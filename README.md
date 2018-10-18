@@ -47,7 +47,7 @@ ng serve --bind 0.0.0.0
 
 And open `localhost:4200` in a browser. This will show you the angular interface.
 
-### Detailed - Bring up the server side dev environment
+### Detailed - Bring up the server side dev environment and troubleshooting job queues
 
 The dev servers do not have any experimental data, only the configurations. In order to load experimental data you will need to process 1 or more screens. take a look at the jobs/processQueues.js script to see some options for searching for workflow configurations.
 
@@ -56,10 +56,11 @@ source chemgen_docker_vars.sh
 cd chemgen-next-server
 ## See the one time setup to install pm2
 pm2 start server/server.js --name chemgen-next-server --watch -i 1
+## Alternative, if you want to see the output from the server directly to the screen, run `npm install -g nodemon; nodemon server/server.js`
 pm2 start jobs/defineQueues.js --name chemgen-next-define-queues --watch -i 1
 node jobs/processScreens.js --limit 2 --site AD --search-pattern CHEM
 node jobs/processScreens.js --limit 2 --site AD --search-pattern AHR 
-#ctrl+c to escape either of these
+#ctrl+c to escape either of these, or run with --exit
 ```
 
 You should some info messages print to the screen: 
