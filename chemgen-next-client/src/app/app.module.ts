@@ -39,11 +39,11 @@ import {BsDatepickerModule} from 'ngx-bootstrap';
 import {DndModule} from 'ng2-dnd';
 import {LightboxModule} from 'angular2-lightbox';
 import {NouisliderModule} from 'ng2-nouislider';
+import {AgGridModule} from 'ag-grid-angular';
 
 //I don't think I am using either of these - just the ngxspinner
 import {NgProgressModule} from '@ngx-progressbar/core';
 import {LoadingModule} from 'ngx-loading';
-// import {NgxToggleModule} from 'ngx-toggle';
 
 /**
  *  Components
@@ -108,9 +108,11 @@ import {HotkeyModule} from "angular2-hotkeys";
  * WIPs
  */
 import {ScatterplotCountsComponent} from './viz/scatterplot-counts/scatterplot-counts.component';
+import {ScoredSummaryComponent} from './scoring/scored-summary/scored-summary.component';
 
 @NgModule({
     imports: [
+        AgGridModule.withComponents([]),
         HighchartsChartModule,
         NgxSpinnerModule,
         BrowserModule,
@@ -162,7 +164,8 @@ import {ScatterplotCountsComponent} from './viz/scatterplot-counts/scatterplot-c
         ExpsetScorePrimaryDialogComponent,
         SearchFormScoreExpsetsComponent,
         // PrimaryEnhComponent,
-        ExpsetScorePrimarySheetComponent
+        ExpsetScorePrimarySheetComponent,
+        ScoredSummaryComponent
     ],
     entryComponents: [],
     providers: [],

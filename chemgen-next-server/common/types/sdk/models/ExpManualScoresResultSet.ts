@@ -14,23 +14,23 @@ export interface ExpManualScoresResultSetInterface {
   "scoreCodeId": number;
   "userId": number;
   "userName": string;
-  "timestamp": Date;
+  "timestamp"?: Date;
   "expWorkflowId"?: string;
 }
 
 export class ExpManualScoresResultSet implements ExpManualScoresResultSetInterface {
-  "manualscoreId": number;
+  "manualscoreId"?: number;
   "manualscoreGroup": string;
   "manualscoreCode": string;
   "manualscoreValue": number;
   "screenId": number;
   "screenName": string;
-  "assayId": number;
+  "assayId"?: number;
   "treatmentGroupId": number;
   "scoreCodeId": number;
   "userId": number;
   "userName": string;
-  "timestamp": Date;
+  "timestamp"?: Date;
   "expWorkflowId": string;
   constructor(data?: ExpManualScoresResultSetInterface) {
     Object.assign(this, data);

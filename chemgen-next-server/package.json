@@ -45,7 +45,7 @@
     "mongoose": "^5.1.2",
     "mustache": "^2.3.0",
     "npm": "^5.7.1",
-    "papaparse": "^4.4.0",
+    "papaparse": "^4.6.1",
     "pluralize": "^7.0.0",
     "recursive-iterator": "^3.3.0",
     "redis": "^2.8.0",

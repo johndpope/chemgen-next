@@ -12,12 +12,25 @@ module.exports = function(ExpManualScores) {
 
   ExpManualScores.on('attached', function () {
     require('../load/ExpManualScores')
+    require('../summary/ExpManualScores');
     // require('../transform/ExpManualScores')
     // require('../extract/RnaiExpManualScores')
   })
+
+  ExpManualScores.summary = function(search, cb){
+    return new Promise((resolve, reject) =>{
+      ExpManualScores.extract.workflows.getScoresStatsPerScreen(search)
+        .then((results) =>{
+          resolve(results);
+        })
+        .catch((error) =>{
+          reject(new Error(error));
+        })
+    });
+  }
+
   ExpManualScores.submitScores = function (scores, cb) {
     return new Promise((resolve, reject) => {
-      console.log(`Received scores: ${JSON.stringify(scores)}`);
       ExpManualScores.load.submitScores(scores)
         .then((results) => {
           resolve(results)
@@ -34,4 +47,13 @@ module.exports = function(ExpManualScores) {
       returns: {arg: 'results', type: 'any'}
     }
   )
+
+  ExpManualScores.remoteMethod(
+    'summary', {
+      http: {path: '/summary', verb: 'post'},
+      accepts: {arg: 'search', type: 'any', http: {source: 'query'}},
+      returns: {arg: 'results', type: 'any'}
+    }
+  )
+
 }

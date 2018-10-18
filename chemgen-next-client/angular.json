@@ -31,7 +31,9 @@
               "node_modules/bootstrap-slider/dist/css/bootstrap-slider.min.css",
               "node_modules/nouislider/distribute/nouislider.min.css",
               "node_modules/font-awesome/css/font-awesome.min.css",
-              "node_modules/ngx-ui-switch/ui-switch.component.css"
+              "node_modules/ngx-ui-switch/ui-switch.component.css",
+              "node_modules/ag-grid-community/dist/styles/ag-grid.css",
+              "node_modules/ag-grid-community/dist/styles/ag-theme-balham.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",

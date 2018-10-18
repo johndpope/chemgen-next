@@ -68,6 +68,7 @@
                             </li>
                             <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/score-expsets-worms">Score Exp
                                     Set</a></li>
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/scored-summary">Scored Summary</a></li>
                         </ul>
                     </li>
                 </ul>

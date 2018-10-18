@@ -98,6 +98,7 @@ export class ExpsetScorePrimaryComponent implements OnInit {
             'userId': this.userId,
             'userName': this.userName,
             'expWorkflowId': String(this.expSet.expWorkflow.id),
+            timestamp: new Date(Date.now()),
         });
         submitThese.push(firstPassScore);
         let hasManualScoreScore = new ExpManualScoresResultSet({
@@ -111,6 +112,7 @@ export class ExpsetScorePrimaryComponent implements OnInit {
             'userId': this.userId,
             'userName': this.userName,
             'expWorkflowId': String(this.expSet.expWorkflow.id),
+            timestamp: new Date(Date.now()),
         });
         submitThese.push(hasManualScoreScore);
         console.log('submitting!');

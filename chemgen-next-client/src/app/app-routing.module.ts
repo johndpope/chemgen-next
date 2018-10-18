@@ -14,6 +14,7 @@ import {SearchFormExpsetsComponent} from "./search-forms/search-form-expsets/sea
 import {ScatterplotCountsComponent} from "./viz/scatterplot-counts/scatterplot-counts.component";
 import {SearchFormContactSheetPrimaryComponent} from "./search-forms/search-form-contact-sheet-primary/search-form-contact-sheet-primary.component";
 import {SearchFormScoreExpsetsComponent} from "./search-forms/search-form-score-expsets/search-form-score-expsets.component";
+import {ScoredSummaryComponent} from "./scoring/scored-summary/scored-summary.component";
 
 // TODO Make Routing Modules
 
@@ -30,6 +31,7 @@ const appRoutes: Routes = [
     {path: 'counts-viz', component: ScatterplotCountsComponent},
     {path: 'search-expsets-worms', component: SearchFormExpsetsComponent},
     {path: 'score-expsets-worms', component: SearchFormScoreExpsetsComponent},
+    {path: 'scored-summary', component: ScoredSummaryComponent},
     {path: '', redirectTo: '/empty', pathMatch: 'full'},
     {path: '**', component: PageNotFoundComponent},
 ];
