@@ -2,25 +2,52 @@
 Server side code is written in Node.js using Loopback.
 
 ## Client Side Code and Interfaces
-Client Side code is written using Angular6, and is then ported over to a wordpress app
 
-In order to build the latest client side code and add it to the wordpress app
+Client Side code is written using Angular6, and is then ported over to a wordpress app for deployment.
 
-```
-# May have to run:
-# npm install --save-dev @angular-devkit/build-angular
-# npm audit fix
-source chemgen_docker_vars.sh
-cd chemgen-next-client
-ng build --prod  --output-hashing none --output-path ../chemgen-next-wptheme/js/ng
-```
 
 ## Bringing up the docker sev servers
+
+If you have not already completed the one time startup instructions to install node and some global packages you will need to complete that first.
 
 Included is a set of docker compose configurations to bring up all services using docker.
 There is no data persistance and this is meant for DEV USE ONLY.
 
 Running  `./run_chemgen_server.sh` will bring up the docker compose instance.
+
+#### Quick Start - Bring up the node server
+
+To start the loopback server
+
+```
+cd chemgen-next-server
+## Run in the foreground
+# if Error: Cannot find module 'loopback'
+# `run npm install` in this directory
+nodemon server/server.js
+## Run in the background
+## See the one time setup to install pm2
+pm2 start server/server.js --name chemgen-next-server --watch -i 1
+pm2 start jobs/defineQueues.js --name chemgen-next-define-queues --watch -i 1
+node jobs/processScreens.js --limit 2 --site AD --search-pattern CHEM
+#ctrl+c to kill or run with --exit
+node jobs/processScreens.js --limit 2 --site AD --search-pattern AHR 
+#ctrl+c to kill or run with --exit
+```
+
+To start the angular dev server
+
+```
+cd chemgen-next-client
+npm install
+# bind wasn't found
+# ng serve --host=0.0.0.0 instead
+ng serve --bind 0.0.0.0
+```
+
+And open `localhost:4200` in a browser. This will show you the angular interface.
+
+### Detailed - Bring up the server side dev environment
 
 The dev servers do not have any experimental data, only the configurations. In order to load experimental data you will need to process 1 or more screens. take a look at the jobs/processQueues.js script to see some options for searching for workflow configurations.
 
@@ -75,6 +102,21 @@ docker volume rm chemgen-next-web-docker_wordpress_db_data
 
 Make sure to set the site as appropriate, NY, AD, or DEV. The default is dev.
 
+### Deploy the angular app to the wordpress theme
+
+The angular dev server is only used in development. For production it is deployed to a wordpress site.
+
+In order to build the latest client side code and add it to the wordpress app
+
+```
+# May have to run:
+# npm install --save-dev @angular-devkit/build-angular
+# npm audit fix
+source chemgen_docker_vars.sh
+cd chemgen-next-client
+ng build --prod  --output-hashing none --output-path ../chemgen-next-wptheme/js/ng
+```
+
 ### Important API EndPoints
 
 #### Get Exp Sets (Regardless of scored/not status)
@@ -93,6 +135,7 @@ http://localhost:3000/api/ExpSets/getUnscoredExpSetsByPlate?search={"pageSize" :
 ```
 
 This is another endpoint that is less optimized, but allows for search across the entire database for rnais/chemicals 
+
 ```
 http://localhost:3000/api/ExpSets/getUnscoredExpSets?search={"pageSize" : 1 }
 ```
@@ -104,35 +147,18 @@ http://localhost:3000/api/ExpSets/getUnScoredExpSetsByFirstPass?search={"pageSiz
 
 ### One time startup instructions
 
-#### Bring up the node server
 
 I am having trouble getting these working as docker containers, so for now you have to do it the hard way. First ensure you have node.js>=9.
 
 ```
 npm install -g pm2 @angular/cli nodemon karma mocha
-```
-
-To start the loopback server
-
-```
+source chemgen_docker_vars.sh
 cd chemgen-next-server
-## Run in the foreground
-# if Error: Cannot find module 'loopback'
-# `run npm install` in this directory
-nodemon server/server.js
-## Run in the background
-pm2 start server/server.js --name chemgen-next-server --watch -i 1
-```
-
-To start the angular dev server
-
-```
-cd chemgen-next-client
 npm install
-# bind wasn't found
-# ng serve --host=0.0.0.0 instead
-ng serve --bind 0.0.0.0
+cd ../chemgen-next-client
+npm install
 ```
+
 
 #### Wordpress
 
@@ -151,7 +177,6 @@ The docker configuration in chemgen-next-analysis-docker requires some data file
 #### Devstar Counts
 
 The configuration is all here, but since devstar is a private github repo you will need to go and download the repo as a zip and put it in the chemgen-next-analysis-docker/counts/devstar folder.
-
 
 ## CI Services
 
