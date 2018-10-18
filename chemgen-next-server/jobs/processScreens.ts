@@ -12,6 +12,7 @@ program
   .option('-l, --limit [value]', 'Max number of workflows to process [1]', 1)
   .option('-s, --site [value]', 'Site - AD, NY, DEV [DEV]', 'DEV')
   .option('-p --search-pattern [value]', 'Search pattern - CHEM, AHR, RNAi, etc')
+  .option('-e --exit', 'Exit after completing the queueing process.', false)
   .parse(process.argv);
 
 processWorkflows(program);
@@ -36,7 +37,12 @@ function processWorkflows(program) {
       })
         .then(() => {
           app.winston.info('Completed queueing.');
-          // process.exit(0);
+          if(program.exit){
+            process.exit(0);
+          }else{
+           app.winston.info(`You should see output to the screen. Continue to run this script in the background with ctrl+c`);
+          }
+
         })
         .catch((error) => {
           console.error(error);

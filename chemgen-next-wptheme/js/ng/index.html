@@ -37,9 +37,44 @@
                     <!-- sidebar menu -->
                     <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                         <div class="menu_section">
-                            <h3>Upload Screens</h3>
+                            <!--Begin Score Menu-->
                             <ul class="nav side-menu">
-                                <li><a><i class="fa fa-home"></i> Exp Screen <span
+                                <li><a><i class="fa fa-search-minus"></i> Score <span
+                                        class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <!--RouterLink does not work in index.html-->
+                                        <!--But the theme does not work if this is in a component-->
+                                        <!--TODO Update the theme to an angular theme-->
+                                        <li><a href="#/search-form-contact-sheet-plate"
+                                               routerLink="/search-form-contact-sheet-plate">Score with 96 Well Contact
+                                            Sheet</a>
+                                        </li>
+                                        <li><a href="#/score-expsets-worms" routerLink="/score-expsets-worms">Score Exp
+                                            Set</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <!--Begin Score Menu-->
+
+                            <!--Begin Search Menu-->
+                            <ul class="nav side-menu">
+                                <li><a><i class="fa fa-search"></i> Search <span
+                                        class="fa fa-chevron-down"></span></a>
+                                    <ul class="nav child_menu">
+                                        <!--RouterLink does not work in index.html-->
+                                        <!--But the theme does not work if this is in a component-->
+                                        <!--TODO Update the theme to an angular theme-->
+                                        <li><a href="#/search-expsets-worms" routerLink="/search-expsets-worms">Search
+                                            for Exp Sets</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <!--End Search Menu-->
+
+                            <!--Begin Upload Menu-->
+                            <ul class="nav side-menu">
+                                <li><a><i class="fa fa-upload"></i> Upload Screens <span
                                         class="fa fa-chevron-down"></span></a>
                                     <ul class="nav child_menu">
                                         <!--RouterLink does not work in index.html-->
@@ -52,9 +87,12 @@
                                     </ul>
                                 </li>
                             </ul>
+                            <!--End Upload Menu-->
+
                         </div>
                     </div>
                     <!-- /sidebar menu -->
+
                 </div>
             </div>
             <!--        /Side Bar Navigation-->

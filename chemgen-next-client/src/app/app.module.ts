@@ -100,7 +100,7 @@ import {ExpsetSheetComponent} from './scoring/expset-sheet/expset-sheet.componen
 import {ExpsetToggleComponent} from './scoring/expset-toggle/expset-toggle.component';
 import {ExpsetScorePrimaryComponent} from './scoring/expset-score-primary/expset-score-primary.component';
 import {ExpsetScorePrimaryDialogComponent} from './scoring/expset-score-primary-dialog/expset-score-primary-dialog.component';
-// import {ExpsetScorePrimarySheetComponent} from './scoring/expset-score-primary-sheet/expset-score-primary-sheet.component';
+import {ExpsetScorePrimarySheetComponent} from './scoring/expset-score-primary-sheet/expset-score-primary-sheet.component';
 // import {PrimaryEnhComponent} from './scoring/forms/primary-enh/primary-enh.component';
 import {HotkeyModule} from "angular2-hotkeys";
 
@@ -162,7 +162,7 @@ import {ScatterplotCountsComponent} from './viz/scatterplot-counts/scatterplot-c
         ExpsetScorePrimaryDialogComponent,
         SearchFormScoreExpsetsComponent,
         // PrimaryEnhComponent,
-        // ExpsetScorePrimarySheetComponent,
+        ExpsetScorePrimarySheetComponent
     ],
     entryComponents: [],
     providers: [],
