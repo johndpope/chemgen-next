@@ -25,6 +25,7 @@ export interface ExpSetSearchInterface {
   ctrlLimit?: number;
   scoresExist?: any;
   scoresQuery?: any;
+  method ?: string;
   //Filters to include different contactSheetResults
   compoundsXRefs?: Boolean;
   expAssays?: Boolean;
@@ -49,6 +50,7 @@ export class ExpSetSearch {
   plateSearch ?: Array<number>;
   expGroupSearch ?: Array<number>;
   currentPage ?: number;
+  method ?: string;
   skip ?: number;
   pageSize ?: number = 1;
   ctrlLimit ?: number = 4;

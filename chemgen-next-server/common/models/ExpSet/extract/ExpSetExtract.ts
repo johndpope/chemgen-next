@@ -595,6 +595,7 @@ ExpSet.extract.workflows.getReagentDataChemicalLibraryStock = function (data: Ex
       });
   });
 };
+
 ExpSet.extract.workflows.getReagentDataRnaiLibraryStock = function (data: ExpSetSearchResults, expAssay2reagents: ExpAssay2reagentResultSet[]) {
   return new Promise((resolve, reject) => {
     let or = expAssay2reagents.map((expAssay2reagent) => {

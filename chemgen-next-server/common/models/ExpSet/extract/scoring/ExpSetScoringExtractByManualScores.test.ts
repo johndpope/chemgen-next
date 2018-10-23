@@ -11,6 +11,7 @@ if (!isEqual(process.env.NODE_ENV, 'dev')) {
 
 describe('ExpSetScoringExtractByManualScores.test.ts', function () {
   it('should run the min/max/avg query', function (done) {
+    let search = new ExpSetSearch({screenSearch: [9], expGroupTypeAlbums: false, expManualScores: false, expPlates: false, expSets: false});
     app.models.ExpSet.extract.workflows.orderByExpManualScoresPrimaryPhenotypes({})
       .then((results) => {
         done();

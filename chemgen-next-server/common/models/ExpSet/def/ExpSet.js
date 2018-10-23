@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-module.exports = function(ExpSet) {
+module.exports = function (ExpSet) {
   ExpSet.helpers = {}
   ExpSet.load = {}
   ExpSet.load.workflows = {}
@@ -20,6 +20,16 @@ module.exports = function(ExpSet) {
     require('../extract/scoring/ExpSetScoringExtractByManualScores')
     require('../extract/ExpSetResults')
   })
+
+  ExpSet.extract.returnTabularScores = function (search, cb) {
+    return new Promise((resolve, reject) => {
+      if (!search.method) {
+        reject(new Error('search field must include a method'))
+      } else {
+        resolve(ExpSet.extract.workflows[search.method])
+      }
+    })
+  }
 
   ExpSet.getUnscoredExpSetsByFirstPass = function (search, cb) {
     return new Promise((resolve, reject) => {
@@ -140,4 +150,12 @@ module.exports = function(ExpSet) {
     }
   )
 
-};
+  ExpSet.remoteMethod(
+    'getTabularData', {
+      http: {path: '/getTabularData', verb: 'post'},
+      accepts: {arg: 'search', type: 'any', http: {source: 'query'}},
+      returns: {arg: 'results', type: 'any'}
+    }
+  )
+
+}
