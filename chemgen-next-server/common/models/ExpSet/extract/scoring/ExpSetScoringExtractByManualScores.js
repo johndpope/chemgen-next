@@ -22,6 +22,7 @@ ExpSet.extract.workflows.orderByExpManualScores = function (search) {
             .groupBy('treatment_group_id')
             .groupBy('manualscore_group')
             .groupBy('manualscore_code')
+            .groupBy('timestamp')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -46,6 +47,7 @@ ExpSet.extract.workflows.orderByExpManualScoresPrimaryPhenotypes = function (sea
             .groupBy('treatment_group_id')
             .groupBy('manualscore_code')
             .groupBy('manualscore_group')
+            .groupBy('timestamp')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -68,6 +70,7 @@ ExpSet.extract.workflows.orderByExpManualScoresEmbLeth = function (search) {
             .groupBy('treatment_group_id')
             .groupBy('manualscore_group')
             .groupBy('manualscore_code')
+            .groupBy('timestamp')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -116,6 +119,7 @@ ExpSet.extract.workflows.orderByExpManualScoresEnhSte = function (search) {
             .groupBy('treatment_group_id')
             .groupBy('manualscore_group')
             .groupBy('manualscore_code')
+            .groupBy('timestamp')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -138,12 +142,13 @@ ExpSet.extract.workflows.orderByExpManualScoresBaseQuery = function (search) {
             query = query.whereIn(sql_col, sql_values);
         }
     });
-    query = query.select('treatment_group_id')
+    return knex('exp_manual_scores')
+        .select('treatment_group_id')
         .select('manualscore_group')
         .select('manualscore_code')
+        .select('timestamp')
         .max('manualscore_value as max_manualscore_value')
         .min('manualscore_value as min_manualscore_value')
         .avg('manualscore_value as avg_manualscore_value');
-    return query;
 };
 //# sourceMappingURL=ExpSetScoringExtractByManualScores.js.map
