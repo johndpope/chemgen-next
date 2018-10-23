@@ -11,6 +11,7 @@ import {get, uniq, orderBy} from 'lodash';
 })
 export class SearchFormExpScreenComponent implements OnInit {
 
+    @Input('expScreenWhere') expScreenWhere: any = {};
     @Input('formResults') formResults: SearchFormExpScreenFormResults;
     expScreens: ExpScreenResultSet[];
     expScreenWorkflows: ExpScreenUploadWorkflowResultSet[];
@@ -31,7 +32,7 @@ export class SearchFormExpScreenComponent implements OnInit {
 
     getExpScreens() {
         this.expScreenApi
-            .find()
+            .find(this.expScreenWhere)
             .subscribe((results: ExpScreenResultSet[]) => {
                 this.expScreens = results;
                 return;

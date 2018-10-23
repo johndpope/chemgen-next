@@ -10,6 +10,7 @@ var ExpSetSearch = /** @class */ (function () {
         //If its false grab ExpSets that are not scored
         //If its true grab ExpSets that are scored
         this.scoresExist = null;
+        this.scoresQuery = null;
         //Filters to include different contactSheetResults
         this.compoundsXRefs = true;
         this.expAssays = true;

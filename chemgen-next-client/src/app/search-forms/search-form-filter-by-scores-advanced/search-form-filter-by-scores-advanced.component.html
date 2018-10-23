@@ -1,0 +1,71 @@
+<div class="row">
+    <div class="col-md-12">
+        <p>This query may take some time. To reduce time select a screen, or by querying with the simple form.</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div *ngFor="let anyGroup of searchFormFilterByAdvancedResults.andGroups; let indexAny=index">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="well">
+
+                        <div *ngIf="indexAny > 0" class="row">
+                            <div class="col-md-12">
+                                <button type="button" (click)=searchFormFilterByAdvancedResults.removeAndGroup(indexAny)
+                                        class="btn btn-danger pull-right"><i class="fa fa-close"></i></button>
+                            </div>
+                        </div>
+
+                        <div *ngFor="let group of anyGroup; let i=index">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="anyCond-{{indexAny}}-{{i}}">
+                                        <div class="form-group">
+                                            <label for="selectEqualCond-{{indexAny}}-{{i}}"
+                                                   class="control-label col-md-2">Matches</label>
+                                            <div class="col-md-2">
+                                                <select id="selectEqualCond-{{indexAny}}-{{i}}"
+                                                        name="selectEqualCond"
+                                                        [(ngModel)]="group.selectedHasValue"
+                                                        class="form-control">
+                                                    <option *ngFor="let equalOption of group.equalOptions" [ngValue]="equalOption.value">{{equalOption.display}}</option>
+                                                </select>
+                                            </div>
+                                            <label for="scoreType-{{indexAny}}-{{i}}"
+                                                   class="control-label col-md-2">Score
+                                                Type</label>
+                                            <div class="col-md-4">
+                                                <select class="form-control" id="scoreType-{{indexAny}}-{{i}}"
+                                                        name="scoreType-{{indexAny}}-{{i}}"
+                                                        [(ngModel)]="group.customSelected"
+                                                >
+                                                    <option *ngFor="let manualScore of group.manualScores"
+                                                            [ngValue]="manualScore">{{manualScore.formCode}} --
+                                                        {{manualScore.description}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-1">
+                                                <button type="button" (click)="searchFormFilterByAdvancedResults.addAnyCond(indexAny, i)"
+                                                        class="btn btn-success"><i
+                                                        class="fa fa-plus-square"></i></button>
+                                            </div>
+                                            <div *ngIf="i>0" class="col-md-1">
+                                                <button type="button" (click)="searchFormFilterByAdvancedResults.removeAnyGroup(indexAny, i)"
+                                                        class="btn warning alert-warning"><i
+                                                        class="fa fa-close"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" (click)="searchFormFilterByAdvancedResults.addAndCond()" class="btn  btn-primary">Add Score Filter Group</button>
+    </div>
+</div>

@@ -29,7 +29,7 @@ let orig = [];
  * WIP
  * This is a custom analysis, that is a getting turned into an interface
  * This particular analysis got a list of genes, and gets them across screens, and then ranks them (I hope).
- * Another way to do this would be to query by a screen, and say 'whats interesting' here.
+ * Another way to do this would be to manualScoresAdvancedQuery by a screen, and say 'whats interesting' here.
  * For custom analyses like this - I want to set up a mongodb collection, where we can just stick stuff
  * Assign it an ID and stick it in a dashboard
  ***/
@@ -73,7 +73,7 @@ function getGeneXRefs(genes) {
         // contactSheetResults = slice(contactSheetResults, 0, 5);
         // let csv = Papa.unparse(contactSheetResults);
         // fs.writeFileSync(path.resolve(__dirname,'chromI_list.csv'), csv);
-        //TODO Split this query
+        //TODO Split this manualScoresAdvancedQuery
         return getExpDesign(results);
       })
       .then((results) => {
@@ -133,7 +133,7 @@ function getExpAssays(data) {
   return new Promise((resolve, reject) => {
     //TODO Also get includeCounts!
     //TODO Paginate
-    //TODO Include statement does not work for belongsTo - figure out correct way to query this
+    //TODO Include statement does not work for belongsTo - figure out correct way to manualScoresAdvancedQuery this
     app.models.ExpAssay
       .find({
         where: {or: or},
@@ -164,6 +164,7 @@ function trimAssays(expAssays: ExpAssayResultSet[]) {
   });
   let groups = groupBy(expAssays, (expAssay) => {
     if (get(expAssay, 'expAssay2reagent[0].reagentType')) {
+      //@ts-ignore
       return expAssay.expAssay2reagent[0].reagentType;
     }
   });
@@ -175,6 +176,7 @@ function trimAssays(expAssays: ExpAssayResultSet[]) {
 function getCountAnalytics(data) {
   console.log('In getCount!');
   return new Promise((resolve, reject) => {
+    //@ts-ignore
     Promise.map(data.expSets, (expSet: RnaiExpSet) => {
       // let treat_rnais = expSet.expAssays.treat_rnai;
       // let ctrl_rnais = expSet.expAssays.ctrl_rnai;
@@ -184,6 +186,7 @@ function getCountAnalytics(data) {
         treatPercEmbLeths = expSet.expAssays.treat_rnai.filter((treat_rnai: ExpAssayResultSet) => {
           return get(treat_rnai, 'modelPredictedCounts[0].percEmbLeth');
         }).map((treat_rnai: ExpAssayResultSet) => {
+          //@ts-ignore
           return treat_rnai.modelPredictedCounts[0].percEmbLeth;
         });
       } catch (error) {
@@ -195,6 +198,7 @@ function getCountAnalytics(data) {
         ctrlPercEmbLeths = expSet.expAssays.ctrl_rnai.filter((ctrl_rnai: ExpAssayResultSet) => {
           return get(ctrl_rnai, 'modelPredictedCounts[0].percEmbLeth');
         }).map((ctrl_rnai: ExpAssayResultSet) => {
+          //@ts-ignore
           return ctrl_rnai.modelPredictedCounts[0].percEmbLeth;
         });
       } catch (error) {
@@ -340,6 +344,7 @@ function prepareInterfaces(genesList, data) {
       //We will have to fetch the screen
       // TODO - UPDATE THIS - there can also be MORE THAN 1 gene
       let gene: RnaiWormbaseXrefsResultSet = find(genesList, (geneRow: RnaiLibraryResultSet) => {
+        //@ts-ignore
         return isEqual(expGroup.reagentId, geneRow.rnaiId);
       });
       let trimmedAssays = trimAssays(expAssays);
@@ -527,6 +532,7 @@ let parseGenesRow = function (row) {
   });
 };
 
+let Object: any;
 /**
  * This is the object for the initial search
  */
@@ -562,6 +568,7 @@ class RnaiExpSetResult {
   rank: ModelPredictedRankResultSet;
 
   constructor(data?: RnaiExpSetResultInterface) {
+    //@ts-ignore
     Object.assign(this, data);
   }
 }
@@ -581,6 +588,7 @@ export class RnaiExpSet {
   analysis?: ModelPredictedRankResultSet;
 
   constructor(data?: RnaiExpSetInterface) {
+    //@ts-ignore
     Object.assign(this, data);
   }
 }

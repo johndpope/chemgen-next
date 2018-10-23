@@ -6,7 +6,7 @@ var Promise = require("bluebird");
 var index_1 = require("../../../types/custom/ExpSetTypes/index");
 var RnaiExpSet = app.models.RnaiExpSet;
 /**
- * Here be a few convenience methods to query for query RNAi sets
+ * Here be a few convenience methods to manualScoresAdvancedQuery for manualScoresAdvancedQuery RNAi sets
  * Most of the actual work is done over at app.models.ExpSet
  */
 /**

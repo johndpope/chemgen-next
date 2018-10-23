@@ -1,9 +1,29 @@
 import app = require('../../../../../server/server.js');
 import {WorkflowModel} from "../../../index";
 import Promise = require('bluebird');
-import {divide, shuffle, isNull, isUndefined, isEmpty, camelCase} from 'lodash';
+import {
+  filter,
+  uniq,
+  reduce,
+  flattenDeep,
+  divide,
+  intersectionBy,
+  shuffle,
+  isArray,
+  isNull,
+  isUndefined,
+  get,
+  isEmpty,
+  camelCase,
+  isEqual
+} from 'lodash';
 import {ExpSetSearch, ExpSetSearchResults} from "../../../../types/custom/ExpSetTypes";
-import {ChemicalLibraryResultSet, ExpAssay2reagentResultSet, RnaiLibraryResultSet} from "../../../../types/sdk/models";
+import {
+  ChemicalLibraryResultSet,
+  ExpAssay2reagentResultSet,
+  ExpManualScoresResultSet,
+  RnaiLibraryResultSet
+} from "../../../../types/sdk/models";
 import decamelize = require('decamelize');
 
 import * as client from "knex";
@@ -19,10 +39,194 @@ const knex = config.get('knex');
 /**
  * The ExpSetExtractScoring* libraries require more complex sql functionality than given by loopback alone
  * (loopback does not support exists, min, max, nested sql, etc)
- * For this reason we use knex, to generate the sql, and then execute it with the loopback native sql executor
+ * For this reason we use knex, to generate some of the sql, and then execute it with the loopback native sql executor
  */
 
 const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
+
+ExpSet.extract.workflows.filterByScores = function (search: ExpSetSearch) {
+  return new Promise((resolve, reject) => {
+    search = new ExpSetSearch(search);
+    let data = new ExpSetSearchResults({});
+    // if (isEmpty(search.rnaiSearch)) {
+    //   //Search the RnaiLibrary Api
+    //   resolve(app.models.RnaiExpSet.extract.workflows.getExpSetsByGeneList(search));
+    // }
+    if (!search.scoresQuery) {
+      resolve(data);
+    } else {
+      //TODO Add Pagination
+      //TODO Check for genes/chemicals list
+      resolve(ExpSet.extract.getScoresByFilter(data, search));
+    }
+  });
+};
+
+ExpSet.extract.getScoresByFilter = function (data: ExpSetSearchResults, search: ExpSetSearch, treatmentGroupIds?: Array<number>) {
+  return new Promise((resolve, reject) => {
+    let query = ExpSet.extract.buildFilterByScoresQuery(data, search, treatmentGroupIds);
+    data.pageSize = 50;
+    if (get(search.scoresQuery, 'and') && isArray(search.scoresQuery.and)) {
+      resolve(ExpSet.extract.getScoresByFilterAdvanced(data, search, treatmentGroupIds));
+    } else {
+      //TODO REAL Pagination DUMMY
+      ExpSet.extract.buildExpManualScorePaginationData(data, search, treatmentGroupIds)
+        .then((data: ExpSetSearchResults) =>{
+          return app.models.ExpManualScores
+            .find({fields: {treatmentGroupId: true}, where: query, limit: 10000})
+        })
+        .then((expManualScores: ExpManualScoresResultSet[]) => {
+          let treatmentGroupIds = uniq(expManualScores.map((expManualScore) => {
+            return expManualScore.treatmentGroupId;
+          }));
+          data.totalPages = treatmentGroupIds.length / data.pageSize;
+          treatmentGroupIds = treatmentGroupIds.slice(data.skip, data.pageSize);
+
+          if (expManualScores.length) {
+            return app.models.ExpAssay2reagent
+              .find({
+                where: {
+                  treatmentGroupId: {
+                    inq: treatmentGroupIds,
+                  }
+                }
+              })
+              .then((expAssay2reagents: ExpAssay2reagentResultSet[]) => {
+                data.expAssay2reagents = expAssay2reagents;
+                return ExpSet.extract.buildExpSets(data, search);
+              })
+              .catch((error) => {
+                return new Error(error);
+              });
+          }
+          else {
+            return data;
+          }
+        })
+        .then((data: ExpSetSearchResults) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(new Error(error));
+        });
+    }
+
+  });
+};
+
+/**
+ * This builds pagination for the amount of expWorkflows
+ * @param {ExpSetSearchResults} data
+ * @param {treatmentGroupIds} Optional array of treatmentGroupIds
+ */
+ExpSet.extract.buildExpManualScorePaginationData = function (data: ExpSetSearchResults, search: ExpSetSearch, treatmentGroupIds?: Array<number>) {
+  return new Promise((resolve, reject) => {
+    let or = ExpSet.extract.buildFilterByScoresQuery(data, search, treatmentGroupIds);
+    let searchObj: any = {};
+    if (or && or.lenth) {
+      searchObj.or = or;
+    }
+    app.paginateModel('ExpManualScores', searchObj, 1)
+      .then((pagination) => {
+        data.currentPage = search.currentPage;
+        data.skip = search.skip;
+        data.pageSize = search.pageSize;
+        data.totalPages = pagination.totalPages;
+        resolve(data);
+      })
+      .catch((error) => {
+        app.winston.error(error);
+        reject(new Error(error));
+      });
+  });
+};
+
+/**
+ * If there's a query with mutliple wheres, we have to run each query individually, and then get the common treatmentGroupIds
+ * @param data
+ * @param search
+ * @param treatmentGroupIds
+ */
+ExpSet.extract.getScoresByFilterAdvanced = function (data: ExpSetSearchResults, search: ExpSetSearch, treatmentGroupIds?: Array<number>) {
+  return new Promise((resolve, reject) => {
+    if (get(search.scoresQuery, 'and') && isArray(search.scoresQuery.and) && search.scoresQuery.and.length) {
+      //@ts-ignore
+      Promise.map(search.scoresQuery.and, (scoreQuery) => {
+        data.pageSize = 50;
+        return app.models.ExpManualScores
+          .find({fields: {treatmentGroupId: true}, where: scoreQuery});
+      })
+        .then((results: Array<ExpManualScoresResultSet[]>) => {
+          let expManualScores: Array<ExpManualScoresResultSet> = reduce(results, (x: ExpManualScoresResultSet[], y: ExpManualScoresResultSet[]) => {
+            return flattenDeep(intersectionBy(x, y, 'treatmentGroupId'));
+          });
+          if (isArray(expManualScores)) {
+            expManualScores = expManualScores.slice(data.skip, data.pageSize);
+          } else {
+            expManualScores = [];
+          }
+          if (expManualScores.length) {
+            return app.models.ExpAssay2reagent
+              .find({
+                where: {
+                  treatmentGroupId: {
+                    inq: expManualScores.map((expManualScore) => {
+                      return expManualScore.treatmentGroupId;
+                    })
+                  }
+                }
+              })
+              .then((expAssay2reagents: ExpAssay2reagentResultSet[]) => {
+                data.expAssay2reagents = expAssay2reagents;
+                return ExpSet.extract.buildExpSets(data, search);
+              })
+              .catch((error) => {
+                return new Error(error);
+              });
+          }
+          else {
+            return data;
+          }
+        })
+        .then((data: ExpSetSearchResults) => {
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(new Error(error));
+        });
+    } else {
+      resolve(ExpSet.extract.getScoresByFilter(data, search, treatmentGroupIds));
+    }
+  });
+};
+
+ExpSet.extract.buildFilterByScoresQuery = function (data: ExpSetSearchResults, search: ExpSetSearch, treatmentGroupIds?: Array<number>) {
+
+  let expScreenSearch = ExpSet.extract.buildScreenDataQuery(data, search);
+  let query: any = {};
+  let treatmentGroupQuery: any = null;
+  if (treatmentGroupIds && treatmentGroupIds.length) {
+    treatmentGroupQuery = {
+      treatmentGroupId: {inq: treatmentGroupIds}
+    };
+  }
+  if (search.scoresQuery || expScreenSearch.length || treatmentGroupQuery) {
+    query = {and: []};
+  }
+  if (search.scoresQuery) {
+    query.and.push(search.scoresQuery);
+  }
+  if (expScreenSearch.length) {
+    expScreenSearch.map((expScreen) => {
+      query.and.push(expScreen);
+    });
+  }
+  if (treatmentGroupQuery) {
+    query.and.push(treatmentGroupQuery);
+  }
+
+  return query;
+};
 
 /**
  * Get expSets that have a FIRST_PASS=1 and no HAS_MANUAL_SCORE
@@ -96,8 +300,6 @@ ExpSet.extract.workflows.getExpAssay2reagentsByFirstPassScores = function (data:
       .limit(5000)
       .offset(data.skip);
 
-    app.winston.info('WHAT?');
-    app.winston.info(JSON.stringify(sqlQuery.toString()));
     sqlQuery
       .then((rows) => {
         let count = rows.length;
@@ -134,7 +336,7 @@ ExpSet.extract.workflows.getExpAssay2reagentsByScores = function (data: ExpSetSe
 
     //Add Pagination
     //TODO Orderby RAND() May be making a big performance hit
-    //A much faster way to do this would be to get all the expWorkflowIds that match the query
+    //A much faster way to do this would be to get all the expWorkflowIds that match the manualScoresAdvancedQuery
     //Then get the ones that haven't been scored
     sqlQuery = sqlQuery
       .limit(data.pageSize)
@@ -168,7 +370,7 @@ ExpSet.extract.buildUnscoredPaginationData = function (data: ExpSetSearchResults
   let sqlKnexQuery = ExpSet.extract.buildNativeQueryExpWorkflowId(data, search, false);
   sqlKnexQuery = sqlKnexQuery.count();
 
-  // The loopback sql query throws an error I can't catch on an empty result set
+  // The loopback sql manualScoresAdvancedQuery throws an error I can't catch on an empty result set
   // Knex returns an error, but I can catch it
   return new Promise((resolve, reject) => {
     let ds = app.datasources.chemgenDS;
@@ -273,7 +475,7 @@ ExpSet.extract.buildNativeQueryByFirstPass = function (data: ExpSetSearchResults
 };
 
 /**
- * The expPlates will have much fewer contactSheetResults, and so it will be faster to query, and more possible to pull a random plate for scoring
+ * The expPlates will have much fewer contactSheetResults, and so it will be faster to manualScoresAdvancedQuery, and more possible to pull a random plate for scoring
  * @param data
  * @param search
  * @param hasManualScores
@@ -343,8 +545,8 @@ ExpSet.extract.buildNativeQueryExpWorkflowId = function (data: ExpSetSearchResul
 };
 
 /**
- * This query will find a single assay that hasn't been scored
- * CAUTION - A query will NOT show up here if the entire expSet was toggled instead of the assays individually
+ * This manualScoresAdvancedQuery will find a single assay that hasn't been scored
+ * CAUTION - A manualScoresAdvancedQuery will NOT show up here if the entire expSet was toggled instead of the assays individually
  * @param data
  * @param search
  * @param hasManualScores

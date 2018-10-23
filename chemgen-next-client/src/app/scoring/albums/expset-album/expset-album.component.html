@@ -292,14 +292,17 @@
                                         <td>Group</td>
                                         <td>Code</td>
                                         <td>Value</td>
+                                        <td>Timestamp</td>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr *ngFor="let manualscore of expSet.expManualScores">
+                                        <td>{{manualscore.scoreCodeId}}</td>
                                         <td>{{manualscore.userName}}</td>
                                         <td>{{manualscore.manualscoreGroup}}</td>
                                         <td>{{manualscore.manualscoreCode}}</td>
                                         <td>{{manualscore.manualscoreValue}}</td>
+                                        <td>{{manualscore.timestamp}}</td>
                                     </tr>
                                     </tbody>
                                 </table>

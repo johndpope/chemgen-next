@@ -8,6 +8,8 @@ import {ExpSetApi} from "../../../types/sdk/services/custom";
 import {ExpsetModule} from "../../scoring/expset/expset.module";
 import {NgxSpinnerService} from "ngx-spinner";
 import {ExpSetSearchResults, ExpSetSearch} from "../../../types/custom/ExpSetTypes";
+import {SearchFormFilterByScoresResults} from "../search-form-filter-by-scores/search-form-filter-by-scores.component";
+import {SearchFormFilterByScoresAdvancedResults} from "../search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component";
 
 @Component({
     templateUrl: './search-form-expsets.component.html',
@@ -16,15 +18,19 @@ import {ExpSetSearchResults, ExpSetSearch} from "../../../types/custom/ExpSetTyp
 export class SearchFormExpsetsComponent implements OnInit {
     searchFormExpScreenResults: SearchFormExpScreenFormResults = new SearchFormExpScreenFormResults();
     searchFormRnaiFormResults: SearchFormRnaiFormResults = new SearchFormRnaiFormResults();
+    searchFormFilterByScoresResults: SearchFormFilterByScoresResults = new SearchFormFilterByScoresResults();
+    searchFormFilterByScoresAdvancedResults: SearchFormFilterByScoresAdvancedResults = new SearchFormFilterByScoresAdvancedResults();
+
     expSetSearch: ExpSetSearch = new ExpSetSearch();
 
     public expSets: ExpSetSearchResults = null;
-    public expSetsModule: ExpsetModule;
+    public expSetsModule: ExpsetModule = null;
 
     public formSubmitted = false;
     public expSetView = true;
     public lowerPageRange: Array<number> = [];
     public upperPageRange: Array<number> = [];
+    public message: string = null;
 
     constructor(private expSetApi: ExpSetApi, private spinner: NgxSpinnerService) {
         this.expSetSearch.currentPage = 1;
@@ -38,12 +44,39 @@ export class SearchFormExpsetsComponent implements OnInit {
         this.onSubmit();
     }
 
+    onReset() {
+        this.searchFormExpScreenResults = new SearchFormExpScreenFormResults();
+        this.searchFormRnaiFormResults = new SearchFormRnaiFormResults();
+        this.searchFormFilterByScoresResults = new SearchFormFilterByScoresResults();
+        this.searchFormFilterByScoresAdvancedResults = new SearchFormFilterByScoresAdvancedResults();
+
+        this.expSetSearch = new ExpSetSearch();
+
+        this.expSets = null;
+        this.expSetsModule = null;
+
+        this.formSubmitted = false;
+        this.expSetView = true;
+        this.lowerPageRange = [];
+        this.upperPageRange = [];
+    }
+
     onSubmit() {
         this.expSets = null;
         this.expSetsModule = null;
         this.expSetSearch.pageSize = 1;
         this.expSetSearch.ctrlLimit = 4;
         this.expSetSearch.skip = null;
+        this.searchFormFilterByScoresResults.createManualScoreQuery();
+        this.searchFormFilterByScoresAdvancedResults.createQuery();
+
+        if (!isEmpty(this.searchFormFilterByScoresAdvancedResults.query)) {
+            //@ts-ignore
+            this.expSetSearch.scoresQuery = this.searchFormFilterByScoresAdvancedResults.query;
+        } else if (!isEmpty(this.searchFormFilterByScoresResults.query)) {
+            //@ts-ignore
+            this.expSetSearch.scoresQuery = this.searchFormFilterByScoresResults.query;
+        }
         if (this.searchFormExpScreenResults.expScreen) {
             this.expSetSearch.screenSearch = [this.searchFormExpScreenResults.expScreen.screenId];
         }
@@ -54,7 +87,7 @@ export class SearchFormExpsetsComponent implements OnInit {
         //TODO Add back in the RNAi endpoint
         if (!isEmpty(this.searchFormRnaiFormResults.rnaisList)) {
             //TODO The pagination when looking for genes is WONKY
-            //So just set teh pageSize to be ridiculously high so that we only return 1 page
+            //So just set the pageSize to be ridiculously high so that we only return 1 page
             this.expSetSearch.pageSize = 10000;
             this.expSetSearch.rnaiSearch = this.searchFormRnaiFormResults.rnaisList;
             this.expSetSearch.skip = null;
@@ -62,6 +95,10 @@ export class SearchFormExpsetsComponent implements OnInit {
             this.expSetSearch.pageSize = 1;
         }
 
+        //@ts-ignore
+        if (this.expSetSearch.rnaiSearch.length && this.expSetSearch.scoresQuery) {
+            this.message = 'Only 1 of RNAi list and Scores filter will return expected results. Score Query will take precedence.';
+        }
         this.formSubmitted = true;
         this.findExpSets();
     }

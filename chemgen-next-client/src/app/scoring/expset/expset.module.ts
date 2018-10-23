@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {isEqual, find, get, filter, shuffle, uniqBy} from 'lodash';
+import {isEqual, uniqWith,  find, get, filter, shuffle, orderBy, uniqBy} from 'lodash';
 import {
     ModelPredictedCountsResultSet,
     ExpScreenUploadWorkflowResultSet,
@@ -48,9 +48,12 @@ export class ExpsetModule {
 
     @Memoize()
     findExpManualScores(treatmentGroupId: number) {
-        return this.expSets.expManualScores.filter((expManualScore: ExpManualScoresResultSet) => {
+        let objects =  this.expSets.expManualScores.filter((expManualScore: ExpManualScoresResultSet) => {
             return isEqual(expManualScore.treatmentGroupId, treatmentGroupId);
         });
+        //This should really be taken care of on the server side
+        objects =  uniqWith(objects, isEqual);
+        return orderBy(objects, 'manualscoreValue', 'desc');
     }
 
     @Memoize()

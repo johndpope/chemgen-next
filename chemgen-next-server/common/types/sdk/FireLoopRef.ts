@@ -132,7 +132,7 @@ export class FireLoopRef<T> {
   /**
   * @method on
   * @param {string} event Event name
-  * @param {LoopBackFilter} filter LoopBack query filter
+  * @param {LoopBackFilter} filter LoopBack manualScoresAdvancedQuery filter
   * @return {Observable<T>}
   * @description
   * Listener for different type of events. Valid events are:
@@ -165,7 +165,7 @@ export class FireLoopRef<T> {
   }
   /**
   * @method stats
-  * @param {LoopBackFilter=} filter LoopBack query filter
+  * @param {LoopBackFilter=} filter LoopBack manualScoresAdvancedQuery filter
   * @return {Observable<T>}
   * @description
   * Listener for real-time statistics, will trigger on every

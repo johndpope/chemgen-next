@@ -19,19 +19,23 @@ Running  `./run_chemgen_server.sh` will bring up the docker compose instance.
 
 To start the loopback server
 
+If you get any errors ensure you have sourced the file `chemgen_docker_vars.sh`.
+
 ```
+source chemgen_docker_vars.sh
 cd chemgen-next-server
+## Note - you can either run nodemon server/server.js OR pm2 start server/server.js, not both
 ## Run in the foreground
 # if Error: Cannot find module 'loopback'
 # `run npm install` in this directory
 nodemon server/server.js
 ## Run in the background
 ## See the one time setup to install pm2
-pm2 start server/server.js --name chemgen-next-server --watch -i 1
+# pm2 start server/server.js --name chemgen-next-server --watch -i 1
 pm2 start jobs/defineQueues.js --name chemgen-next-define-queues --watch -i 1
-node jobs/processScreens.js --limit 2 --site AD --search-pattern CHEM
+node jobs/processScreens.js --limit 10 --site AD --search-pattern CHEM
 #ctrl+c to kill or run with --exit
-node jobs/processScreens.js --limit 2 --site AD --search-pattern AHR 
+node jobs/processScreens.js --limit 10 --site AD --search-pattern AHR 
 #ctrl+c to kill or run with --exit
 ```
 

@@ -17,6 +17,7 @@ module.exports = function(ExpSet) {
     require('../extract/scoring/ExpSetScoringExtract')
     require('../extract/scoring/ExpSetScoringExtractByCounts')
     require('../extract/scoring/ExpSetScoringExtractByPlate')
+    require('../extract/scoring/ExpSetScoringExtractByManualScores')
     require('../extract/ExpSetResults')
   })
 

@@ -100,7 +100,7 @@ export abstract class BaseLoopBackApi {
       
       let queryString: string = '';
 
-      // Separate filter object from url params and add to search query
+      // Separate filter object from url params and add to search manualScoresAdvancedQuery
       if (urlParams.filter) {
         if (LoopBackConfig.isHeadersFilteringSet()) {
           headers = headers.append('filter', JSON.stringify(urlParams.filter));
@@ -110,7 +110,7 @@ export abstract class BaseLoopBackApi {
         delete urlParams.filter;
       }
 
-      // Separate where object from url params and add to search query
+      // Separate where object from url params and add to search manualScoresAdvancedQuery
       if (urlParams.where) {
         if (LoopBackConfig.isHeadersWhereSet()) {
           /**

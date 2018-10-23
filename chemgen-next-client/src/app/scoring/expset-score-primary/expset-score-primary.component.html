@@ -27,7 +27,7 @@
                                       (ngSubmit)="onSubmit()">
                                     <!--Begin scoring the mutant-->
                                     <div class="mutant_scoring">
-                                        <h3>Mutant + RNAi</h3>
+                                        <h3>Mutant + Reagent</h3>
                                         <!--Begin scoring mutant primary phenotypes - EMB/ STE-->
                                         <div class="row">
                                             <div class="form-group">
@@ -41,55 +41,25 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group">
-                                                <label class="control-label col-md-2">Weak</label>
+                                                <label class="control-label col-md-3">Emb</label>
                                                 <div class="checkbox">
-                                                    <label class="control-label col-md-2"><input
+                                                    <label class="control-label col-md-3"><input
                                                             name="M_WEAK_EMB"
                                                             [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_WEAK_EMB"
                                                             (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
-                                                            type="checkbox"/>Emb</label>
+                                                            type="checkbox"/>Weak</label>
                                                 </div>
-                                                <div class="checkbox">
-                                                    <label class="control-label col-md-2"><input
-                                                            name="M_WEAK_STE"
-                                                            [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_WEAK_STE"
-                                                            (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
-                                                            type="checkbox"/>Ste</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group">
-                                                <label class="control-label col-md-2">Medium</label>
-                                                <div class="checkbox"><label class="control-label col-md-2"><input
+                                                <div class="checkbox"><label class="control-label col-md-3"><input
                                                         name="M_MED_EMB"
                                                         [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_MED_EMB"
                                                         (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
-                                                        type="checkbox"/>Emb</label>
+                                                        type="checkbox"/>Med</label>
                                                 </div>
-                                                <div class="checkbox"><label class="control-label col-md-2">
-                                                    <input
-                                                            name="M_MED_STE"
-                                                            [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_MED_STE"
-                                                            (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
-                                                            type="checkbox"/>Ste</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group">
-                                                <label class="control-label col-md-2">Strong</label>
-                                                <div class="checkbox"><label class="control-label col-md-2"><input
+                                                <div class="checkbox"><label class="control-label col-md-3"><input
                                                         name="M_STRONG_EMB"
                                                         [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_STRONG_EMB"
                                                         (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
-                                                        type="checkbox"/>Emb</label>
-                                                </div>
-                                                <div class="checkbox"><label class="control-label col-md-2"><input
-                                                        name="M_STRONG_STE"
-                                                        [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_STRONG_STE"
-                                                        (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
-                                                        type="checkbox"/>Ste</label>
+                                                        type="checkbox"/>Strong</label>
                                                 </div>
                                             </div>
                                         </div>
@@ -97,6 +67,31 @@
                                              class="row">
                                             <div class="col-md-12 alert alert-danger">
                                                 {{expSetPrimaryScoreFormResults.mEmbErrorMessage}}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3">Ste</label>
+                                                <div class="checkbox">
+                                                    <label class="control-label col-md-3"><input
+                                                            name="M_WEAK_STE"
+                                                            [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_WEAK_STE"
+                                                            (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
+                                                            type="checkbox"/>Weak</label>
+                                                </div>
+                                                <div class="checkbox"><label class="control-label col-md-3">
+                                                    <input
+                                                            name="M_MED_STE"
+                                                            [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_MED_STE"
+                                                            (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
+                                                            type="checkbox"/>Med</label>
+                                                </div>
+                                                <div class="checkbox"><label class="control-label col-md-3"><input
+                                                        name="M_STRONG_STE"
+                                                        [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_STRONG_STE"
+                                                        (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
+                                                        type="checkbox"/>Strong</label>
+                                                </div>
                                             </div>
                                         </div>
                                         <div *ngIf="expSetPrimaryScoreFormResults.mSteErrorMessage"
@@ -107,13 +102,13 @@
                                         </div>
                                         <div class="row">
                                             <div class="form-group">
-                                                <label class="control-label col-md-2">Supp of</label>
-                                                <div class="checkbox"><label class="control-label col-md-2"><input
+                                                <label class="control-label col-md-3">Supp of</label>
+                                                <div class="checkbox"><label class="control-label col-md-3"><input
                                                         name="M_SUP_EMB_ENH"
                                                         [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_SUP_EMB_ENH"
                                                         type="checkbox"/>Emb</label>
                                                 </div>
-                                                <div class="checkbox"><label class="control-label col-md-2"><input
+                                                <div class="checkbox"><label class="control-label col-md-3"><input
                                                         name="M_SUP_STE_ENH"
                                                         [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_SUP_STE_ENH"
                                                         type="checkbox"/>Ste</label>
@@ -128,7 +123,7 @@
                                                 <input
                                                         name="M_SUP_PE_LVA_ENH"
                                                         [(ngModel)]="expSetPrimaryScoreFormResults.scores.M_SUP_PE_LVA_ENH"
-                                                        type="checkbox"/>Supp, </label>
+                                                        type="checkbox"/>Supp of PE/LVA </label>
                                             </div>
                                             <div class="checkbox"><label class="control-label">
                                                 <input
@@ -166,7 +161,7 @@
                                     <!--End scoring the mutant-->
                                     <!--Begin scoring the N2-->
                                     <div class="n2_scoring">
-                                        <h3>N2 + RNAi</h3>
+                                        <h3>N2 + Reagent</h3>
                                         <!--Begin scoring N2 primary phenotypes-->
                                         <div class="form-group">
                                             <div class="checkbox"><label class="control-label"><input
@@ -176,6 +171,7 @@
                                                     type="checkbox"/>WT</label>
                                             </div>
                                         </div>
+                                        <!--Begin WT Emb-->
                                         <div class="row">
                                             <div class="form-group">
                                                 <label class="control-label col-md-3">Emb</label>
@@ -189,7 +185,7 @@
                                                         name="WT_MED_EMB"
                                                         [(ngModel)]="expSetPrimaryScoreFormResults.scores.WT_MED_EMB"
                                                         (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
-                                                        type="checkbox"/>Medium</label>
+                                                        type="checkbox"/>Med</label>
                                                 </div>
                                                 <div class="checkbox"><label class="control-label col-md-3"><input
                                                         name="WT_STRONG_EMB"
@@ -205,14 +201,42 @@
                                                 {{expSetPrimaryScoreFormResults.wtEmbErrorMessage}}
                                             </div>
                                         </div>
+                                        <!--End WT Emb-->
+                                        <!--Begin WT Ste-->
+                                        <div class="row">
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3">Ste</label>
+                                                <div class="checkbox"><label class="control-label col-md-3"><input
+                                                        name="WT_WEAK_STE"
+                                                        [(ngModel)]="expSetPrimaryScoreFormResults.scores.WT_WEAK_STE"
+                                                        (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
+                                                        type="checkbox"/>Weak</label>
+                                                </div>
+                                                <div class="checkbox"><label class="control-label col-md-3"><input
+                                                        name="WT_MED_STE"
+                                                        [(ngModel)]="expSetPrimaryScoreFormResults.scores.WT_MED_STE"
+                                                        (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
+                                                        type="checkbox"/>Med</label>
+                                                </div>
+                                                <div class="checkbox"><label class="control-label col-md-3"><input
+                                                        name="WT_STRONG_STE"
+                                                        [(ngModel)]="expSetPrimaryScoreFormResults.scores.WT_STRONG_STE"
+                                                        (ngModelChange)="expSetPrimaryScoreFormResults.checkEmbSteOne()"
+                                                        type="checkbox"/>Strong</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div *ngIf="expSetPrimaryScoreFormResults.wtSteErrorMessage"
+                                             class="row">
+                                            <div class="col-md-12 alert alert-danger">
+                                                {{expSetPrimaryScoreFormResults.wtSteErrorMessage}}
+                                            </div>
+                                        </div>
+                                        <!--Begin WT Ste-->
+
                                         <!--End scoring N2 primary phenotypes-->
                                         <!--Begin scoring N2 secondary phenotypes-->
                                         <div class="form-group">
-                                            <div class="checkbox"><label class="control-label"><input
-                                                    name="WT_STE"
-                                                    [(ngModel)]="expSetPrimaryScoreFormResults.scores.WT_STE"
-                                                    type="checkbox"/>Ste</label>
-                                            </div>
                                             <div class="checkbox"><label class="control-label"><input
                                                     name="WT_LB"
                                                     [(ngModel)]="expSetPrimaryScoreFormResults.scores.WT_LB"

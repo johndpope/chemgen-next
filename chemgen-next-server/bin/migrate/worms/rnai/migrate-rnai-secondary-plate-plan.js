@@ -221,6 +221,7 @@ var parseWell = function (workflowData, wellData) {
 };
 var parseRows = function (workflowData, lists) {
     return new Promise(function (resolve, reject) {
+        //@ts-ignore
         Promise.map(lists, function (wellData) {
             return parseWell(workflowData, wellData);
         })

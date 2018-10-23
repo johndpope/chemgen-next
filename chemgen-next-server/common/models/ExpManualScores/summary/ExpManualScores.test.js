@@ -7,7 +7,7 @@ if (!lodash_1.isEqual(process.env.NODE_ENV, 'dev')) {
     process.exit(0);
 }
 describe('Summary ExpManualScores', function () {
-    it('should return the query for a single expWorkflow', function () {
+    it('should return the manualScoresAdvancedQuery for a single expWorkflow', function () {
         var query = app.models.ExpManualScores.extract.buildNativeQueryDistinctTreatmentIds({ id: 'ABCDEF' });
         var sqlString = query.toString();
         assert.ok(query);

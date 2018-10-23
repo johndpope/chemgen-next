@@ -18,18 +18,20 @@ ExpSet.extract.workflows.getExpSets = function (search) {
         search = new index_1.ExpSetSearch(search);
         app.winston.info("A: Search : " + JSON.stringify(search));
         var data = new index_1.ExpSetSearchResults({});
-        if (lodash_1.isEqual(search.scoresExist, true)) {
-            //Use the  scoring
-            app.winston.info("ExpSet.extract.workflows.getUnscoredExpSet");
+        if (search.scoresQuery) {
+            resolve(ExpSet.extract.workflows.filterByScores(search));
+        }
+        else if (lodash_1.isEqual(search.scoresExist, true)) {
+            //search.scoresExist is a boolean value to say whether or not there exists an entry in the exp_manual_scores for a given treatmentGroupId
+            //It does not do any further filtering
+            //It uses the knex api, because it executes a nested select if exists, which is not possible through the loopback api
             resolve(ExpSet.extract.workflows.getUnscoredExpSet(search));
         }
         else if (lodash_1.isEqual(search.scoresExist, false)) {
-            app.winston.info("ExpSet.extract.workflows.getUnscoredExpSetsByPlate");
             resolve(ExpSet.extract.workflows.getUnscoredExpSetsByPlate(search));
         }
         else if (lodash_1.isEqual(search.scoresExist, null) && !(lodash_1.isEmpty(search.rnaiSearch))) {
             //Search the RnaiLibrary Api
-            app.winston.info("RnaiExpSet.extract.workflows.getExpSetsByGeneList");
             resolve(app.models.RnaiExpSet.extract.workflows.getExpSetsByGeneList(search));
         }
         else if (lodash_1.isEqual(search.scoresExist, null) && !(lodash_1.isEmpty(search.chemicalSearch))) {
@@ -38,15 +40,15 @@ ExpSet.extract.workflows.getExpSets = function (search) {
             resolve();
         }
         else {
+            //Get all the expSets for a single expWorkflowId
             search.pageSize = 1;
             //Return the expSet
-            app.winston.info("ExpSet.extract.workflows.getExpSetsByWorkflowId");
             resolve(ExpSet.extract.workflows.getExpSetsByWorkflowId(search));
         }
     });
 };
 /**
- * Build the 'where' query against the ExpAssay2reagent table (the main experiment table)
+ * Build the 'where' manualScoresAdvancedQuery against the ExpAssay2reagent table (the main experiment table)
  * You need to use this function if you are querying against a specific set of genes or chemicals
  * Otherwise use the ExpWorkflowFunctions
  * @param {ExpSetSearchResults} data
@@ -73,6 +75,32 @@ ExpSet.extract.buildQuery = function (data, search) {
         }
     }
     return ExpSet.extract.buildReagentQuery(data, or, expOr);
+};
+ExpSet.extract.buildAssayDataQuery = function (data, search) {
+    var or = [];
+    var expOr = ['plate', 'expGroup', 'assay'].map(function (searchType) {
+        if (!lodash_1.isEmpty(search[searchType + "Search"])) {
+            var searchObject = {};
+            searchObject[searchType + "Id"] = { inq: search[searchType + "Search"] };
+            return searchObject;
+        }
+    }).filter(function (or) {
+        return or;
+    });
+    return or;
+};
+ExpSet.extract.buildScreenDataQuery = function (data, search) {
+    var or = [];
+    var expOr = ['screen', 'expWorkflow'].map(function (searchType) {
+        if (!lodash_1.isEmpty(search[searchType + "Search"])) {
+            var searchObject = {};
+            searchObject[searchType + "Id"] = { inq: search[searchType + "Search"] };
+            return searchObject;
+        }
+    }).filter(function (or) {
+        return or;
+    });
+    return expOr;
 };
 ExpSet.extract.buildReagentQuery = function (data, or, expOr) {
     ['rnai', 'compounds'].map(function (reagentType) {

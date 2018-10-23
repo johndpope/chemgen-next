@@ -22,11 +22,15 @@
                             <li class="active"><a href="#screenData" data-toggle="tab">Screen</a>
                             </li>
                             <li><a href="#rnaiData" data-toggle="tab">RNAi</a>
-                            <!--</li>-->
-                            <!--<li><a href="#chemicalData" data-toggle="tab">Chemical</a>-->
-                            <!--</li>-->
+                            <li><a href="#filterScores" data-toggle="tab">Filter By Scores - Simple</a>
+                            <li><a href="#filterScoresAdvanced" data-toggle="tab">Filter By Scores - Advanced</a>
+                                <!--</li>-->
+                                <!--<li><a href="#chemicalData" data-toggle="tab">Chemical</a>-->
+                                <!--</li>-->
                         </ul>
                         <div class="clearfix"></div>
+                        <br>
+                        <button type="button" (click)="onReset()" class="btn btn-danger">Reset</button>
                         <button type="submit" id="searchFormSubmit" class="btn btn-success">Submit</button>
                         <div class="clearfix"></div>
                     </div>
@@ -43,12 +47,26 @@
                                 <p class="lead">RNAis List</p>
                                 <app-search-form-rnai [formResults]="searchFormRnaiFormResults"></app-search-form-rnai>
                             </div>
+                            <div class="tab-pane" id="filterScores">
+                                <p class="lead">Filter By Scores - Simple</p>
+                                <app-search-form-filter-by-scores
+                                        [searchFormFilterByScoresResults]="searchFormFilterByScoresResults"></app-search-form-filter-by-scores>
+                            </div>
+                            <div class="tab-pane" id="filterScoresAdvanced">
+                                <p class="lead">Filter By Scores - Advanced</p>
+                                <app-search-form-filter-by-scores-advanced
+                                        [searchFormFilterByScoresAdvancedResults]="searchFormFilterByScoresAdvancedResults"
+                                ></app-search-form-filter-by-scores-advanced>
+                            </div>
                             <!--<div class="tab-pane" id="chemicalData">Chemical</div>-->
                         </div>
                     </div>
 
                     <div class="clearfix"></div>
                 </form>
+                <div class="alert alert-warning" *ngIf="message">
+                    {{message}}
+                </div>
 
             </div>
         </div>

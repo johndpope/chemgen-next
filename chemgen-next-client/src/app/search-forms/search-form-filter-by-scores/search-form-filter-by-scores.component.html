@@ -1,0 +1,240 @@
+<div class="row">
+    <!--<div class="col-md-12">-->
+        <!--Begin scoring the mutant-->
+        <div class="mutant_scoring col-md-6">
+            <h5>Mutant + Reagent</h5>
+            <!--Begin scoring mutant primary phenotypes - EMB/ STE-->
+            <div class="row">
+                <div class="form-group">
+                    <div class="checkbox col-md-12"><label class="control-label">
+                        <input name="M_NO_EFFECT"
+                               [(ngModel)]="searchFormFilterByScoresResults.scores.M_NO_EFFECT"
+                               type="checkbox"/>No
+                        Sup/Enh</label></div>
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="form-group">
+
+                    <label class="control-label col-md-2">Emb</label>
+
+                    <div class="checkbox">
+                        <label class="control-label col-md-2"><input
+                                name="M_WEAK_EMB"
+                                [(ngModel)]="searchFormFilterByScoresResults.scores.M_WEAK_EMB"
+                                type="checkbox"/>Weak</label>
+                    </div>
+
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="M_MED_EMB"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.M_MED_EMB"
+                            type="checkbox"/>Med</label>
+                    </div>
+
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="M_STRONG_EMB"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.M_STRONG_EMB"
+                            type="checkbox"/>Strong</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Ste</label>
+                    <div class="checkbox">
+                        <label class="control-label col-md-2"><input
+                                name="M_WEAK_STE"
+                                [(ngModel)]="searchFormFilterByScoresResults.scores.M_WEAK_STE"
+                                type="checkbox"/>Weak</label>
+                    </div>
+
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="M_MED_STE"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.M_MED_STE"
+                            type="checkbox"/>Med</label>
+                    </div>
+
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="M_STRONG_STE"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.M_STRONG_STE"
+                            type="checkbox"/>Strong</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Supp of</label>
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="M_SUP_EMB_ENH"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.M_SUP_EMB_ENH"
+                            type="checkbox"/>Emb</label>
+                    </div>
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="M_SUP_STE_ENH"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.M_SUP_STE_ENH"
+                            type="checkbox"/>Ste</label>
+                    </div>
+                </div>
+            </div>
+            <!--End scoring mutant primary phenotypes - EMB/ STE-->
+            <hr/>
+            <!--Begin scoring mutant secondary phenotypes - PE/LVA Other stuff-->
+            <div class="form-group">
+                <div class="checkbox"><label class="control-label">
+                    <input
+                            name="M_SUP_PE_LVA_ENH"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.M_SUP_PE_LVA_ENH"
+                            type="checkbox"/>Supp, </label>
+                </div>
+                <div class="checkbox"><label class="control-label">
+                    <input
+                            name="M_ENH_PE_LVA_ENH"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.M_ENH_PE_LVA_ENH"
+                            type="checkbox"/>Enh
+                    of PE/LVA</label></div>
+            </div>
+            <hr/>
+            <div class="form-group">
+                <div class="checkbox"><label class="control-label"><input
+                        name="M_UF"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.M_UF"
+                        type="checkbox"/>UF</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="M_NB"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.M_NB"
+                        type="checkbox"/>NB</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="M_NW"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.M_NW"
+                        type="checkbox"/>NW</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="M_CONT"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.M_CONT"
+                        type="checkbox"/>Contamination</label>
+                </div>
+            </div>
+            <!--Begin scoring mutant secondary phenotypes - PE/LVA Other stuff-->
+            <hr/>
+        </div>
+        <!--End scoring the mutant-->
+        <!--Begin scoring the N2-->
+        <div class="n2_scoring col-md-6">
+            <h5>N2 + Reagent</h5>
+            <!--Begin scoring N2 primary phenotypes-->
+            <div class="row">
+                <div class="form-group">
+                    <div class="checkbox col-md-12"><label class="control-label"><input
+                            name="WT_NO_EFFECT"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.WT_NO_EFFECT"
+                            type="checkbox"/>WT</label>
+                    </div>
+                </div>
+            </div>
+            <hr/>
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Emb</label>
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="WT_WEAK_EMB"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.WT_WEAK_EMB"
+                            type="checkbox"/>Weak</label>
+                    </div>
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="WT_MED_EMB"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.WT_MED_EMB"
+                            type="checkbox"/>Med</label>
+                    </div>
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="WT_STRONG_EMB"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.WT_STRONG_EMB"
+                            type="checkbox"/>Strong</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label col-md-2">Ste</label>
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="WT_WEAK_STE"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.WT_WEAK_STE"
+                            type="checkbox"/>Weak</label>
+                    </div>
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="WT_MED_STE"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.WT_MED_STE"
+                            type="checkbox"/>Med</label>
+                    </div>
+                    <div class="checkbox"><label class="control-label col-md-2"><input
+                            name="WT_STRONG_STE"
+                            [(ngModel)]="searchFormFilterByScoresResults.scores.WT_STRONG_STE"
+                            type="checkbox"/>Strong</label>
+                    </div>
+                </div>
+            </div>
+
+            <hr/>
+            <!--End scoring N2 primary phenotypes-->
+            <!--Begin scoring N2 secondary phenotypes-->
+            <div class="form-group">
+                <div class="checkbox"><label class="control-label"><input
+                        name="WT_STE"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.WT_STE"
+                        type="checkbox"/>Ste</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="WT_LB"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.WT_LB"
+                        type="checkbox"/>LB</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="WT_LVA"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.WT_LVA"
+                        type="checkbox"/>LVA</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="WT_PE"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.WT_PE"
+                        type="checkbox"/>PE</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="WT_UF"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.WT_UF"
+                        type="checkbox"/>UF</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="WT_NB"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.WT_NB"
+                        type="checkbox"/>NB</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="WT_NW"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.WT_NW"
+                        type="checkbox"/>NW</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="WT_CONT"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.WT_CONT"
+                        type="checkbox"/>Contamination</label>
+                </div>
+                <div class="checkbox"><label class="control-label"><input
+                        name="WT_PROB"
+                        [(ngModel)]="searchFormFilterByScoresResults.scores.WT_PROB"
+                        type="checkbox"/>Problem</label>
+                </div>
+            </div>
+            <!--End scoring N2 secondary phenotypes-->
+            <hr/>
+        </div>
+        <!--End scoring the N2-->
+    <!--</div>-->
+</div>
+

@@ -98,7 +98,7 @@ var BaseLoopBackApi = /** @class */ (function () {
                 body = postBody;
             }
             var queryString = '';
-            // Separate filter object from url params and add to search query
+            // Separate filter object from url params and add to search manualScoresAdvancedQuery
             if (urlParams.filter) {
                 if (lb_config_1.LoopBackConfig.isHeadersFilteringSet()) {
                     headers = headers.append('filter', JSON.stringify(urlParams.filter));
@@ -108,7 +108,7 @@ var BaseLoopBackApi = /** @class */ (function () {
                 }
                 delete urlParams.filter;
             }
-            // Separate where object from url params and add to search query
+            // Separate where object from url params and add to search manualScoresAdvancedQuery
             if (urlParams.where) {
                 if (lb_config_1.LoopBackConfig.isHeadersWhereSet()) {
                     /**

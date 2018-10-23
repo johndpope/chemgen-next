@@ -24,6 +24,7 @@ export interface ExpSetSearchInterface {
   pageSize?: number;
   ctrlLimit?: number;
   scoresExist?: any;
+  scoresQuery?: any;
   //Filters to include different contactSheetResults
   compoundsXRefs?: Boolean;
   expAssays?: Boolean;
@@ -56,6 +57,7 @@ export class ExpSetSearch {
   //If its false grab ExpSets that are not scored
   //If its true grab ExpSets that are scored
   scoresExist?: any = null;
+  scoresQuery?: any = null;
   //Filters to include different contactSheetResults
   compoundsXRefs?: Boolean = true;
   expAssays?: Boolean = true;

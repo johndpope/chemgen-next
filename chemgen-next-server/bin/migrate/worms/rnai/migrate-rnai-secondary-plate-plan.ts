@@ -203,7 +203,7 @@ const parseWell = function (workflowData, wellData) {
         app.models.RnaiLibrary.findOne({
           where: where,
         })
-          .then(function (results: RnaiLibraryResultSet) {
+          .then(function (results: any) {
             if (!results || isEmpty(results)) {
               resolve();
             } else {
@@ -230,6 +230,7 @@ const parseWell = function (workflowData, wellData) {
 
 const parseRows = function (workflowData, lists) {
   return new Promise(function (resolve, reject) {
+    //@ts-ignore
     Promise.map(lists, function (wellData) {
       return parseWell(workflowData, wellData);
     })

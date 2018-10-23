@@ -21,7 +21,8 @@ function processWorkflows(program) {
   let search: any = {};
   if (program.searchPattern) {
     search = {
-      name: new RegExp(program.searchPattern),
+      screenId: 3,
+      // name: new RegExp(program.searchPattern),
     }
   }
   app.models.ExpScreenUploadWorkflow

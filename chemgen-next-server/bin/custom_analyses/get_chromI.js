@@ -21,7 +21,7 @@ var orig = [];
  * WIP
  * This is a custom analysis, that is a getting turned into an interface
  * This particular analysis got a list of genes, and gets them across screens, and then ranks them (I hope).
- * Another way to do this would be to query by a screen, and say 'whats interesting' here.
+ * Another way to do this would be to manualScoresAdvancedQuery by a screen, and say 'whats interesting' here.
  * For custom analyses like this - I want to set up a mongodb collection, where we can just stick stuff
  * Assign it an ID and stick it in a dashboard
  ***/
@@ -62,7 +62,7 @@ function getGeneXRefs(genes) {
             // contactSheetResults = slice(contactSheetResults, 0, 5);
             // let csv = Papa.unparse(contactSheetResults);
             // fs.writeFileSync(path.resolve(__dirname,'chromI_list.csv'), csv);
-            //TODO Split this query
+            //TODO Split this manualScoresAdvancedQuery
             return getExpDesign(results);
         })
             .then(function (results) {
@@ -119,7 +119,7 @@ function getExpAssays(data) {
     return new Promise(function (resolve, reject) {
         //TODO Also get includeCounts!
         //TODO Paginate
-        //TODO Include statement does not work for belongsTo - figure out correct way to query this
+        //TODO Include statement does not work for belongsTo - figure out correct way to manualScoresAdvancedQuery this
         app.models.ExpAssay
             .find({
             where: { or: or },
@@ -149,6 +149,7 @@ function trimAssays(expAssays) {
     });
     var groups = lodash_1.groupBy(expAssays, function (expAssay) {
         if (lodash_1.get(expAssay, 'expAssay2reagent[0].reagentType')) {
+            //@ts-ignore
             return expAssay.expAssay2reagent[0].reagentType;
         }
     });
@@ -159,6 +160,7 @@ function trimAssays(expAssays) {
 function getCountAnalytics(data) {
     console.log('In getCount!');
     return new Promise(function (resolve, reject) {
+        //@ts-ignore
         Promise.map(data.expSets, function (expSet) {
             // let treat_rnais = expSet.expAssays.treat_rnai;
             // let ctrl_rnais = expSet.expAssays.ctrl_rnai;
@@ -167,6 +169,7 @@ function getCountAnalytics(data) {
                 treatPercEmbLeths = expSet.expAssays.treat_rnai.filter(function (treat_rnai) {
                     return lodash_1.get(treat_rnai, 'modelPredictedCounts[0].percEmbLeth');
                 }).map(function (treat_rnai) {
+                    //@ts-ignore
                     return treat_rnai.modelPredictedCounts[0].percEmbLeth;
                 });
             }
@@ -179,6 +182,7 @@ function getCountAnalytics(data) {
                 ctrlPercEmbLeths = expSet.expAssays.ctrl_rnai.filter(function (ctrl_rnai) {
                     return lodash_1.get(ctrl_rnai, 'modelPredictedCounts[0].percEmbLeth');
                 }).map(function (ctrl_rnai) {
+                    //@ts-ignore
                     return ctrl_rnai.modelPredictedCounts[0].percEmbLeth;
                 });
             }
@@ -316,6 +320,7 @@ function prepareInterfaces(genesList, data) {
             //We will have to fetch the screen
             // TODO - UPDATE THIS - there can also be MORE THAN 1 gene
             var gene = lodash_1.find(genesList, function (geneRow) {
+                //@ts-ignore
                 return lodash_1.isEqual(expGroup_1.reagentId, geneRow.rnaiId);
             });
             var trimmedAssays = trimAssays(expAssays);
@@ -494,14 +499,17 @@ var parseGenesRow = function (row) {
         resolve();
     });
 };
+var Object;
 var RnaiExpSetResult = /** @class */ (function () {
     function RnaiExpSetResult(data) {
+        //@ts-ignore
         Object.assign(this, data);
     }
     return RnaiExpSetResult;
 }());
 var RnaiExpSet = /** @class */ (function () {
     function RnaiExpSet(data) {
+        //@ts-ignore
         Object.assign(this, data);
     }
     return RnaiExpSet;

@@ -40,6 +40,7 @@ import {DndModule} from 'ng2-dnd';
 import {LightboxModule} from 'angular2-lightbox';
 import {NouisliderModule} from 'ng2-nouislider';
 import {AgGridModule} from 'ag-grid-angular';
+import {HotkeyModule} from "angular2-hotkeys";
 
 //I don't think I am using either of these - just the ngxspinner
 import {NgProgressModule} from '@ngx-progressbar/core';
@@ -101,14 +102,15 @@ import {ExpsetToggleComponent} from './scoring/expset-toggle/expset-toggle.compo
 import {ExpsetScorePrimaryComponent} from './scoring/expset-score-primary/expset-score-primary.component';
 import {ExpsetScorePrimaryDialogComponent} from './scoring/expset-score-primary-dialog/expset-score-primary-dialog.component';
 import {ExpsetScorePrimarySheetComponent} from './scoring/expset-score-primary-sheet/expset-score-primary-sheet.component';
+import {ScoredSummaryComponent} from './scoring/scored-summary/scored-summary.component';
 // import {PrimaryEnhComponent} from './scoring/forms/primary-enh/primary-enh.component';
-import {HotkeyModule} from "angular2-hotkeys";
 
 /**
  * WIPs
  */
 import {ScatterplotCountsComponent} from './viz/scatterplot-counts/scatterplot-counts.component';
-import {ScoredSummaryComponent} from './scoring/scored-summary/scored-summary.component';
+import { SearchFormFilterByScoresComponent } from './search-forms/search-form-filter-by-scores/search-form-filter-by-scores.component';
+import { SearchFormFilterByScoresAdvancedComponent } from './search-forms/search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component';
 
 @NgModule({
     imports: [
@@ -165,7 +167,9 @@ import {ScoredSummaryComponent} from './scoring/scored-summary/scored-summary.co
         SearchFormScoreExpsetsComponent,
         // PrimaryEnhComponent,
         ExpsetScorePrimarySheetComponent,
-        ScoredSummaryComponent
+        ScoredSummaryComponent,
+        SearchFormFilterByScoresComponent,
+        SearchFormFilterByScoresAdvancedComponent
     ],
     entryComponents: [],
     providers: [],
