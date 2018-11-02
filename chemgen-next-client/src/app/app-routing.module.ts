@@ -30,7 +30,7 @@ const appRoutes: Routes = [
     {path: 'search-expsets-worms', component: SearchFormExpsetsComponent},
     {path: 'score-expsets-worms', component: SearchFormScoreExpsetsComponent},
     {path: 'scored-summary', component: ScoredSummaryComponent},
-    {path: 'contact-sheet-by-expset', component: ContactSheetSecondaryComponent},
+    {path: 'contact-sheet-secondary', component: ContactSheetSecondaryComponent},
     /* WIP */
     {path: 'counts-viz', component: ScatterplotCountsComponent},
     {path: '', redirectTo: '/empty', pathMatch: 'full'},
