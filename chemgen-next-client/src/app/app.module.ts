@@ -95,7 +95,7 @@ import {SearchFormScoreExpsetsComponent} from './search-forms/search-form-score-
 /**
  * Components -  Scoring Forms
  */
-import {ContactSheetComponent} from './scoring/contact-sheet/contact-sheet.component';
+import {ContactSheetPrimaryComponent} from "./scoring/contact-sheet-primary/contact-sheet-primary.component";
 import {SearchFormWormsComponent} from './search-forms/search-form-worms/search-form-worms.component';
 import {ExpsetSheetComponent} from './scoring/expset-sheet/expset-sheet.component';
 import {ExpsetToggleComponent} from './scoring/expset-toggle/expset-toggle.component';
@@ -103,14 +103,14 @@ import {ExpsetScorePrimaryComponent} from './scoring/expset-score-primary/expset
 import {ExpsetScorePrimaryDialogComponent} from './scoring/expset-score-primary-dialog/expset-score-primary-dialog.component';
 import {ExpsetScorePrimarySheetComponent} from './scoring/expset-score-primary-sheet/expset-score-primary-sheet.component';
 import {ScoredSummaryComponent} from './scoring/scored-summary/scored-summary.component';
-// import {PrimaryEnhComponent} from './scoring/forms/primary-enh/primary-enh.component';
 
 /**
  * WIPs
  */
 import {ScatterplotCountsComponent} from './viz/scatterplot-counts/scatterplot-counts.component';
-import { SearchFormFilterByScoresComponent } from './search-forms/search-form-filter-by-scores/search-form-filter-by-scores.component';
-import { SearchFormFilterByScoresAdvancedComponent } from './search-forms/search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component';
+import {SearchFormFilterByScoresComponent} from './search-forms/search-form-filter-by-scores/search-form-filter-by-scores.component';
+import {SearchFormFilterByScoresAdvancedComponent} from './search-forms/search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component';
+import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/contact-sheet-secondary.component";
 
 @NgModule({
     imports: [
@@ -152,7 +152,7 @@ import { SearchFormFilterByScoresAdvancedComponent } from './search-forms/search
         SearchFormExpScreenComponent,
         SearchFormRnaiComponent,
         SearchFormChemicalComponent,
-        ContactSheetComponent,
+        ContactSheetPrimaryComponent,
         SearchFormViewOptionsComponent,
         ExpsetAlbumDialogComponent,
         SearchFormWormsComponent,
@@ -165,11 +165,11 @@ import { SearchFormFilterByScoresAdvancedComponent } from './search-forms/search
         ExpsetScorePrimaryComponent,
         ExpsetScorePrimaryDialogComponent,
         SearchFormScoreExpsetsComponent,
-        // PrimaryEnhComponent,
         ExpsetScorePrimarySheetComponent,
         ScoredSummaryComponent,
         SearchFormFilterByScoresComponent,
-        SearchFormFilterByScoresAdvancedComponent
+        SearchFormFilterByScoresAdvancedComponent,
+        ContactSheetSecondaryComponent
     ],
     entryComponents: [],
     providers: [],

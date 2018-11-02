@@ -5,7 +5,7 @@ import {SearchFormExpScreenComponent} from '../search-form-exp-screen/search-for
 import {SearchFormRnaiComponent} from '../search-form-rnai/search-form-rnai.component';
 import {SearchFormViewOptionsComponent} from '../search-form-view-options/search-form-view-options.component';
 import {LoadingModule} from 'ngx-loading';
-import {ContactSheetComponent} from '../../scoring/contact-sheet/contact-sheet.component';
+import {ContactSheetPrimaryComponent} from '../../scoring/contact-sheet-primary/contact-sheet.component';
 import {ExpsetSheetComponent} from '../../scoring/expset-sheet/expset-sheet.component';
 import {FormsModule} from '@angular/forms';
 import {NouisliderModule} from 'ng2-nouislider';
@@ -24,7 +24,7 @@ describe('SearchFormWormsComponent', () => {
         TestBed.configureTestingModule({
             imports: [LoadingModule, FormsModule, NouisliderModule, ModalModule, NgProgressModule, SDKBrowserModule.forRoot()],
             declarations: [SearchFormWormsComponent, SearchFormExpScreenComponent, MockExpsetToggleComponent, MockGridAlbumComponent,
-                SearchFormRnaiComponent, SearchFormViewOptionsComponent, ContactSheetComponent,
+                SearchFormRnaiComponent, SearchFormViewOptionsComponent, ContactSheetPrimaryComponent,
                 ExpsetSheetComponent, ExpsetAlbumComponent, ExpsetAlbumDialogComponent],
         })
             .compileComponents();

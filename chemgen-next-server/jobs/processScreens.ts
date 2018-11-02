@@ -21,7 +21,7 @@ function processWorkflows(program) {
   let search: any = {};
   if (program.searchPattern) {
     search = {
-      screenId: {inq: [3,4]},
+      screenId: {inq: [1]},
       // name: new RegExp(program.searchPattern),
     }
   }
