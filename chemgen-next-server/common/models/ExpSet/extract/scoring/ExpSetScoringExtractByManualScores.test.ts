@@ -10,9 +10,34 @@ if (!isEqual(process.env.NODE_ENV, 'dev')) {
 }
 
 describe('ExpSetScoringExtractByManualScores.test.ts', function () {
-  it('should run the min/max/avg query', function (done) {
-    app.models.ExpSet.extract.workflows.orderByExpManualScoresPrimaryPhenotypes({})
+  it('should run the min/max/avg query for emb leth', function (done) {
+    let search = new ExpSetSearch({
+      // screenSearch: [9],
+      expGroupTypeAlbums: false,
+      expManualScores: false,
+      expPlates: false,
+      expSets: false
+    });
+    app.models.ExpSet.extract.workflows.orderByExpManualScoresEmbLeth({})
       .then((results) => {
+        // results = app.models.ExpSet.extract.workflows.createDataFrame(results);
+        done();
+      })
+      .catch((error) => {
+        done(new Error(error));
+      })
+  });
+  it('should run the min/max/avg query for enh ste', function (done) {
+    let search = new ExpSetSearch({
+      // screenSearch: [9],
+      expGroupTypeAlbums: false,
+      expManualScores: false,
+      expPlates: false,
+      expSets: false
+    });
+    app.models.ExpSet.extract.workflows.orderByExpManualScoresEnhSte({})
+      .then((results) => {
+        // results = app.models.ExpSet.extract.workflows.createDataFrame(results);
         done();
       })
       .catch((error) => {

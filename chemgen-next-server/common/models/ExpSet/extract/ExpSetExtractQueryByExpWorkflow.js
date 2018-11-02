@@ -17,12 +17,11 @@ var ExpSet = app.models.ExpSet;
  */
 ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search) {
     return new Promise(function (resolve, reject) {
-        app.winston.info("B: " + JSON.stringify(search));
         //Since the result is already very large - the pageSize is 1
         search.pageSize = 1;
         search = new ExpSetTypes_1.ExpSetSearch(search);
         var data = new ExpSetTypes_1.ExpSetSearchResults({});
-        app.winston.info("A: " + JSON.stringify(search));
+        app.winston.info("Search: " + JSON.stringify(search));
         var or = ExpSet.extract.buildQueryExpWorkflow(data, search);
         var searchQuery = {
             limit: search.pageSize,
@@ -42,6 +41,7 @@ ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search) {
                 resolve();
             }
             else {
+                data.expWorkflows = lodash_1.compact(expWorkflows);
                 return ExpSet.extract.fetchFromCache(data, search, String(data.expWorkflows[0].id));
             }
         })
@@ -80,7 +80,7 @@ ExpSet.extract.buildQueryExpWorkflow = function (data, search) {
     var expOr = ['screen', 'expWorkflow'].map(function (searchType) {
         if (!lodash_1.isEmpty(search[searchType + "Search"])) {
             var searchObject = {};
-            if (searchType.match('expworkflow')) {
+            if (searchType.match('expWorkflow')) {
                 searchObject["id"] = { inq: search[searchType + "Search"] };
             }
             else {
@@ -212,7 +212,6 @@ ExpSet.extract.getExpAssay2reagentsByExpWorkflowId = function (data, search) {
  */
 ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId) {
     return new Promise(function (resolve, reject) {
-        app.winston.info('Finding expAssay2reagents');
         app.models.ExpAssay2reagent
             .find({
             where: {
@@ -241,7 +240,6 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             return data;
         })
             .then(function (data) {
-            app.winston.info('Finding expAssays');
             return app.models.ExpAssay
                 .find({
                 where: {
@@ -266,7 +264,6 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             return data;
         })
             .then(function (data) {
-            app.winston.info('Finding ExpPlates');
             return app.models.ExpPlate
                 .find({
                 where: {
@@ -279,7 +276,6 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             return data;
         })
             .then(function (data) {
-            app.winston.info('Finding Counts');
             return app.models.ModelPredictedCounts
                 .find({
                 where: {
@@ -292,8 +288,6 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             return data;
         })
             .then(function (data) {
-            app.winston.info('Finding Screens');
-            app.winston.info("ScreenId: " + JSON.stringify(data.expAssay2reagents[0]));
             return app.models.ExpScreen
                 .findOne({
                 where: { screenId: data.expAssay2reagents[0].screenId },
@@ -307,11 +301,9 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
         })
             .then(function (expScreens) {
             data.expScreens = [expScreens];
-            app.winston.info("Got exp screens!");
             return data;
         })
             .then(function (data) {
-            app.winston.info('Finding Workflows');
             return app.models.ExpScreenUploadWorkflow
                 .findOne({
                 where: { id: expWorkflowId },
@@ -328,12 +320,10 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             });
         })
             .then(function (expScreenWorkflow) {
-            app.winston.info('Getting ExpDesigns!');
             data.expWorkflows = [expScreenWorkflow];
             return ExpSet.extract.getExpDesignsByExpWorkflowId(data, search);
         })
             .then(function (data) {
-            app.winston.info('Generating expSetAlbums!');
             try {
                 return ExpSet.extract.genExpSetAlbums(data, search);
             }
@@ -344,13 +334,10 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             }
         })
             .then(function (data) {
-            app.winston.info('Getting reagentData');
             return ExpSet.extract.workflows.getReagentData(data, search);
         })
             .then(function (data) {
-            app.winston.info('Getting genExpGroupTypeAlbums');
             data = ExpSet.extract.genExpGroupTypeAlbums(data, search);
-            app.winston.info('Saving to the cache!');
             return ExpSet.extract.saveToCache(data, search);
         })
             .then(function (data) {

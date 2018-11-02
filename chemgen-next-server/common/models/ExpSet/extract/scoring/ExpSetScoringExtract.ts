@@ -71,7 +71,7 @@ ExpSet.extract.getScoresByFilter = function (data: ExpSetSearchResults, search: 
     } else {
       //TODO REAL Pagination DUMMY
       ExpSet.extract.buildExpManualScorePaginationData(data, search, treatmentGroupIds)
-        .then((data: ExpSetSearchResults) =>{
+        .then((data: ExpSetSearchResults) => {
           return app.models.ExpManualScores
             .find({fields: {treatmentGroupId: true}, where: query, limit: 10000})
         })
@@ -311,7 +311,9 @@ ExpSet.extract.workflows.getExpAssay2reagentsByFirstPassScores = function (data:
         const rowData = rows.map(rawRowData => {
           Object.keys(rawRowData).map((rowKey) => {
             rawRowData[camelCase(rowKey)] = rawRowData[rowKey];
-            delete rawRowData[rowKey];
+            if (!isEqual(camelCase(rowKey), rowKey)) {
+              delete rawRowData[rowKey];
+            }
           });
           return new app.models.ExpAssay2reagent(JSON.parse(JSON.stringify(rawRowData)));
         });

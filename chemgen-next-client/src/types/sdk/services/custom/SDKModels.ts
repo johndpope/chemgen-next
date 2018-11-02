@@ -34,6 +34,8 @@ import { RnaiExpSetResultSet } from '../../models/RnaiExpSetResultSet';
 import { ChemicalExpSetResultSet } from '../../models/ChemicalExpSetResultSet';
 import { ExpSetResultSet } from '../../models/ExpSetResultSet';
 import { ModelsResultSet } from '../../models/ModelsResultSet';
+import { ReactomeEnityResultSet } from '../../models/ReactomeEnityResultSet';
+import { ReactomePathwayResultSet } from '../../models/ReactomePathwayResultSet';
 
 export interface Models { [name: string]: any }
 
@@ -75,6 +77,8 @@ export class SDKModels {
     ChemicalExpSetResultSet: ChemicalExpSetResultSet,
     ExpSetResultSet: ExpSetResultSet,
     ModelsResultSet: ModelsResultSet,
+    ReactomeEnityResultSet: ReactomeEnityResultSet,
+    ReactomePathwayResultSet: ReactomePathwayResultSet,
     
   };
 

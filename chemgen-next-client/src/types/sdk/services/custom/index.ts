@@ -33,5 +33,7 @@ export * from './RnaiExpSet';
 export * from './ChemicalExpSet';
 export * from './ExpSet';
 export * from './Models';
+export * from './ReactomeEnity';
+export * from './ReactomePathway';
 export * from './SDKModels';
 export * from './logger.service';

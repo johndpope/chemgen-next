@@ -14,7 +14,6 @@ var ExpSet = app.models.ExpSet;
 ExpSet.extract.workflows.getExpSets = function (search) {
     return new Promise(function (resolve, reject) {
         //come on compile!!!
-        app.winston.info("B: Search : " + JSON.stringify(search));
         search = new index_1.ExpSetSearch(search);
         app.winston.info("A: Search : " + JSON.stringify(search));
         var data = new index_1.ExpSetSearchResults({});
@@ -36,7 +35,6 @@ ExpSet.extract.workflows.getExpSets = function (search) {
         }
         else if (lodash_1.isEqual(search.scoresExist, null) && !(lodash_1.isEmpty(search.chemicalSearch))) {
             //Place holder - I haven't written in this one yet
-            app.winston.info("TODO Chemical Exp Set");
             resolve();
         }
         else {
@@ -454,7 +452,6 @@ ExpSet.extract.getCounts = function (data, search) {
  * @param search
  */
 ExpSet.extract.genExpSetAlbums = function (data, search) {
-    app.winston.info("In genExpSetAlbums");
     data.expSets.map(function (expSet) {
         var album = {};
         album.expWorkflowId = expSet[0].expWorkflowId;
