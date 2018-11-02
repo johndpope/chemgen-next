@@ -34,10 +34,10 @@ import {ExpSetSearchResults, ExpSetSearch} from "../../../types/custom/ExpSetTyp
 
 @Component({
     selector: 'app-contact-sheet',
-    templateUrl: './contact-sheet.component.html',
-    styleUrls: ['./contact-sheet.component.css'],
+    templateUrl: './contact-sheet-primary.component.html',
+    styleUrls: ['./contact-sheet-primary.component.css'],
 })
-export class ContactSheetComponent implements OnInit {
+export class ContactSheetPrimaryComponent implements OnInit {
     @Input() expSets: ExpSetSearchResults;
     @Input() byPlate: Boolean = true;
     @Output() expSetsScored = new EventEmitter<boolean>();
@@ -275,7 +275,7 @@ export class ContactSheetComponent implements OnInit {
     }
 }
 
-class ContactSheetFormResults {
+export class ContactSheetFormResults {
     interesting: any = {};
 }
 

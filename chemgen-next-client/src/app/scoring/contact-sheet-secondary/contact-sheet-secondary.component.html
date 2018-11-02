@@ -1,0 +1,227 @@
+<!--Start Search Form-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Select Interesting ExpSets</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+
+                <form (ngSubmit)="onSubmit()">
+                    <div class="col-xs-3">
+                        <!-- required for floating -->
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs tabs-left">
+                            <li class="active"><a href="#screenData" data-toggle="tab">Screen</a>
+                            </li>
+                            <li><a href="#viewOptions" data-toggle="tab">View Options</a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                        <button type="submit" id="searchFormSubmit" class="btn btn-success">Submit</button>
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="col-xs-9">
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="screenData">
+                                <p class="lead">Screen Data</p>
+                                <app-search-form-exp-screen
+                                        [formResults]="searchFormExpScreenResults"></app-search-form-exp-screen>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--End Search Form-->
+
+<!--Start Spinner-->
+<ngx-spinner
+        bdColor="rgba(51, 51, 51, 0.8)"
+        size="large"
+        color="#fff"
+        type="ball-atom"
+></ngx-spinner>
+<!--End Spinner-->
+
+<!--Start Content-->
+<div class="row">
+    <div class="col-md-12">
+
+        <div *ngIf="formSubmitted">
+            <!--Begin Content-->
+
+            <div *ngIf="expSets && expSets.expWorkflows?.length" class="expSets">
+                <!--Begin Submit-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-primary btn-lg"
+                                (click)="submitInteresting()"
+                                tooltip="Submit everything you have selected as interesting. This will clear the view of all interesting results.">
+                            Submit Interesting
+                        </button>
+                        <br>
+                        <button type="button" class="btn btn-success btn-lg"
+                                (click)="submitAll()"
+                                tooltip="Submit everything selected as interesting and not for preselection of manual scores.">
+                            Submit All
+                        </button>
+                        <br>
+                        <button type="button" class="btn btn-warning btn-lg" (click)="reset()"
+                                tooltip="Reset the form. All wells will be marked as 'not interesting'.">Reset
+                        </button>
+                        <br>
+                    </div>
+                </div>
+                <!--End Submit-->
+
+                <br>
+
+                <!--Begin Exp Set Albums-->
+                <div class="well" *ngFor="let album of expSets.albums; let i = index">
+
+                    <!--Begin Toggle interesting on/of-->
+                    <div class="row">
+                        <div class="col-md-12 pull-right">
+                            <app-expset-toggle [treatmentGroupId]="album.treatmentGroupId"
+                                               [expScreen]="album.expScreen"
+                                               [expWorkflow]="album.expWorkflow"
+                                               [expManualScores]="album.expManualScores"
+                                               [contactSheetResults]="contactSheetResults"
+                                               [submit]="false"
+                            ></app-expset-toggle>
+                        </div>
+                    </div>
+                    <!--End Toggle interesting on/of-->
+
+                    <!--Begin CtrlStrain (mel+28 + L4440) Row - 4 images per row-->
+                    <div class="row" id="ctrl_strain-{{album.treatmentGroupId}}">
+                        <div class="col-md-12">
+                            <h3>Control Strain (ts)</h3>
+                            <div class="row">
+                                <div *ngIf="album.ctrlStrainImages?.length > 0">
+                                    <div *ngFor="let image of album.ctrlStrainImages; let i=index">
+                                        <div *ngIf="image">
+                                            <div class="col-md-3">
+                                                <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                     (click)="open(album.ctrlStrainImages, i)"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End CtrlStrain Row - 4 images per row-->
+
+                    <!--Begin TreatReagent (mel-28 + rnai) Row - 4 images per row-->
+                    <div class="row" id="treat-{{album.treatmentGroupId}}">
+                        <div class="col-md-12">
+                            <h3>{{album.expWorkflow.biosamples.experimentBiosample.name}} + Reagent</h3>
+                            <div *ngIf="album.expWorkflow.screenStage == 'secondary'">
+                                <div class="row">
+                                    <div *ngFor="let image of album.treatmentReagentImages; let i=index">
+                                        <div *ngIf="image">
+                                            <div class="col-md-3">
+                                                <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                     (click)="open(album.treatmentReagentImages, i)"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="album.expWorkflow.screenStage == 'primary'">
+                                <div class="row">
+                                    <div *ngFor="let image of album.treatmentReagentImages; let i=index">
+                                        <div *ngIf="image">
+                                            <div class="col-md-6">
+                                                <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                     (click)="open(album.treatmentReagentImages, i)"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--End TreatReagent Row - 4 images per row-->
+
+                    <!--Begin CtrlNull Row (N2 + L4440) - 4 images per row-->
+                    <div class="row" id="ctrl_null-{{album.treatmentGroupId}}">
+                        <div class="col-md-12">
+                            <h3>Control Null </h3>
+                            <div class="row">
+                                <div *ngFor="let image of album.ctrlNullImages; let i=index">
+                                    <div *ngIf="image">
+                                        <div class="col-md-3">
+                                            <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                 (click)="open(album.ctrlNullImages, i)"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End CtrlNull Row - 4 images per row-->
+
+                    <!--Begin CtrlReagent Row (N2 + L4440) - 4 images per row-->
+                    <div class="row" id="ctrl_reagent-{{album.treatmentGroupId}}">
+                        <div class="col-md-12">
+                            <div *ngIf="album.expWorkflow.screenStage == 'secondary'">
+                                <div class="row">
+                                    <div *ngFor="let image of album.ctrlReagentImages; let i=index">
+                                        <div *ngIf="image">
+                                            <div class="col-md-3">
+                                                <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                     (click)="open(album.ctrlReagentImages, i)"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="album.expWorkflow.screenStage == 'primary'">
+                                <div class="row">
+                                    <div *ngFor="let image of album.ctrlReagentImages; let i=index">
+                                        <div *ngIf="image">
+                                            <div class="col-md-6">
+                                                <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                     (click)="open(album.ctrlReagentImages, i)"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--End CtrlReagent Row - 4 images per row-->
+
+                </div>
+            </div>
+
+            <!--End Content-->
+            <div *ngIf="expSets && ! expSets.expWorkflows?.length">
+                <h2>Empty ResultSet</h2>
+                <p>The search you performed returned an empty result set.</p>
+                <p>Either your search is incorrect, all plates are scored for this screen, or not in the
+                    database.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Content-->

@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, Input, Output, EventEmitter} from "@angular/core";
-import {ContactSheetComponent} from './contact-sheet.component';
+import {ContactSheetPrimaryComponent} from './contact-sheet.component';
 import {FormsModule} from '@angular/forms';
 import {NouisliderModule} from 'ng2-nouislider';
 import {ModalModule} from 'ngx-bootstrap';
@@ -11,23 +11,23 @@ import {expSetMockData} from "../../../../test/ExpSet.mock";
 import {DebugElement} from "@angular/core";
 import {MockGridAlbumComponent} from "../../../../test/MockComponents";
 
-describe('ContactSheetComponent', () => {
-    let component: ContactSheetComponent;
-    let fixture: ComponentFixture<ContactSheetComponent>;
+describe('ContactSheetPrimaryComponent', () => {
+    let component: ContactSheetPrimaryComponent;
+    let fixture: ComponentFixture<ContactSheetPrimaryComponent>;
     let expSetsEl: DebugElement;
 
     // Need to not only declare import, but also all the child imports
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule, NouisliderModule, ModalModule.forRoot()],
-            declarations: [ContactSheetComponent, MockGridAlbumComponent],
+            declarations: [ContactSheetPrimaryComponent, MockGridAlbumComponent],
             providers: [{provide: ExpSetApi}, {provide: ExpManualScoresApi}, {provide: Lightbox}, {provide: ComponentLoaderFactory}]
         })
             .compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ContactSheetComponent);
+        fixture = TestBed.createComponent(ContactSheetPrimaryComponent);
         component = fixture.componentInstance;
         component.expSets = expSetMockData;
         fixture.detectChanges();
