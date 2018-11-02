@@ -42,6 +42,8 @@ var RnaiExpSetResultSet_1 = require("../../models/RnaiExpSetResultSet");
 var ChemicalExpSetResultSet_1 = require("../../models/ChemicalExpSetResultSet");
 var ExpSetResultSet_1 = require("../../models/ExpSetResultSet");
 var ModelsResultSet_1 = require("../../models/ModelsResultSet");
+var ReactomeEnityResultSet_1 = require("../../models/ReactomeEnityResultSet");
+var ReactomePathwayResultSet_1 = require("../../models/ReactomePathwayResultSet");
 var SDKModels = /** @class */ (function () {
     function SDKModels() {
         this.models = {
@@ -79,6 +81,8 @@ var SDKModels = /** @class */ (function () {
             ChemicalExpSetResultSet: ChemicalExpSetResultSet_1.ChemicalExpSetResultSet,
             ExpSetResultSet: ExpSetResultSet_1.ExpSetResultSet,
             ModelsResultSet: ModelsResultSet_1.ModelsResultSet,
+            ReactomeEnityResultSet: ReactomeEnityResultSet_1.ReactomeEnityResultSet,
+            ReactomePathwayResultSet: ReactomePathwayResultSet_1.ReactomePathwayResultSet,
         };
     }
     SDKModels.prototype.get = function (modelName) {
