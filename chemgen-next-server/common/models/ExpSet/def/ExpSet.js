@@ -18,15 +18,22 @@ module.exports = function (ExpSet) {
     require('../extract/scoring/ExpSetScoringExtractByCounts')
     require('../extract/scoring/ExpSetScoringExtractByPlate')
     require('../extract/scoring/ExpSetScoringExtractByManualScores')
+    require('../extract/predict/ExpSetPredictPhenotype')
     require('../extract/ExpSetResults')
   })
 
-  ExpSet.extract.returnTabularScores = function (search, cb) {
+  ExpSet.getTabularData = function (search, cb) {
     return new Promise((resolve, reject) => {
       if (!search.method) {
         reject(new Error('search field must include a method'))
       } else {
-        resolve(ExpSet.extract.workflows[search.method])
+        ExpSet.extract.workflows[search.method](search)
+          .then((results) =>{
+            resolve(results);
+          })
+          .catch((error) =>{
+            reject(new Error(error));
+          })
       }
     })
   }
@@ -46,6 +53,18 @@ module.exports = function (ExpSet) {
   ExpSet.getExpSets = function (search, cb) {
     return new Promise((resolve, reject) => {
       ExpSet.extract.workflows.getExpSets(search)
+        .then((results) => {
+          resolve(results)
+        })
+        .catch((error) => {
+          reject(new Error(error))
+        })
+    })
+  }
+
+  ExpSet.getExpSetsByExpGroupId = function (search, cb) {
+    return new Promise((resolve, reject) => {
+      ExpSet.extract.searchExpAssay2reagents(search)
         .then((results) => {
           resolve(results)
         })

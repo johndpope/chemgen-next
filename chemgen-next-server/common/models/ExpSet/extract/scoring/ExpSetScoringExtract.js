@@ -271,7 +271,9 @@ ExpSet.extract.workflows.getExpAssay2reagentsByFirstPassScores = function (data,
             var rowData = rows.map(function (rawRowData) {
                 Object.keys(rawRowData).map(function (rowKey) {
                     rawRowData[lodash_1.camelCase(rowKey)] = rawRowData[rowKey];
-                    delete rawRowData[rowKey];
+                    if (!lodash_1.isEqual(lodash_1.camelCase(rowKey), rowKey)) {
+                        delete rawRowData[rowKey];
+                    }
                 });
                 return new app.models.ExpAssay2reagent(JSON.parse(JSON.stringify(rawRowData)));
             });

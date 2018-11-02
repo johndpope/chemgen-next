@@ -1,0 +1,25 @@
+version: '3'
+
+# Run as
+# docker-compose build; docker-compose up -d
+# Check with
+# docker ps
+# Then check the logs with
+# docker-compose logs --tail 20 predict_pheno_expset
+
+services:
+    # App that actually runs the tf_counts
+    # In order to build the image run
+    # It needs to be retagged to upload to quay
+    # docker-compose build --force-rm
+    # docker tag  predict_pheno_predict_pheno_expset quay.io/nyuad_cgsb/predict_pheno_expset:latest
+    predict_pheno_expset:
+#        image: quay.io/nyuad_cgsb/tf_14_faster_rcnn_inception_resnet_v2_atrous_coco_tf_counts
+        environment:
+            - GUNICORN_INSTANCES=4
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "5010:5000"
+

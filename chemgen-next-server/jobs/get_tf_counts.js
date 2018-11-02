@@ -10,6 +10,8 @@ var lodash_2 = require("lodash");
 var glob = require("glob-promise");
 var Papa = require("papaparse");
 var fs = require('fs');
+// const search =  {or: [{screenId: 3}, {screenId: 4}]};
+// const search = {screenId: 1};
 var search = {};
 countExpPlates()
     .then(function (paginationResults) {
@@ -37,23 +39,12 @@ function getPagedExpPlates(paginationResults) {
                 where: search,
             })
                 .then(function (results) {
+                app.winston.info("First Plate ScreenId: " + results[0].screenId + " Barcode: " + results[0].barcode);
                 data['expPlates'] = results;
-                return app.models.ExpAssay
-                    .find({
-                    where: {
-                        plateId: {
-                            inq: results.map(function (expPlate) {
-                                return expPlate.plateId;
-                            })
-                        }
-                    },
-                });
-            }, { concurrency: 1 })
-                .then(function (expPlates) {
                 //@ts-ignore
-                return Promise.map(expPlates, function (expPlate) {
+                return Promise.map(data.expPlates, function (expPlate) {
                     return getCountsApi(expPlate);
-                });
+                }, { concurrency: 1 });
             })
                 .then(function () {
                 return;
@@ -61,7 +52,7 @@ function getPagedExpPlates(paginationResults) {
                 .catch(function (error) {
                 return new Error(error);
             });
-        })
+        }, { concurrency: 1 })
             .then(function () {
             resolve();
         })
@@ -72,6 +63,7 @@ function getPagedExpPlates(paginationResults) {
     });
 }
 function getCountsApi(expPlate) {
+    app.winston.info("Getting counts for " + expPlate.plateImagePath);
     return new Promise(function (resolve, reject) {
         var imagePath = "/mnt/image/" + expPlate.plateImagePath;
         var counts = [
@@ -86,6 +78,7 @@ function getCountsApi(expPlate) {
                 counts: countsFile,
             })
                 .then(function (results) {
+                app.winston.info("Found Counts " + countsFile);
                 // console.log(contactSheetResults.data);
                 return getAssays(results.data.counts);
                 // return;
@@ -132,7 +125,7 @@ function getAssays(counts) {
                 resolve();
             }
             else {
-                app.models.ExpAssay
+                return app.models.ExpAssay
                     .find({ where: { or: or } })
                     .then(function (results) {
                     return assignCountsToAssay(results, counts);
@@ -153,122 +146,113 @@ function getAssays(counts) {
 }
 // TODO Add all this math to the tf_counts get_counts api
 function assignCountsToAssay(assays, counts) {
+    app.winston.info("Assigning counts to assay " + assays[0].assayImagePath);
     // console.log('In assignCountsToAssay');
     return new Promise(function (resolve, reject) {
-        //@ts-ignore
-        Promise.map(assays, function (assay) {
-            var countRow = lodash_1.find(counts, function (count) {
-                if (!lodash_1.isNull(count) && !lodash_1.isUndefined(count)) {
-                    return lodash_1.isEqual(String(count.imagePathModified), String(assay.assayImagePath));
+        app.models.ExpAssay2reagent
+            .find({
+            where: {
+                assayId: {
+                    inq: assays.map(function (assay) {
+                        return assay.assayId;
+                    })
                 }
-            });
-            // console.log(JSON.stringify(countRow));
-            // Lethality as [ embryos / (embryos + larvae) ] ]
-            // let percEmbLeth = 0;
-            if (lodash_1.isNull(countRow) || lodash_1.isUndefined(countRow)) {
-                return {};
             }
-            else {
-                // let percEmbLeth = 0;
-                var percEmbLeth_1 = lodash_2.divide(Number(countRow.egg), lodash_2.add(Number(countRow.egg), Number(countRow.larva)));
-                //Do not know why this wasn't caught by isNan
-                if (!lodash_1.isFinite(percEmbLeth_1) || lodash_1.isNull(percEmbLeth_1) || lodash_1.isUndefined(percEmbLeth_1) || lodash_1.isNaN(percEmbLeth_1)) {
-                    percEmbLeth_1 = 0;
-                }
-                percEmbLeth_1 = percEmbLeth_1 * 100;
-                percEmbLeth_1 = lodash_2.round(percEmbLeth_1, 4);
-                // larvae / ( embryos + larvae)
-                // let percSter = 0;
-                var percSter_1 = lodash_2.divide(Number(countRow.larva), lodash_2.add(Number(countRow.egg), Number(countRow.larva)));
-                if (!lodash_1.isFinite(percSter_1) || lodash_1.isNull(percSter_1) || lodash_1.isUndefined(percSter_1) || lodash_1.isNaN(percSter_1)) {
-                    percSter_1 = 0;
-                }
-                percSter_1 = percSter_1 * 100;
-                percSter_1 = lodash_2.round(percSter_1, 4);
-                // Brood size is calculated as [ (embryos + larvae) / worm ].
-                var broodSize_1 = lodash_2.divide(Number(countRow.larva), (lodash_2.add(Number(countRow.egg), Number(countRow.worm))));
-                if (!lodash_1.isFinite(broodSize_1) || lodash_1.isNull(broodSize_1) || lodash_1.isUndefined(broodSize_1) || lodash_1.isNaN(broodSize_1)) {
-                    broodSize_1 = 0;
-                }
-                broodSize_1 = lodash_2.round(broodSize_1, 4);
-                var newCounts = new index_1.ModelPredictedCountsResultSet({
-                    modelId: 3,
-                    assayId: assay.assayId,
-                    screenId: assay.screenId,
-                    plateId: assay.plateId,
-                    expGroupId: assay.expGroupId,
-                    assayImagePath: assay.assayImagePath,
-                    wormCount: countRow.worm,
-                    larvaCount: countRow.larva,
-                    eggCount: countRow.egg,
-                    percEmbLeth: percEmbLeth_1,
-                    percSter: percSter_1,
-                    broodSize: broodSize_1
-                });
-                // console.log(JSON.stringify(newCounts));
-                //Using the entire findOrCreate Object did not work - possibly because of rhe percEmbLeth?
-                // let findOrCreate = app.etlWorkflow.helpers.findOrCreateObj(newCounts);
-                // console.log(`FindOrCreate: ${JSON.stringify(findOrCreate)}`);
-                return app.models.ModelPredictedCounts
-                    .findOrCreate({
-                    where: {
-                        and: [
-                            { assayId: newCounts.assayId },
-                            { modelId: newCounts.modelId }
-                        ]
+        })
+            .then(function (expAssay2reagents) {
+            //@ts-ignore
+            return Promise.map(assays, function (assay) {
+                var countRow = lodash_1.find(counts, function (count) {
+                    if (!lodash_1.isNull(count) && !lodash_1.isUndefined(count)) {
+                        return lodash_1.isEqual(String(count.imagePathModified), String(assay.assayImagePath));
                     }
-                }, newCounts)
-                    .then(function (results) {
-                    results[0].broodSize = broodSize_1;
-                    results[0].percSter = percSter_1;
-                    results[0].percEmbLeth = percEmbLeth_1;
-                    var modelPredictedCount = results[0];
-                    return app.models.ExpGroup
-                        .findOne({ where: { expGroupId: assay.expGroupId } })
-                        .then(function (expGroup) {
-                        // app.winston.info(`Old Counts: ${JSON.stringify(modelPredictedCount)}`);
-                        modelPredictedCount.expWorkflowId = assay.expWorkflowId;
-                        modelPredictedCount.expGroupId = assay.expGroupId;
-                        modelPredictedCount.expGroupType = expGroup.expGroupType;
-                        if (assay.expGroupId) {
-                            return app.models.ExpDesign.extract.workflows
-                                .getExpSets([{ expGroupId: assay.expGroupId }])
-                                .then(function (results) {
-                                if (!lodash_1.isEqual(modelPredictedCount.expGroupType, 'ctrl_null') && !lodash_1.isEqual(modelPredictedCount.expGroupType, 'ctrl_strain')) {
-                                    modelPredictedCount.treatmentGroupId = results.expDesigns[0][0].treatmentGroupId;
-                                }
-                                // app.winston.info(`New Counts: ${JSON.stringify(modelPredictedCount)}`);
-                                return app.models.ModelPredictedCounts.upsert(modelPredictedCount);
-                            })
-                                .then(function () {
-                                return;
-                            })
-                                .catch(function (error) {
-                                app.winston.error(error);
-                                reject(new Error(error));
-                            });
+                });
+                // console.log(JSON.stringify(countRow));
+                // Lethality as [ embryos / (embryos + larvae) ] ]
+                // let percEmbLeth = 0;
+                if (lodash_1.isNull(countRow) || lodash_1.isUndefined(countRow)) {
+                    return {};
+                }
+                else {
+                    // let percEmbLeth = 0;
+                    var percEmbLeth_1 = lodash_2.divide(Number(countRow.egg), lodash_2.add(Number(countRow.egg), Number(countRow.larva)));
+                    //Do not know why this wasn't caught by isNan
+                    if (!lodash_1.isFinite(percEmbLeth_1) || lodash_1.isNull(percEmbLeth_1) || lodash_1.isUndefined(percEmbLeth_1) || lodash_1.isNaN(percEmbLeth_1)) {
+                        percEmbLeth_1 = 0;
+                    }
+                    percEmbLeth_1 = percEmbLeth_1 * 100;
+                    percEmbLeth_1 = lodash_2.round(percEmbLeth_1, 4);
+                    // larvae / ( embryos + larvae)
+                    // let percSter = 0;
+                    var percSter_1 = lodash_2.divide(Number(countRow.larva), lodash_2.add(Number(countRow.egg), Number(countRow.larva)));
+                    if (!lodash_1.isFinite(percSter_1) || lodash_1.isNull(percSter_1) || lodash_1.isUndefined(percSter_1) || lodash_1.isNaN(percSter_1)) {
+                        percSter_1 = 0;
+                    }
+                    percSter_1 = percSter_1 * 100;
+                    percSter_1 = lodash_2.round(percSter_1, 4);
+                    // Brood size is calculated as [ (embryos + larvae) / worm ].
+                    var broodSize_1 = lodash_2.divide(Number(countRow.larva), (lodash_2.add(Number(countRow.egg), Number(countRow.worm))));
+                    if (!lodash_1.isFinite(broodSize_1) || lodash_1.isNull(broodSize_1) || lodash_1.isUndefined(broodSize_1) || lodash_1.isNaN(broodSize_1)) {
+                        broodSize_1 = 0;
+                    }
+                    broodSize_1 = lodash_2.round(broodSize_1, 4);
+                    var newCounts_1 = new index_1.ModelPredictedCountsResultSet({
+                        modelId: 3,
+                        assayId: assay.assayId,
+                        screenId: assay.screenId,
+                        plateId: assay.plateId,
+                        expGroupId: assay.expGroupId,
+                        assayImagePath: assay.assayImagePath,
+                        expWorkflowId: assay.expWorkflowId,
+                        wormCount: countRow.worm,
+                        larvaCount: countRow.larva,
+                        eggCount: countRow.egg,
+                        percEmbLeth: percEmbLeth_1,
+                        percSter: percSter_1,
+                        broodSize: broodSize_1,
+                    });
+                    var expAssay2reagent_1 = lodash_1.find(expAssay2reagents, { assayId: newCounts_1.assayId });
+                    if (expAssay2reagent_1) {
+                        newCounts_1.expGroupType = expAssay2reagent_1.reagentType;
+                        newCounts_1.treatmentGroupId = expAssay2reagent_1.treatmentGroupId;
+                    }
+                    app.winston.info("Creating Counts: " + newCounts_1.assayImagePath + " " + newCounts_1.expWorkflowId);
+                    return app.models.ModelPredictedCounts
+                        .findOrCreate({
+                        where: {
+                            and: [
+                                { assayId: newCounts_1.assayId },
+                                { modelId: newCounts_1.modelId }
+                            ]
+                        }
+                    }, newCounts_1)
+                        .then(function (results) {
+                        results[0].broodSize = broodSize_1;
+                        results[0].percSter = percSter_1;
+                        results[0].percEmbLeth = percEmbLeth_1;
+                        var modelPredictedCount = results[0];
+                        if (!results[0].expGroupType && expAssay2reagent_1) {
+                            app.winston.info("Updating Counts: " + newCounts_1.assayImagePath);
+                            modelPredictedCount.expGroupType = expAssay2reagent_1.reagentType;
+                            modelPredictedCount.treatmentGroupId = expAssay2reagent_1.treatmentGroupId;
+                            return app.models.ModelPredictedCounts.upsert(modelPredictedCount);
                         }
                         else {
-                            // app.winston.info(`New Counts: ${JSON.stringify(modelPredictedCount)}`);
-                            return app.models.ModelPredictedCounts
-                                .upsert(modelPredictedCount);
+                            return modelPredictedCount;
                         }
                     })
+                        .then(function () {
+                        return {};
+                    })
                         .catch(function (error) {
+                        console.log(JSON.stringify(error));
                         return new Error(error);
                     });
-                })
-                    .then(function () {
-                    return {};
-                })
-                    .catch(function (error) {
-                    console.log(JSON.stringify(error));
-                    return new Error(error);
-                });
-            }
-        }, { concurrency: 1 })
+                }
+            });
+        })
             .then(function () {
-            console.log('Complete');
+            app.winston.info("Complete assigning counts to assay " + assays[0].assayImagePath);
             resolve();
         })
             .catch(function (error) {
@@ -407,9 +391,9 @@ function parseCountsFile(countsFile) {
 function countExpPlates() {
     return new Promise(function (resolve, reject) {
         app.models.ExpPlate
-            .count()
+            .count(search)
             .then(function (count) {
-            var limit = 50;
+            var limit = 10;
             var numPages = Math.round(count / limit);
             var pages = lodash_1.range(0, numPages + 2);
             pages = lodash_1.shuffle(pages);

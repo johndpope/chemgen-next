@@ -1,181 +1,191 @@
 {
-	"_meta": {
-		"sources": [
-			"loopback/common/models",
-			"loopback/server/models",
-			"../common/models",
-			"./models",
-			"../common/models/BiosampleStock/def",
-			"../common/models/ExpDesign/def",
-			"../common/models/ExpBiosample/def",
-			"../common/models/ChemicalLibrary/def",
-			"../common/models/ChemicalXrefs/def",
-			"../common/models/ChemicalLibraryStock/def",
-			"../common/models/ExpAssay2reagent/def",
-			"../common/models/ExpScreen/def",
-			"../common/models/ExpGroup/def",
-			"../common/models/ExpAssay/def",
-			"../common/models/ExpPlate/def",
-			"../common/models/ReagentLibrary/def",
-			"../common/models/RnaiLibrary/def",
-			"../common/models/RnaiWormbaseXrefs/def",
-			"../common/models/ModelPredictedPheno/def",
-			"../common/models/ModelPredictedRank/def",
-			"../common/models/ModelPredictedCounts/def",
-			"../common/models/Models/def",
-			"../common/models/RnaiLibraryStock/def",
-			"../common/models/RnaiExpSet/def",
-			"../common/models/ExpSet/def",
-			"../common/models/ExpManualScores/def",
-			"../common/models/ExpManualScoreCode/def",
-			"../common/models/ChemicalExpSet/def",
-			"../common/models/Instruments/ArrayScan/def",
-			"../common/models/workflows/def",
-			"../common/models/PlatePlan/def",
-			"../common/models/Analysis/def",
-			"../common/models/wordpress/def"
-		],
-		"mixins": [
-			"loopback/common/mixins",
-			"loopback/server/mixins",
-			"../common/mixins",
-			"./mixins",
-			"../node_modules/loopback-ds-readonly-mixin/lib"
-		]
-	},
-	"BiosampleStock": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ChemicalLibrary": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ExpDesign": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ExpGroup": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ExpAssay2reagent": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ExpScreen": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ExpBiosample": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ExpPlate": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ExpAssay": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ReagentLibrary": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"RnaiLibrary": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ChemicalLibraryStock": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ChemicalXrefs": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"RnaiLibraryStock": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"RnaiWormbaseXrefs": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"Plate": {
-		"dataSource": "arrayscanDS"
-	},
-	"ExpScreenUploadWorkflow": {
-		"dataSource": "mongoDB",
-		"public": true
-	},
-	"WpTerms": {
-		"dataSource": "wordpressDS",
-		"public": true
-	},
-	"WpPosts": {
-		"dataSource": "wordpressDS",
-		"public": true
-	},
-	"WpPostmeta": {
-		"dataSource": "wordpressDS",
-		"public": true
-	},
-	"WpTermRelationships": {
-		"dataSource": "wordpressDS",
-		"public": true
-	},
-	"WpTermTaxonomy": {
-		"dataSource": "wordpressDS",
-		"public": true
-	},
-	"RnaiScreenUploadWorkflow": {
-		"dataSource": "mongoDB",
-		"public": true
-	},
-	"ModelPredictedPheno": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ModelPredictedCounts": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ModelPredictedRank": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ExpManualScores": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"ExpManualScoreCode": {
-		"dataSource": "chemgenDS",
-		"public": true
-	},
-	"PlatePlan96": {
-		"dataSource": "mongoDB",
-		"public": true
-	},
-	"Analysis": {
-		"dataSource": "mongoDB",
-		"public": true
-	},
-	"RnaiExpSet": {
-		"dataSource": "db",
-		"public": true
-	},
-	"ChemicalExpSet": {
-		"dataSource": "db",
-		"public": true
-	},
-	"ExpSet": {
-		"dataSource": "db",
-		"public": true
-	},
-	"Models": {
-		"dataSource": "chemgenDS",
-		"public": true
-	}
+  "_meta": {
+    "sources": [
+      "loopback/common/models",
+      "loopback/server/models",
+      "../common/models",
+      "./models",
+      "../common/models/BiosampleStock/def",
+      "../common/models/ExpDesign/def",
+      "../common/models/ExpBiosample/def",
+      "../common/models/ChemicalLibrary/def",
+      "../common/models/ChemicalXrefs/def",
+      "../common/models/ChemicalLibraryStock/def",
+      "../common/models/ExpAssay2reagent/def",
+      "../common/models/ExpScreen/def",
+      "../common/models/ExpGroup/def",
+      "../common/models/ExpAssay/def",
+      "../common/models/ExpPlate/def",
+      "../common/models/ReagentLibrary/def",
+      "../common/models/RnaiLibrary/def",
+      "../common/models/RnaiWormbaseXrefs/def",
+      "../common/models/ModelPredictedPheno/def",
+      "../common/models/ModelPredictedRank/def",
+      "../common/models/ModelPredictedCounts/def",
+      "../common/models/Models/def",
+      "../common/models/RnaiLibraryStock/def",
+      "../common/models/RnaiExpSet/def",
+      "../common/models/ExpSet/def",
+      "../common/models/ExpManualScores/def",
+      "../common/models/ExpManualScoreCode/def",
+      "../common/models/ChemicalExpSet/def",
+      "../common/models/Instruments/ArrayScan/def",
+      "../common/models/workflows/def",
+      "../common/models/PlatePlan/def",
+      "../common/models/Analysis/def",
+      "../common/models/wordpress/def",
+      "../common/models/ReactomeEntity/def",
+      "../common/models/ReactomePathway/def"
+    ],
+    "mixins": [
+      "loopback/common/mixins",
+      "loopback/server/mixins",
+      "../common/mixins",
+      "./mixins",
+      "../node_modules/loopback-ds-readonly-mixin/lib"
+    ]
+  },
+  "BiosampleStock": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ChemicalLibrary": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ExpDesign": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ExpGroup": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ExpAssay2reagent": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ExpScreen": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ExpBiosample": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ExpPlate": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ExpAssay": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ReagentLibrary": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "RnaiLibrary": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ChemicalLibraryStock": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ChemicalXrefs": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "RnaiLibraryStock": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "RnaiWormbaseXrefs": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "Plate": {
+    "dataSource": "arrayscanDS"
+  },
+  "ExpScreenUploadWorkflow": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "WpTerms": {
+    "dataSource": "wordpressDS",
+    "public": true
+  },
+  "WpPosts": {
+    "dataSource": "wordpressDS",
+    "public": true
+  },
+  "WpPostmeta": {
+    "dataSource": "wordpressDS",
+    "public": true
+  },
+  "WpTermRelationships": {
+    "dataSource": "wordpressDS",
+    "public": true
+  },
+  "WpTermTaxonomy": {
+    "dataSource": "wordpressDS",
+    "public": true
+  },
+  "RnaiScreenUploadWorkflow": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "ModelPredictedPheno": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ModelPredictedCounts": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ModelPredictedRank": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ExpManualScores": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ExpManualScoreCode": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "PlatePlan96": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "Analysis": {
+    "dataSource": "mongoDB",
+    "public": true
+  },
+  "RnaiExpSet": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ChemicalExpSet": {
+    "dataSource": "db",
+    "public": true
+  },
+  "ExpSet": {
+    "dataSource": "db",
+    "public": true
+  },
+  "Models": {
+    "dataSource": "chemgenDS",
+    "public": true
+  },
+  "ReactomeEnity": {
+    "dataSource": "reactomeDS",
+    "public": true
+  },
+  "ReactomePathway": {
+    "dataSource": "reactomeDS",
+    "public": true
+  }
 }

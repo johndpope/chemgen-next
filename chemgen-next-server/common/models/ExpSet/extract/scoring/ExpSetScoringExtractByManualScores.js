@@ -20,9 +20,9 @@ ExpSet.extract.workflows.orderByExpManualScores = function (search) {
             .whereNot('manualscore_group', 'FIRST_PASS')
             .whereNot('manualscore_group', 'HAS_MANUAL_SCORE')
             .groupBy('treatment_group_id')
-            .groupBy('manualscore_group')
-            .groupBy('manualscore_code')
             .groupBy('timestamp')
+            .groupBy('manualscore_group')
+            .groupBy('screen_id')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -39,15 +39,16 @@ ExpSet.extract.workflows.orderByExpManualScoresPrimaryPhenotypes = function (sea
     search = new ExpSetTypes_1.ExpSetSearch(search);
     var data = new ExpSetTypes_1.ExpSetSearchResults({});
     return new Promise(function (resolve, reject) {
+        var phenos = ['M_EMB_LETH', 'WT_EMB_LETH', 'M_ENH_STE', 'WT_ENH_STE'];
         ExpSet.extract.workflows.orderByExpManualScoresBaseQuery(search)
-            .where('manualscore_group', 'M_EMB_LETH')
+            .orWhere('manualscore_group', 'M_EMB_LETH')
             .orWhere('manualscore_group', 'WT_EMB_LETH')
             .orWhere('manualscore_group', 'M_ENH_STE')
             .orWhere('manualscore_group', 'WT_ENH_STE')
             .groupBy('treatment_group_id')
-            .groupBy('manualscore_code')
-            .groupBy('manualscore_group')
             .groupBy('timestamp')
+            .groupBy('manualscore_group')
+            .groupBy('screen_id')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -65,12 +66,12 @@ ExpSet.extract.workflows.orderByExpManualScoresEmbLeth = function (search) {
     var data = new ExpSetTypes_1.ExpSetSearchResults({});
     return new Promise(function (resolve, reject) {
         ExpSet.extract.workflows.orderByExpManualScoresBaseQuery(search)
-            .where('manualscore_group', 'M_EMB_LETH')
+            .orWhere('manualscore_group', 'M_EMB_LETH')
             .orWhere('manualscore_group', 'WT_EMB_LETH')
             .groupBy('treatment_group_id')
-            .groupBy('manualscore_group')
-            .groupBy('manualscore_code')
             .groupBy('timestamp')
+            .groupBy('manualscore_group')
+            .groupBy('screen_id')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -102,12 +103,81 @@ ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId = function (data, search, 
         })
             .then(function (data) {
             results = lodash_1.groupBy(results, 'treatment_group_id');
-            resolve({ tableData: results, expSetSearchResults: data });
+            results = { tableData: results, expSets: data };
+            results = ExpSet.extract.workflows.createTrainPhenoExpSetDataFrameFromScores(results);
+            resolve(results);
         })
             .catch(function (error) {
             reject(new Error(error));
         });
     });
+};
+/**
+ * Given the score groupings map them back to counts
+ * TODO - this is really only necessary for returning a dataframe to train with TF
+ * @param results
+ */
+ExpSet.extract.workflows.createTrainPhenoExpSetDataFrameFromScores = function (results) {
+    var data = results.expSets;
+    var tableData = results.tableData;
+    var expSetModule = new ExpSetTypes_1.ExpsetModule(data);
+    var dataFrame = [];
+    Object.keys(tableData).map(function (key) {
+        var album = expSetModule.findAlbums(Number(key));
+        tableData[key].map(function (scoreGroup) {
+            //Its a treatmentGroup
+            scoreGroup.treatmentGroupId = scoreGroup.treatment_group_id;
+            if (scoreGroup.manualscore_group.match(new RegExp('^M_.*'))) {
+                scoreGroup = ExpSet.extract.getExpSetCounts(expSetModule, album, scoreGroup, 'treatmentReagentImages', 'ctrlStrainImages');
+                dataFrame.push(scoreGroup);
+            }
+            else if (scoreGroup.manualscore_group.match(new RegExp('^WT_.*'))) {
+                scoreGroup = ExpSet.extract.getExpSetCounts(expSetModule, album, scoreGroup, 'ctrlReagentImages', 'ctrlNullImages');
+                dataFrame.push(scoreGroup);
+            }
+        });
+    });
+    dataFrame = lodash_1.orderBy(dataFrame, 'max_manualscore_value', 'desc');
+    results.dataFrame = dataFrame;
+    return results;
+};
+ExpSet.extract.getExpSetCounts = function (expSetModule, album, scoreGroup, reagentGroup, ctrlGroup) {
+    var expAssay2reagent = expSetModule.findExpAssay2reagents(Number(scoreGroup.treatmentGroupId));
+    var expScreen = expSetModule.findExpScreen(expAssay2reagent[0].screenId);
+    scoreGroup.screenId = expScreen.screenId;
+    scoreGroup.screenName = expScreen.screenName;
+    scoreGroup.screenStage = expScreen.screenStage;
+    scoreGroup.expWorkflowId = expAssay2reagent[0].expWorkflowId;
+    var treatReagentAssayIds = album[reagentGroup].map(function (assay) {
+        return assay.assayId;
+    });
+    var ctrlStrainAssayIds = album[ctrlGroup].map(function (assay) {
+        return assay.assayId;
+    });
+    var treatReagentCounts = expSetModule.expSets.modelPredictedCounts.filter(function (modelPredictedCounts) {
+        return lodash_1.includes(treatReagentAssayIds, modelPredictedCounts.assayId);
+    });
+    var ctrlStrainCounts = expSetModule.expSets.modelPredictedCounts.filter(function (modelPredictedCounts) {
+        return lodash_1.includes(ctrlStrainAssayIds, modelPredictedCounts.assayId);
+    });
+    treatReagentCounts.map(function (counts, index) {
+        scoreGroup["reagentWormCountR" + index] = counts.wormCount;
+        scoreGroup["reagentLarvaCountR" + index] = counts.larvaCount;
+        scoreGroup["reagentEggCountR" + index] = counts.eggCount;
+    });
+    ctrlStrainCounts.map(function (counts, index) {
+        scoreGroup["ctrlWormCountR" + index] = counts.wormCount;
+        scoreGroup["ctrlLarvaCountR" + index] = counts.larvaCount;
+        scoreGroup["ctrlEggCountR" + index] = counts.eggCount;
+    });
+    scoreGroup.predictedScore = scoreGroup.max_manualscore_value;
+    if (scoreGroup.screenStage.match('primary')) {
+        scoreGroup = new ExpSetTypes_1.PredictPrimaryPhenotypeExpSet(scoreGroup);
+    }
+    else if (scoreGroup.screenStage.match('secondary')) {
+        scoreGroup = new ExpSetTypes_1.PredictSecondaryPhenotypeExpSet(scoreGroup);
+    }
+    return scoreGroup;
 };
 ExpSet.extract.workflows.orderByExpManualScoresEnhSte = function (search) {
     search = new ExpSetTypes_1.ExpSetSearch(search);
@@ -117,9 +187,9 @@ ExpSet.extract.workflows.orderByExpManualScoresEnhSte = function (search) {
             .where('manualscore_group', 'M_ENH_STE')
             .orWhere('manualscore_group', 'WT_ENH_STE')
             .groupBy('treatment_group_id')
-            .groupBy('manualscore_group')
-            .groupBy('manualscore_code')
             .groupBy('timestamp')
+            .groupBy('manualscore_group')
+            .groupBy('screen_id')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -143,10 +213,10 @@ ExpSet.extract.workflows.orderByExpManualScoresBaseQuery = function (search) {
         }
     });
     return knex('exp_manual_scores')
+        .select('timestamp')
         .select('treatment_group_id')
         .select('manualscore_group')
-        .select('manualscore_code')
-        .select('timestamp')
+        .select('screen_id')
         .max('manualscore_value as max_manualscore_value')
         .min('manualscore_value as min_manualscore_value')
         .avg('manualscore_value as avg_manualscore_value');

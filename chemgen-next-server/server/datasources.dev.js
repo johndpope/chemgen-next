@@ -55,5 +55,11 @@ module.exports = {
     // database: 'chemgen',
     // user: 'root',
     // password: 'password',
+  },
+  reactomeDS: {
+    name: 'reactomeDS',
+    connector: 'mongodb',
+    port: 27017,
+    url: 'mongodb://root:password@localhost:27017/reactome?authSource=admin',
   }
 }

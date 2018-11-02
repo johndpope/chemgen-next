@@ -34,7 +34,6 @@ const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
 ExpSet.extract.workflows.getExpSets = function (search: ExpSetSearch) {
   return new Promise((resolve, reject) => {
     //come on compile!!!
-    app.winston.info(`B: Search : ${JSON.stringify(search)}`);
     search = new ExpSetSearch(search);
 
     app.winston.info(`A: Search : ${JSON.stringify(search)}`);
@@ -54,7 +53,6 @@ ExpSet.extract.workflows.getExpSets = function (search: ExpSetSearch) {
       resolve(app.models.RnaiExpSet.extract.workflows.getExpSetsByGeneList(search));
     } else if (isEqual(search.scoresExist, null) && !(isEmpty(search.chemicalSearch))) {
       //Place holder - I haven't written in this one yet
-      app.winston.info(`TODO Chemical Exp Set`);
       resolve();
     } else {
       //Get all the expSets for a single expWorkflowId
@@ -496,7 +494,6 @@ ExpSet.extract.getCounts = function (data: ExpSetSearchResults, search?: ExpSetS
  * @param search
  */
 ExpSet.extract.genExpSetAlbums = function (data?: ExpSetSearchResults, search?: ExpSetSearch) {
-  app.winston.info(`In genExpSetAlbums`);
   data.expSets.map((expSet) => {
     let album: any = {};
     album.expWorkflowId = expSet[0].expWorkflowId;

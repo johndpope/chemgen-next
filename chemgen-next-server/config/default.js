@@ -25,6 +25,7 @@ module.exports = {
   redisPort: process.env.REDIS_PORT || 6380,
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6380',
   imageUrl: process.env.IMAGE_URL || 'http://10.230.9.227/microscope',
+  predictPhenoUrl: process.env.PREDICT_PHENO_URL || 'http://localhost:5010/tf_linear_classification/1.0/api/classify_expset',
   sites: {
     AD: {
       imageConversionHost: 'pyrite.abudhabi.nyu.edu',
@@ -35,6 +36,7 @@ module.exports = {
       // baseImageSite: process.env.IMAGE_URL || 'http://onyx.abudhabi.nyu.edu/images',
       redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
       imageUrl: process.env.IMAGE_URL || 'http://10.230.9.227/microscope',
+      predictPhenoUrl: process.env.PREDICT_PHENO_URL || 'http://localhost:5010/tf_linear_classification/1.0/api/classify_expset',
     },
     NY: {
       imageConversionHost: 'pyxis.nyu.edu',
@@ -44,6 +46,7 @@ module.exports = {
       redisPort: process.env.REDIS_PORT || 6379,
       imageUrl:  'http://eegi.bio.nyu.edu/image',
       redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
+      predictPhenoUrl: process.env.PREDICT_PHENO_URL || 'http://localhost:5010/tf_linear_classification/1.0/api/classify_expset',
       // imageUrl: process.env.IMAGE_URL || 'http://10.230.9.227/microscope',
     },
     DEV: {
@@ -55,6 +58,7 @@ module.exports = {
       // baseImageSite: process.env.IMAGE_URL || 'http://onyx.abudhabi.nyu.edu/images',
       redisUrl: process.env.REDIS_URL || 'redis://localhost:6380',
       imageUrl: process.env.IMAGE_URL || 'http://10.230.9.227/microscope',
+      predictPhenoUrl: process.env.PREDICT_PHENO_URL || 'http://localhost:5010/tf_linear_classification/1.0/api/classify_expset',
     }
   },
   knex: knex,

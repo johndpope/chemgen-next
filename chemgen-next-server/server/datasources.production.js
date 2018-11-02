@@ -43,5 +43,15 @@ module.exports = {
     // database: process.env.MONGO_DB,
     // password: process.env.MONGO_PASS,
     // user: process.env.MONGO_USER
+  },
+  reactomeDS: {
+    name: 'reactomeDS',
+    connector: 'mongodb',
+    port: 27017,
+    url: `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}:27017/reactome?authSource=admin`,
+    // url: process.env.MONGO_URL,
+    // database: process.env.MONGO_DB,
+    // password: process.env.MONGO_PASS,
+    // user: process.env.MONGO_USER
   }
 }
