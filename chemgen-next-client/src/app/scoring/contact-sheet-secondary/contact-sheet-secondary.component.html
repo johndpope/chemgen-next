@@ -109,108 +109,131 @@
                     </div>
                     <!--End Toggle interesting on/of-->
 
-                    <!--Begin CtrlStrain (mel+28 + L4440) Row - 4 images per row-->
-                    <div class="row" id="ctrl_strain-{{album.treatmentGroupId}}">
-                        <div class="col-md-12">
-                            <h3>Control Strain (ts)</h3>
-                            <div class="row">
-                                <div *ngIf="album.ctrlStrainImages?.length > 0">
-                                    <div *ngFor="let image of album.ctrlStrainImages; let i=index">
+                    <ul class="nav nav-tabs md-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="ts-rnai-tab-md" data-toggle="tab" href="#treat-{{album.treatmentGroupId}}" role="tab"
+                                aria-controls="ts-rnai-tab-md" aria-selected="true">TS + RNAi</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="ts-l4440-tab-md" data-toggle="tab" href="#ctrl_strain-{{album.treatmentGroupId}}" role="tab"
+                                aria-controls="ts-l4440-tab-md" aria-selected="false">TS + L4440</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="n2-l4440-tab-md" data-toggle="tab" href="#ctrl_null-{{album.treatmentGroupId}}" role="tab"
+                                aria-controls="n2-l4440-tab-md" aria-selected="false">N2 + L4440</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="n2-rnai-tab-md" data-toggle="tab" href="#ctrl_reagent-{{album.treatmentGroupId}}" role="tab"
+                                aria-controls="n2-rnai-tab-md" aria-selected="false">N2 + RNAi</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content card pt-5">
+                        <!--Begin CtrlStrain (mel+28 + L4440) Row - 4 images per row-->
+                        <div class="row tab-pane fade" id="ctrl_strain-{{album.treatmentGroupId}}" role="tabpanel" aria-labelledby="ts-l4440-tab-md">
+                            <div class="col-md-12">
+                                <h3>Control Strain (ts)</h3>
+                                <div class="row">
+                                    <div *ngIf="album.ctrlStrainImages?.length > 0">
+                                        <div *ngFor="let image of album.ctrlStrainImages; let i=index">
+                                            <div *ngIf="image">
+                                                <div class="col-md-3">
+                                                    <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                        (click)="open(album.ctrlStrainImages, i)"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--End CtrlStrain Row - 4 images per row-->
+
+                        <!--Begin TreatReagent (mel-28 + rnai) Row - 4 images per row-->
+                        <div class="row tab-pane fade active in" id="treat-{{album.treatmentGroupId}}" role="tabpanel" aria-labelledby="ts-rnai-tab-md">
+                            <div class="col-md-12">
+                                <h3>{{album.expWorkflow.biosamples.experimentBiosample.name}} + Reagent</h3>
+                                <div *ngIf="album.expWorkflow.screenStage == 'secondary'">
+                                    {{album.expWorkflow.screenStage}}
+                                    <div class="row">
+                                        <div *ngFor="let image of album.treatmentReagentImages; let i=index">
+                                            <div *ngIf="image">
+                                                <div class="col-md-3">
+                                                    <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                        (click)="open(album.treatmentReagentImages, i)"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="album.expWorkflow.screenStage == 'primary'">
+                                    {{album.expWorkflow.screenStage}}
+                                    <div class="row">
+                                        <div *ngFor="let image of album.treatmentReagentImages; let i=index">
+                                            <div *ngIf="image">
+                                                <div class="col-md-3">
+                                                    <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                        (click)="open(album.treatmentReagentImages, i)"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!--End TreatReagent Row - 4 images per row-->
+                    
+                        <!--Begin CtrlNull Row (N2 + L4440) - 4 images per row-->
+                        <div class="row tab-pane fade" id="ctrl_null-{{album.treatmentGroupId}}" role="tabpanel" aria-labelledby="n2-l4440-tab-md">
+                            <div class="col-md-12">
+                                <h3>Control Null </h3>
+                                <div class="row">
+                                    <div *ngFor="let image of album.ctrlNullImages; let i=index">
                                         <div *ngIf="image">
                                             <div class="col-md-3">
                                                 <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
-                                                     (click)="open(album.ctrlStrainImages, i)"/>
+                                                    (click)="open(album.ctrlNullImages, i)"/>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!--End CtrlStrain Row - 4 images per row-->
+                        <!--End CtrlNull Row - 4 images per row-->
 
-                    <!--Begin TreatReagent (mel-28 + rnai) Row - 4 images per row-->
-                    <div class="row" id="treat-{{album.treatmentGroupId}}">
-                        <div class="col-md-12">
-                            <h3>{{album.expWorkflow.biosamples.experimentBiosample.name}} + Reagent</h3>
-                            <div *ngIf="album.expWorkflow.screenStage == 'secondary'">
-                                <div class="row">
-                                    <div *ngFor="let image of album.treatmentReagentImages; let i=index">
-                                        <div *ngIf="image">
-                                            <div class="col-md-3">
-                                                <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
-                                                     (click)="open(album.treatmentReagentImages, i)"/>
+                        <!--Begin CtrlReagent Row (N2 + L4440) - 4 images per row-->
+                        <div class="row tab-pane fade" id="ctrl_reagent-{{album.treatmentGroupId}}" role="tabpanel" aria-labelledby="n2-rnai-tab-md">
+                            <div class="col-md-12">
+                                <h3>Control Reagent</h3>
+                                <div *ngIf="album.expWorkflow.screenStage == 'secondary'">
+                                    <div class="row">
+                                        <div *ngFor="let image of album.ctrlReagentImages; let i=index">
+                                            <div *ngIf="image">
+                                                <div class="col-md-3">
+                                                    <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                        (click)="open(album.ctrlReagentImages, i)"/>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div *ngIf="album.expWorkflow.screenStage == 'primary'">
-                                <div class="row">
-                                    <div *ngFor="let image of album.treatmentReagentImages; let i=index">
-                                        <div *ngIf="image">
-                                            <div class="col-md-6">
-                                                <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
-                                                     (click)="open(album.treatmentReagentImages, i)"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <!--End TreatReagent Row - 4 images per row-->
-
-                    <!--Begin CtrlNull Row (N2 + L4440) - 4 images per row-->
-                    <div class="row" id="ctrl_null-{{album.treatmentGroupId}}">
-                        <div class="col-md-12">
-                            <h3>Control Null </h3>
-                            <div class="row">
-                                <div *ngFor="let image of album.ctrlNullImages; let i=index">
-                                    <div *ngIf="image">
-                                        <div class="col-md-3">
-                                            <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
-                                                 (click)="open(album.ctrlNullImages, i)"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--End CtrlNull Row - 4 images per row-->
-
-                    <!--Begin CtrlReagent Row (N2 + L4440) - 4 images per row-->
-                    <div class="row" id="ctrl_reagent-{{album.treatmentGroupId}}">
-                        <div class="col-md-12">
-                            <div *ngIf="album.expWorkflow.screenStage == 'secondary'">
-                                <div class="row">
-                                    <div *ngFor="let image of album.ctrlReagentImages; let i=index">
-                                        <div *ngIf="image">
-                                            <div class="col-md-3">
-                                                <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
-                                                     (click)="open(album.ctrlReagentImages, i)"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div *ngIf="album.expWorkflow.screenStage == 'primary'">
-                                <div class="row">
-                                    <div *ngFor="let image of album.ctrlReagentImages; let i=index">
-                                        <div *ngIf="image">
-                                            <div class="col-md-6">
-                                                <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
-                                                     (click)="open(album.ctrlReagentImages, i)"/>
+                                <div *ngIf="album.expWorkflow.screenStage == 'primary'">
+                                    <div class="row">
+                                        <div *ngFor="let image of album.ctrlReagentImages; let i=index">
+                                            <div *ngIf="image">
+                                                <div class="col-md-3">
+                                                    <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
+                                                        (click)="open(album.ctrlReagentImages, i)"/>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <!--End CtrlReagent Row - 4 images per row-->
                     </div>
-                    <!--End CtrlReagent Row - 4 images per row-->
-
+                    <!-- End Tab Content -->
                 </div>
             </div>
 

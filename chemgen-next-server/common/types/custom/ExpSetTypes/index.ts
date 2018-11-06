@@ -11,6 +11,7 @@ import {Memoize} from 'lodash-decorators';
 
 declare var Object: any;
 
+// This is only for intellisense/autocomplete in IDEs and nothing else
 export interface ExpSetSearchInterface {
   chemicalSearch?: Array<string>;
   rnaiSearch?: Array<string>;
@@ -41,6 +42,7 @@ export interface ExpSetSearchInterface {
   expGroupTypeAlbums?: Boolean;
 }
 
+// The API definition for getting ExpSets
 export class ExpSetSearch {
   rnaiSearch ?: Array<string>;
   chemicalSearch ?: Array<string>;
