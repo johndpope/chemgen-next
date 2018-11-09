@@ -12,6 +12,7 @@ import {Lightbox} from "angular2-lightbox";
 import {ContactSheetFormResults} from "../contact-sheet-primary/contact-sheet-primary.component";
 import {flatten, get, find, compact, isArray, remove, isUndefined, filter} from 'lodash';
 import {ExpManualScoresResultSet} from "../../../types/sdk/models";
+import { HotkeysService, HotkeysDirective, Hotkey } from "angular2-hotkeys";
 import { group } from '@angular/animations';
 
 // /Users/alan/projects/gunsiano/dockers/chemgen-next/chemgen-next-server/common/types/custom/ExpSetTypes/index.ts
@@ -56,7 +57,12 @@ export class ContactSheetSecondaryComponent implements OnInit {
                 private expManualScoresApi: ExpManualScoresApi,
                 private spinner: NgxSpinnerService,
                 private renderer: Renderer2,
-                public _lightbox: Lightbox) {
+                public _lightbox: Lightbox,
+                private hotkeysService: HotkeysService) {
+        // this.hotkeysService.add(new Hotkey('0', (event: KeyboardEvent): boolean => {
+        //     this.toggleScore('M_NO_EFFECT');
+        //     return false; // Prevent bubbling
+        // }, undefined, 'Toggle Mutant No Effect'));
         this.expSetSearch.currentPage = 1;
         const userName = document.getElementById('userName');
         const userId = document.getElementById('userId');
@@ -67,6 +73,13 @@ export class ContactSheetSecondaryComponent implements OnInit {
             this.userId = userId.innerText || 0;
         }
     }
+
+    // addRepliacteContactSheetHotkeys(){
+    //     this.hotkeysService.add(new Hotkey('0', (event: KeyboardEvent): boolean => {
+    //         this.toggleScore('M_NO_EFFECT');
+    //         return false; // Prevent bubbling
+    //     }, undefined, 'Toggle Mutant No Effect'));
+    // }
 
     ngOnInit() {
     }
