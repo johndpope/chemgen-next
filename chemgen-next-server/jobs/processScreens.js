@@ -17,7 +17,7 @@ function processWorkflows(program) {
     var search = {};
     if (program.searchPattern) {
         search = {
-            screenId: { inq: [1] },
+            screenId: { inq: [3, 4] },
         };
     }
     app.models.ExpScreenUploadWorkflow

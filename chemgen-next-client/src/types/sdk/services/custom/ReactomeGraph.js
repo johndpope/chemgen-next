@@ -28,11 +28,11 @@ var lb_config_1 = require("../../lb.config");
 var auth_service_1 = require("../core/auth.service");
 var error_service_1 = require("../core/error.service");
 /**
- * Api services for the `ReactomeEnityResultSet` model.
+ * Api services for the `ReactomeGraphResultSet` model.
  */
-var ReactomeEnityApi = /** @class */ (function (_super) {
-    __extends(ReactomeEnityApi, _super);
-    function ReactomeEnityApi(http, models, auth, errorHandler) {
+var ReactomeGraphApi = /** @class */ (function (_super) {
+    __extends(ReactomeGraphApi, _super);
+    function ReactomeGraphApi(http, models, auth, errorHandler) {
         var _this = _super.call(this, http, models, auth, errorHandler) || this;
         _this.http = http;
         _this.models = models;
@@ -53,14 +53,14 @@ var ReactomeEnityApi = /** @class */ (function (_super) {
      *
      * <em>
      * (The remote method definition does not provide any description.
-     * This usually means the response is a `ReactomeEnityResultSet` object.)
+     * This usually means the response is a `ReactomeGraphResultSet` object.)
      * </em>
      */
-    ReactomeEnityApi.prototype.patchOrCreate = function (data, customHeaders) {
+    ReactomeGraphApi.prototype.patchOrCreate = function (data, customHeaders) {
         if (data === void 0) { data = {}; }
         var _method = "PATCH";
         var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
-            "/ReactomeEnities";
+            "/ReactomeGraphs";
         var _routeParams = {};
         var _postBody = {
             data: data
@@ -72,7 +72,7 @@ var ReactomeEnityApi = /** @class */ (function (_super) {
     /**
      * Patch attributes for a model instance and persist it into the data source.
      *
-     * @param {any} id ReactomeEnity id
+     * @param {any} id ReactomeGraph id
      *
      * @param {object} data Request data.
      *
@@ -84,14 +84,14 @@ var ReactomeEnityApi = /** @class */ (function (_super) {
      *
      * <em>
      * (The remote method definition does not provide any description.
-     * This usually means the response is a `ReactomeEnityResultSet` object.)
+     * This usually means the response is a `ReactomeGraphResultSet` object.)
      * </em>
      */
-    ReactomeEnityApi.prototype.patchAttributes = function (id, data, customHeaders) {
+    ReactomeGraphApi.prototype.patchAttributes = function (id, data, customHeaders) {
         if (data === void 0) { data = {}; }
         var _method = "PATCH";
         var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
-            "/ReactomeEnities/:id";
+            "/ReactomeGraphs/:id";
         var _routeParams = {
             id: id
         };
@@ -104,19 +104,19 @@ var ReactomeEnityApi = /** @class */ (function (_super) {
     };
     /**
      * The name of the model represented by this $resource,
-     * i.e. `ReactomeEnityResultSet`.
+     * i.e. `ReactomeGraphResultSet`.
      */
-    ReactomeEnityApi.prototype.getModelName = function () {
-        return "ReactomeEnityResultSet";
+    ReactomeGraphApi.prototype.getModelName = function () {
+        return "ReactomeGraphResultSet";
     };
-    ReactomeEnityApi = __decorate([
+    ReactomeGraphApi = __decorate([
         core_1.Injectable(),
         __param(0, core_1.Inject(http_1.HttpClient)),
         __param(1, core_1.Inject(SDKModels_1.SDKModels)),
         __param(2, core_1.Inject(auth_service_1.LoopBackAuth)),
         __param(3, core_1.Optional()), __param(3, core_1.Inject(error_service_1.ErrorHandler))
-    ], ReactomeEnityApi);
-    return ReactomeEnityApi;
+    ], ReactomeGraphApi);
+    return ReactomeGraphApi;
 }(base_service_1.BaseLoopBackApi));
-exports.ReactomeEnityApi = ReactomeEnityApi;
-//# sourceMappingURL=ReactomeEnity.js.map
+exports.ReactomeGraphApi = ReactomeGraphApi;
+//# sourceMappingURL=ReactomeGraph.js.map

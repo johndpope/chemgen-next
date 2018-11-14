@@ -89,8 +89,9 @@ var RnaiExpSet_1 = require("./services/custom/RnaiExpSet");
 var ChemicalExpSet_1 = require("./services/custom/ChemicalExpSet");
 var ExpSet_1 = require("./services/custom/ExpSet");
 var Models_1 = require("./services/custom/Models");
-var ReactomeEnity_1 = require("./services/custom/ReactomeEnity");
+var ReactomeEntity_1 = require("./services/custom/ReactomeEntity");
 var ReactomePathway_1 = require("./services/custom/ReactomePathway");
+var ReactomeGraph_1 = require("./services/custom/ReactomeGraph");
 /**
 * @module SDKBrowserModule
 * @description
@@ -149,8 +150,9 @@ var SDKBrowserModule = /** @class */ (function () {
                 ChemicalExpSet_1.ChemicalExpSetApi,
                 ExpSet_1.ExpSetApi,
                 Models_1.ModelsApi,
-                ReactomeEnity_1.ReactomeEnityApi,
+                ReactomeEntity_1.ReactomeEntityApi,
                 ReactomePathway_1.ReactomePathwayApi,
+                ReactomeGraph_1.ReactomeGraphApi,
                 internalStorageProvider,
                 { provide: storage_swaps_1.SDKStorage, useClass: storage_browser_1.StorageBrowser }
             ]

@@ -9,6 +9,7 @@ import {
 } from "../../../types/sdk/models/index";
 import {
   get,
+  uniqWith,
   find,
   uniqBy,
   isEqual,
@@ -561,6 +562,7 @@ ExpSet.extract.workflows.getReagentData = function (data: ExpSetSearchResults, s
       }
     })
       .then(() => {
+        data.rnaisXrefs = uniqWith(data.rnaisXrefs, isEqual);
         resolve(data);
       })
       .catch((error) => {
@@ -617,6 +619,7 @@ ExpSet.extract.workflows.getReagentDataRnaiLibraryStock = function (data: ExpSet
               wbGeneSequenceId: true,
               wbGeneAccession: true,
               wbGeneCgcName: true,
+              uniprotAccession: true,
             },
             limit: 1000,
           });

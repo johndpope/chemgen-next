@@ -111,6 +111,11 @@ import {ScatterplotCountsComponent} from './viz/scatterplot-counts/scatterplot-c
 import {SearchFormFilterByScoresComponent} from './search-forms/search-form-filter-by-scores/search-form-filter-by-scores.component';
 import {SearchFormFilterByScoresAdvancedComponent} from './search-forms/search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component';
 import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/contact-sheet-secondary.component";
+import {PathwayDirectedGraphComponent} from './viz/pathway-directed-graph/pathway-directed-graph.component';
+import {LinkVisualComponent} from './viz/d3/link-visual/link-visual.component';
+import {NodeVisualComponent} from './viz/d3/node-visual/node-visual.component';
+import { DraggableDirective } from './viz/d3/draggable.directive';
+import { ZoomableDirective } from './viz/d3/zoomable.directive';
 
 @NgModule({
     imports: [
@@ -169,7 +174,12 @@ import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/
         ScoredSummaryComponent,
         SearchFormFilterByScoresComponent,
         SearchFormFilterByScoresAdvancedComponent,
-        ContactSheetSecondaryComponent
+        ContactSheetSecondaryComponent,
+        PathwayDirectedGraphComponent,
+        LinkVisualComponent,
+        NodeVisualComponent,
+        DraggableDirective,
+        ZoomableDirective,
     ],
     entryComponents: [],
     providers: [],

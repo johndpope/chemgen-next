@@ -6,6 +6,7 @@ import {SearchFormExpScreenFormResults} from "../src/app/search-forms/search-for
 import {SearchFormRnaiFormResults} from "../src/app/search-forms/search-form-rnai/search-form-rnai.component";
 import {ExpsetModule} from "../src/app/scoring/expset/expset.module";
 
+//@ts-ignore
 @Component({
     selector: 'app-grid-album',
     template: '<p>Mock Grid Album Component</p>'
@@ -24,6 +25,7 @@ export class MockGridAlbumComponent {
     @Output() getExpSetsEvent = new EventEmitter<any>();
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-exp-screen-info',
     template: '<p>Mock Plate Imaging Dates Component</p>'
@@ -33,6 +35,7 @@ export class MockExpScreenInfoComponent {
     @Input() expBiosampleModel: SearchExpBiosamples;
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-plate-imaging-dates',
     template: '<p>Mock Plate Imaging Dates Component</p>'
@@ -41,6 +44,7 @@ export class MockPlateImagingDatesComponent {
     @Input() plateModel: ScreenDesign;
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-expset-toggle',
     template: '<p>Mock ExpSetToggle</p>',
@@ -55,6 +59,7 @@ export class MockExpsetToggleComponent{
     @Input() submit: boolean = true;
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-contact-sheet',
     template: '<p>Mock Contact Sheet</p>',
@@ -66,6 +71,7 @@ export class MockContactSheetComponent{
     @Output() expSetsScored = new EventEmitter<boolean>();
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-expset-album',
     template: '<p>Mock ExpSetAlbum</p>',
@@ -79,6 +85,7 @@ export class MockExpsetAlbumComponent{
     @Input('contactSheetResults') contactSheetResults: any = {interesting: {}};
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-search-form-exp-screen',
     template: '<p>Mock Search Form Exp Screen</p>',
@@ -87,6 +94,7 @@ export class MockSearchFormExpScreen{
     @Input('formResults') formResults: SearchFormExpScreenFormResults;
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-search-form-rnai',
     template: '<p>Mock Search Form Rnai</p>',
@@ -95,6 +103,7 @@ export class MockSearchFormRnai{
     @Input('formResults') formResults: SearchFormRnaiFormResults;
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-expset-sheet',
     template: '<p>Mock Exp Set Sheet</p>',
@@ -105,6 +114,7 @@ export class MockExpsetSheet{
     @Input() expSetModule: ExpsetModule;
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-expset-album-dialog',
     template: '<p>Mock ExpSet Album Dialog</p>',
@@ -117,6 +127,7 @@ export class MockExpsetAlbumDialog {
     @Input('contactSheetResults') contactSheetResults: any = {interesting: {}};
 }
 
+//@ts-ignore
 @Component({
     selector: 'app-expset-score-primary',
     template: '<p>Mock ExpSet Score Primary</p>',

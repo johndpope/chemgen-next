@@ -1,0 +1,49 @@
+{
+  "name": "ReactomePathway",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "className": {
+      "type": "string"
+    },
+    "dbId": {
+      "type": "string"
+    },
+    "displayName": {
+      "type": "string"
+    },
+    "hasDiagram": {
+      "type": "boolean"
+    },
+    "isInDisease": {
+      "type": "boolean"
+    },
+    "isInferred": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": [
+        "string"
+      ]
+    },
+    "releaseDate": {
+      "type": "string"
+    },
+    "speciesName": {
+      "type": "string"
+    },
+    "stdId": {
+      "type": "string"
+    },
+    "stdIdVersion": {
+      "type": "string"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

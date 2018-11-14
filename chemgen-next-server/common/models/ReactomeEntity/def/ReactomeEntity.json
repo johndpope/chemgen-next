@@ -1,0 +1,56 @@
+{
+  "name": "ReactomeEntity",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "dbId": {
+      "type": "string"
+    },
+    "databaseName": {
+      "type": "string"
+    },
+    "compartmentAccession": {
+      "type": [
+        "string"
+      ]
+    },
+    "compartmentNames": {
+      "type": [
+        "string"
+      ]
+    },
+    "exactType": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "isDisease": {
+      "type": "boolean"
+    },
+    "name": {
+      "type": "string"
+    },
+    "referenceIdentifier": {
+      "type": "string"
+    },
+    "referenceUrl": {
+      "type": "string"
+    },
+    "stId": {
+      "type": "string"
+    },
+    "species": {
+      "type": [
+        "string"
+      ]
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

@@ -517,6 +517,7 @@ ExpSet.extract.workflows.getReagentData = function (data, search) {
             }
         })
             .then(function () {
+            data.rnaisXrefs = lodash_1.uniqWith(data.rnaisXrefs, lodash_1.isEqual);
             resolve(data);
         })
             .catch(function (error) {
@@ -571,6 +572,7 @@ ExpSet.extract.workflows.getReagentDataRnaiLibraryStock = function (data, expAss
                     wbGeneSequenceId: true,
                     wbGeneAccession: true,
                     wbGeneCgcName: true,
+                    uniprotAccession: true,
                 },
                 limit: 1000,
             });

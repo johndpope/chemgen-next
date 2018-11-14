@@ -81,7 +81,7 @@ module.exports = function (app, cb) {
         .count(query)
         .then((count) => {
           let totalPages = Math.round(count / pageSize)
-          resolve({count: count, totalPages: totalPages + 1})
+          resolve({count: count, totalPages: totalPages + 1, limit: pageSize})
         })
         .catch((error) => {
           console.log(error)

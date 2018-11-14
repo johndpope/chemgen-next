@@ -27,6 +27,7 @@
     "fast-memoize": "^2.3.2",
     "flat": "^4.0.0",
     "glob-promise": "^3.4.0",
+    "graphlib": "^2.1.5",
     "helmet": "^1.3.0",
     "js-php-serialize": "0.0.4",
     "jsonfile": "^4.0.0",
@@ -58,7 +59,9 @@
     "sqlite3": "^4.0.2",
     "strong-error-handler": "^2.0.0",
     "uppercamelcase": "^3.0.0",
-    "winston": "^2.4.1"
+    "winston": "^2.4.1",
+    "xml": "^1.0.1",
+    "xml-js": "^1.6.8"
   },
   "repository": {
     "type": "",

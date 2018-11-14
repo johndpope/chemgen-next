@@ -3,10 +3,32 @@
 /* Jillian */
 declare var Object: any;
 export interface ReactomePathwayResultSetInterface {
+  "className"?: string;
+  "dbId"?: string;
+  "displayName"?: string;
+  "hasDiagram"?: boolean;
+  "isInDisease"?: boolean;
+  "isInferred"?: boolean;
+  "name"?: Array<any>;
+  "releaseDate"?: string;
+  "speciesName"?: string;
+  "stdId"?: string;
+  "stdIdVersion"?: string;
   "id"?: any;
 }
 
 export class ReactomePathwayResultSet implements ReactomePathwayResultSetInterface {
+  "className": string;
+  "dbId": string;
+  "displayName": string;
+  "hasDiagram": boolean;
+  "isInDisease": boolean;
+  "isInferred": boolean;
+  "name": Array<any>;
+  "releaseDate": string;
+  "speciesName": string;
+  "stdId": string;
+  "stdIdVersion": string;
   "id": any;
   constructor(data?: ReactomePathwayResultSetInterface) {
     Object.assign(this, data);
@@ -41,6 +63,50 @@ export class ReactomePathwayResultSet implements ReactomePathwayResultSetInterfa
       path: 'ReactomePathways',
       idName: 'id',
       properties: {
+        "className": {
+          name: 'className',
+          type: 'string'
+        },
+        "dbId": {
+          name: 'dbId',
+          type: 'string'
+        },
+        "displayName": {
+          name: 'displayName',
+          type: 'string'
+        },
+        "hasDiagram": {
+          name: 'hasDiagram',
+          type: 'boolean'
+        },
+        "isInDisease": {
+          name: 'isInDisease',
+          type: 'boolean'
+        },
+        "isInferred": {
+          name: 'isInferred',
+          type: 'boolean'
+        },
+        "name": {
+          name: 'name',
+          type: 'Array&lt;any&gt;'
+        },
+        "releaseDate": {
+          name: 'releaseDate',
+          type: 'string'
+        },
+        "speciesName": {
+          name: 'speciesName',
+          type: 'string'
+        },
+        "stdId": {
+          name: 'stdId',
+          type: 'string'
+        },
+        "stdIdVersion": {
+          name: 'stdIdVersion',
+          type: 'string'
+        },
         "id": {
           name: 'id',
           type: 'any'

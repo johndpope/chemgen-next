@@ -38,8 +38,9 @@ __export(require("./RnaiExpSet"));
 __export(require("./ChemicalExpSet"));
 __export(require("./ExpSet"));
 __export(require("./Models"));
-__export(require("./ReactomeEnity"));
+__export(require("./ReactomeEntity"));
 __export(require("./ReactomePathway"));
+__export(require("./ReactomeGraph"));
 __export(require("./SDKModels"));
 __export(require("./logger.service"));
 //# sourceMappingURL=index.js.map

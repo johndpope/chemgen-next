@@ -105,6 +105,20 @@ ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId = function (data, search, 
             results = lodash_1.groupBy(results, 'treatment_group_id');
             results = { tableData: results, expSets: data };
             results = ExpSet.extract.workflows.createTrainPhenoExpSetDataFrameFromScores(results);
+            delete results.tableData;
+            results.expSets.expManualScores = [];
+            return app.models.ReactomeGraph.extract.workflows.getGraphFromXrefs(results.expSets.rnaisXrefs)
+                .then(function (graph) {
+                results.expSets['reactomeGraph'] = {};
+                results.expSets['reactomeGraph']['links'] = graph.links;
+                results.expSets['reactomeGraph']['nodes'] = graph.nodes;
+                return results;
+            })
+                .catch(function (error) {
+                return new Error(error);
+            });
+        })
+            .then(function (results) {
             resolve(results);
         })
             .catch(function (error) {

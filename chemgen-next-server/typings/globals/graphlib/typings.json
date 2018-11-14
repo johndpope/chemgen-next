@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/25420083bd1545171c733661ce55f9395ec02efa/graphlib/index.d.ts",
+    "raw": "registry:dt/graphlib#2.1.1+20170119211514",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/25420083bd1545171c733661ce55f9395ec02efa/graphlib/index.d.ts"
+  }
+}

@@ -78,8 +78,9 @@ import { RnaiExpSetApi } from './services/custom/RnaiExpSet';
 import { ChemicalExpSetApi } from './services/custom/ChemicalExpSet';
 import { ExpSetApi } from './services/custom/ExpSet';
 import { ModelsApi } from './services/custom/Models';
-import { ReactomeEnityApi } from './services/custom/ReactomeEnity';
+import { ReactomeEntityApi } from './services/custom/ReactomeEntity';
 import { ReactomePathwayApi } from './services/custom/ReactomePathway';
+import { ReactomeGraphApi } from './services/custom/ReactomeGraph';
 /**
 * @module SDKBrowserModule
 * @description
@@ -142,8 +143,9 @@ export class SDKBrowserModule {
         ChemicalExpSetApi,
         ExpSetApi,
         ModelsApi,
-        ReactomeEnityApi,
+        ReactomeEntityApi,
         ReactomePathwayApi,
+        ReactomeGraphApi,
         internalStorageProvider,
         { provide: SDKStorage, useClass: StorageBrowser }
       ]

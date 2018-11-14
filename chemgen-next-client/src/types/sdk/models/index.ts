@@ -33,7 +33,8 @@ export * from './RnaiExpSetResultSet';
 export * from './ChemicalExpSetResultSet';
 export * from './ExpSetResultSet';
 export * from './ModelsResultSet';
-export * from './ReactomeEnityResultSet';
+export * from './ReactomeEntityResultSet';
 export * from './ReactomePathwayResultSet';
+export * from './ReactomeGraphResultSet';
 export * from './BaseModels';
 

@@ -1,0 +1,15 @@
+<div *ngIf="expSets">
+    <svg #svg [attr.width]="_options.width" [attr.height]="_options.height">
+        <g [zoomableOf]="svg">
+            <g [linkVisual]="link" *ngFor="let link of links"></g>
+            <g [nodeVisual]="node" *ngFor="let node of nodes"
+               [draggableNode]="node" [draggableInGraph]="graph"></g>
+        </g>
+    </svg>
+</div>
+<ngx-spinner
+        bdColor="rgba(51, 51, 51, 0.8)"
+        size="large"
+        color="#fff"
+        type="ball-atom"
+></ngx-spinner>

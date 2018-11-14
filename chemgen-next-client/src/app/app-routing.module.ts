@@ -15,6 +15,7 @@ import {SearchFormContactSheetPrimaryComponent} from "./search-forms/search-form
 import {SearchFormScoreExpsetsComponent} from "./search-forms/search-form-score-expsets/search-form-score-expsets.component";
 import {ScoredSummaryComponent} from "./scoring/scored-summary/scored-summary.component";
 import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/contact-sheet-secondary.component";
+import {PathwayDirectedGraphComponent} from "./viz/pathway-directed-graph/pathway-directed-graph.component";
 
 // TODO Make Routing Modules
 
@@ -33,6 +34,7 @@ const appRoutes: Routes = [
     {path: 'contact-sheet-secondary', component: ContactSheetSecondaryComponent},
     /* WIP */
     {path: 'counts-viz', component: ScatterplotCountsComponent},
+    {path: 'pathways', component: PathwayDirectedGraphComponent},
     {path: '', redirectTo: '/empty', pathMatch: 'full'},
     {path: '**', component: PageNotFoundComponent},
 ];

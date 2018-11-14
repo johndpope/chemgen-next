@@ -1,0 +1,38 @@
+{
+  "name": "ReactomeGraph",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "entityName": {
+      "type": "string",
+      "required": true
+    },
+    "nodes": {
+      "type": [
+        "any"
+      ]
+    },
+    "links": {
+      "type": [
+        "any"
+      ]
+    },
+    "pathways": {
+      "type": [
+        "any"
+      ]
+    },
+    "entities": {
+      "type": [
+        "any"
+      ]
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}
