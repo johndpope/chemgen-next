@@ -66,6 +66,10 @@
                                 <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-form-contact-sheet-plate">
                                     Score with 96 Well Contact Sheet</a>
                             </li>
+                            <li>
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/contact-sheet-secondary">
+                                    Contact Sheet - Grouped By ExpSet</a>
+                            </li>
                             <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/score-expsets-worms">Score Exp
                                     Set</a></li>
                             <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/scored-summary">Scored Summary</a></li>

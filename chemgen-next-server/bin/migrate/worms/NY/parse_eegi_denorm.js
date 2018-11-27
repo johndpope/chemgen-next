@@ -9,26 +9,40 @@ var deepcopy = require("deepcopy");
 var models_1 = require("../../../../common/types/sdk/models");
 var path = require('path');
 var fs = require('fs');
-var file = 'eegi-denorm-2012-01-18.csv';
-// let file = 'eegi_ny_db_denorm_2012-01-18_A01.csv';
+var hash = require('object-hash');
+var file = 'eegi-denorm-2012-all.csv';
 var eegi = path.resolve(__dirname, file);
 var wormStrains = path.resolve(__dirname, 'worm_strain_table_ny.csv');
+var problemGroups = {};
 // Image urls look like this - http://eegi.bio.nyu.edu/image/32412/Tile000006.bmp
 // eegi.bio.nyu.edu/${plateId}/tileMappingWell.bmp
 parseCSVFile(eegi)
     .then(function (eegiResults) {
+    app.winston.info('Finished parsing csv');
     var groupedResults = createExpGroups(eegiResults);
+    app.winston.info('Finished Grouping Results');
     return extractPlates(groupedResults)
         .then(function (platePlans) {
+        app.winston.info('Finishing extracting plates');
         return createScreens(groupedResults)
             .then(function (screens) {
+            app.winston.info('Finished creating screens!');
             screens = lodash_1.uniqBy(screens, 'screenName');
             return createBiosamples(groupedResults)
                 .then(function (biosamples) {
+                app.winston.info('Finished creating biosamples');
+                app.winston.info('Begin creating expScreenUploadWorkflows');
                 return createExpScreenWorkflows(groupedResults, screens, biosamples, platePlans);
             })
                 .then(function (results) {
-                return app.models.ExpScreenUploadWorkflow.load.workflows.worms.doWork(results[0])
+                app.winston.info('Finished creating expScreenUploadWorkflows');
+                // return results;
+                //@ts-ignore
+                return Promise.map(results, function (workflow) {
+                    app.winston.info('Doing work...');
+                    return app.models.ExpScreenUploadWorkflow.load.workflows.worms.doWork(workflow);
+                    // return app.models.ExpScreenUploadWorkflow.findOrCreate({where: {name: workflow.name}}, workflow)
+                }, { concurrency: 1 })
                     .then(function () {
                     return;
                 })
@@ -72,11 +86,19 @@ function parseCSVFile(csvFile) {
  * @param eegiResults
  */
 function createExpGroups(eegiResults) {
+    // eegiResults = filter(eegiResults, {'clone.library': 'Ahringer'});
+    // if (isEqual(eegiResult['clone.id'], 'L4440')) {
+    // let tt = groupBy(t[wormStrain], 'experiment.plate_id');
+    eegiResults = filterForAhringerLibrary(eegiResults);
     eegiResults.map(function (eegiResult) {
+        var experimentDate = eegiResult['experimentplate.date'];
+        var yearRegexp = new RegExp('\\d{4}');
+        var year = yearRegexp.exec(experimentDate)[0];
         var libraryStock = eegiResult['experiment.library_stock_id'].replace(/_.*$/, '');
         var barcode = "RNAi--" + eegiResult['experimentplate.date'] + "--" + eegiResult['experimentplate.temperature'] + "--" + eegiResult['experiment.worm_strain_id'] + "--" + libraryStock + "--" + eegiResult["experiment.plate_id"];
         var name = "RNAi Ahringer " + eegiResult['experimentplate.date'] + " " + eegiResult['experimentplate.temperature'] + " " + eegiResult['experiment.worm_strain_id'] + " " + libraryStock;
-        var group = "RNAi--" + eegiResult['experimentplate.date'] + "--" + eegiResult['experimentplate.temperature'] + "--" + libraryStock;
+        var group = "RNAi--" + year + "--" + eegiResult['experimentplate.temperature'] + "--" + libraryStock;
+        var batch = "RNAi--" + eegiResult['experimentplate.date'] + "--" + eegiResult['experimentplate.temperature'] + "--" + libraryStock;
         if (!lodash_1.isEqual(eegiResult["experiment.worm_strain_id"], 'N2')) {
             if (lodash_1.isEqual(eegiResult["experimentplate.temperature"], eegiResult['wormstrain.permissive_temperature'])) {
                 eegiResult.screenType = 'permissive';
@@ -95,36 +117,86 @@ function createExpGroups(eegiResults) {
         }
         eegiResult.barcode = barcode;
         eegiResult.group = group;
+        eegiResult.batch = batch;
     });
     var groupedResults = lodash_1.groupBy(eegiResults, 'group');
+    groupedResults = generatePlatePlanHash(groupedResults);
+    return createBatches(groupedResults);
+}
+function filterForAhringerLibrary(eegiResults) {
+    var plates = lodash_1.groupBy(eegiResults, 'experiment.plate_id');
+    var teegiResults = [];
+    Object.keys(plates).map(function (plateId) {
+        if (lodash_1.find(plates[plateId], { 'clone.library': 'Ahringer' })) {
+            plates[plateId].map(function (eegiResult) {
+                teegiResults.push(eegiResult);
+            });
+        }
+    });
+    return teegiResults;
+}
+function createBatches(groupedResults) {
+    return sanityCheckBatches(groupedResults);
+}
+function generatePlatePlanHash(groupedResults) {
+    var eegiResults = [];
     Object.keys(groupedResults).map(function (group) {
         var t = lodash_1.groupBy(groupedResults[group], 'experiment.worm_strain_id');
         Object.keys(t).map(function (wormStrain) {
             var tt = lodash_1.groupBy(t[wormStrain], 'experiment.plate_id');
             Object.keys(tt).map(function (plateId) {
-                if (!lodash_1.find(tt[plateId], { 'clone.library': 'Ahringer' })) {
-                    delete tt[plateId];
-                }
-            });
-            //Check to ensure that all have the same plateplan
-            var allPlateCloneIds = Object.keys(tt).map(function (plateId) {
-                return tt[plateId].map(function (eegiResult) {
+                var platePlanHash = hash(tt[plateId].map(function (eegiResult) {
                     return eegiResult['clone.id'];
+                }));
+                tt[plateId].map(function (eegiResult) {
+                    eegiResult['platePlanHash'] = platePlanHash;
+                    eegiResult.group = eegiResult.group + "---" + platePlanHash;
+                    eegiResult.name = eegiResult.name + " " + platePlanHash;
                 });
             });
-            // For secondary screens plate plans need to be the same
-            // If they aren't need to figure out which ones are different
-            // And probably manually change it
-            allPlateCloneIds.map(function (aOnePlateCloneIds) {
-                allPlateCloneIds.map(function (bOnePlateCloneIds) {
-                    if (!lodash_1.isEqual(aOnePlateCloneIds, bOnePlateCloneIds)) {
-                        throw new Error("plate plans for " + group + " are not equal and must be equal for secondary screens!");
+        });
+    });
+    Object.keys(groupedResults).map(function (group) {
+        var grouped = groupedResults[group];
+        if (lodash_1.isArray(grouped)) {
+            grouped.map(function (eegiResult) {
+                eegiResults.push(eegiResult);
+            });
+        }
+        else if (lodash_1.isObject(grouped)) {
+            Object.keys(grouped).map(function (wormStrain) {
+                var wormStrainGroup = grouped[wormStrain];
+                Object.keys(wormStrainGroup).map(function (plateId) {
+                    var plate = wormStrainGroup[plateId];
+                    // eegiResults = filter(eegiResults, {'clone.library': 'Ahringer'});
+                    if (lodash_1.find(plate, { 'clone.library': 'Ahringer' })) {
+                        plate.map(function (eegiResult) {
+                            eegiResults.push(eegiResult);
+                        });
+                    }
+                    else {
+                        console.log('plate not found!!');
                     }
                 });
             });
+        }
+    });
+    return lodash_1.groupBy(eegiResults, 'group');
+}
+function sanityCheckBatches(groupedResults) {
+    Object.keys(groupedResults).map(function (group) {
+        var t = lodash_1.groupBy(groupedResults[group], 'experiment.worm_strain_id');
+        var validPlatePlan = true;
+        Object.keys(t).map(function (wormStrain) {
+            var tt = lodash_1.groupBy(t[wormStrain], 'experiment.plate_id');
             t[wormStrain] = tt;
         });
-        groupedResults[group] = t;
+        if (!Object.keys(t).length) {
+            groupedResults[group] = null;
+        }
+        else {
+            groupedResults[group] = t;
+        }
     });
     return groupedResults;
 }
@@ -170,7 +242,7 @@ function createScreens(groupedResults) {
                 .catch(function (error) {
                 return new Error(error);
             });
-        })
+        }, { concurrency: 1 })
             .then(function (results) {
             resolve(results);
         })
@@ -230,7 +302,7 @@ function createBiosamples(groupedResults) {
                 .catch(function (error) {
                 return new Error(error);
             });
-        })
+        }, { concurrency: 1 })
             .then(function (results) {
             resolve(results);
         })
@@ -265,7 +337,6 @@ function createBiosamples(groupedResults) {
  * @param biosamples
  */
 function createExpScreenWorkflows(groupedResults, screens, biosamples, platePlans) {
-    var _this = this;
     var workflows = [];
     Object.keys(groupedResults).map(function (group) {
         //Top Level is the Experiment Group Key
@@ -277,87 +348,112 @@ function createExpScreenWorkflows(groupedResults, screens, biosamples, platePlan
         Object.keys(groupedResults[group]).map(function (mutantWormStrain) {
             var plateR1 = Object.keys(groupedResults[group][mutantWormStrain])[0];
             var firstWell = groupedResults[group][mutantWormStrain][plateR1][0];
-            var wormRecord = lodash_1.find(biosamples, { biosampleGene: firstWell['wormstrain.gene'] });
-            var screenRecord = lodash_1.find(screens, { screenName: firstWell.screenName });
-            var platePlan = lodash_1.find(platePlans, { platePlanName: "NY " + group });
-            var thisWorkflow = deepcopy(minimalWorkflow);
-            thisWorkflow['site'] = 'NY';
-            thisWorkflow.name = firstWell.name;
-            thisWorkflow.screenName = firstWell.screenName;
-            thisWorkflow.screenStage = firstWell.screenStage;
-            thisWorkflow.screenType = firstWell.screenType;
-            thisWorkflow.temperature = firstWell['experimentplate.temperature'];
-            thisWorkflow.screenId = screenRecord.screenId;
-            thisWorkflow.instrumentId = 3;
-            thisWorkflow.libraryId = 1;
-            thisWorkflow.librarycode = 'ahringer2';
-            thisWorkflow.assayViewType = "exp_assay_ahringer2";
-            thisWorkflow.plateViewType = "exp_plate_ahringer2";
-            thisWorkflow.biosamples = {
-                "experimentBiosample": {
-                    "id": wormRecord.biosampleId,
-                    "name": wormRecord.biosampleGene
-                }, "ctrlBiosample": { "id": "4", "name": "N2" }
-            };
-            // Add Plates
-            thisWorkflow.experimentGroups = {};
-            thisWorkflow.experimentGroups.treat_rnai = {};
-            thisWorkflow.experimentGroups.treat_rnai.plates = [];
-            thisWorkflow.experimentGroups.treat_rnai.biosampleId = wormRecord.biosampleId;
-            Object.keys(groupedResults[group][mutantWormStrain]).map(function (plateId) {
-                var plate = groupedResults[group][mutantWormStrain][plateId][0];
-                var plateRecord = {
-                    "csPlateid": plate["experiment.plate_id"],
-                    "id": plate["experiment.plate_id"],
-                    "name": plate.barcode,
-                    "creationdate": plate["experimentplate.date"],
-                    imagepath: plate['experiment.plate_id'],
-                    "platebarcode": plate.barcode,
-                    "instrumentPlateId": plate['experiment.plate_id']
+            if (!lodash_1.isObject(firstWell)) {
+                console.log("Results malformed. No First Well!");
+                return;
+            }
+            else {
+                var wormRecord = lodash_1.find(biosamples, { biosampleGene: firstWell['wormstrain.gene'] });
+                var screenRecord = lodash_1.find(screens, { screenName: firstWell.screenName });
+                var platePlan = lodash_1.find(platePlans, { platePlanName: "NY " + group });
+                if (!wormRecord) {
+                    throw new Error("No worm record found!");
+                }
+                if (!screenRecord) {
+                    throw new Error("No ScreenRecord Found!");
+                }
+                if (!platePlan) {
+                    throw new Error("No PlatePlan Found!");
+                }
+                var thisWorkflow_1 = deepcopy(minimalWorkflow);
+                thisWorkflow_1['site'] = 'NY';
+                thisWorkflow_1.name = firstWell.name;
+                thisWorkflow_1.screenName = firstWell.screenName;
+                thisWorkflow_1.screenStage = firstWell.screenStage;
+                thisWorkflow_1.screenType = firstWell.screenType;
+                thisWorkflow_1.temperature = firstWell['experimentplate.temperature'];
+                try {
+                    thisWorkflow_1.screenId = screenRecord.screenId;
+                }
+                catch (error) {
+                    console.log(error);
+                }
+                thisWorkflow_1.instrumentId = 3;
+                thisWorkflow_1.libraryId = 1;
+                thisWorkflow_1.librarycode = 'ahringer2';
+                thisWorkflow_1.assayViewType = "exp_assay_ahringer2";
+                thisWorkflow_1.plateViewType = "exp_plate_ahringer2";
+                thisWorkflow_1.biosamples = {
+                    "experimentBiosample": {
+                        "id": wormRecord.biosampleId,
+                        "name": wormRecord.biosampleGene
+                    }, "ctrlBiosample": { "id": "4", "name": "N2" }
                 };
-                thisWorkflow.experimentGroups.treat_rnai.plates.push(plateRecord);
-            });
-            thisWorkflow.experimentGroups.ctrl_rnai = {};
-            thisWorkflow.experimentGroups.ctrl_rnai.plates = [];
-            thisWorkflow.experimentGroups.ctrl_rnai.biosampleId = 4;
-            if (N2) {
-                Object.keys(N2).map(function (plateId) {
-                    var plate = N2[plateId][0];
+                // Add Plates
+                thisWorkflow_1.experimentGroups = {};
+                thisWorkflow_1.experimentGroups.treat_rnai = {};
+                thisWorkflow_1.experimentGroups.treat_rnai.plates = [];
+                thisWorkflow_1.experimentGroups.treat_rnai.biosampleId = wormRecord.biosampleId;
+                var mutantWormStrainImageDates_1 = [];
+                Object.keys(groupedResults[group][mutantWormStrain]).map(function (plateId) {
+                    var plate = groupedResults[group][mutantWormStrain][plateId][0];
                     var plateRecord = {
                         "csPlateid": plate["experiment.plate_id"],
                         "id": plate["experiment.plate_id"],
                         "name": plate.barcode,
                         "creationdate": plate["experimentplate.date"],
-                        imagepath: plate['experiment.plate_id'],
+                        "imagepath": plate['experiment.plate_id'],
                         "platebarcode": plate.barcode,
                         "instrumentPlateId": plate['experiment.plate_id']
                     };
-                    thisWorkflow.experimentGroups.ctrl_rnai.plates.push(plateRecord);
+                    mutantWormStrainImageDates_1.push(plateRecord.creationdate);
+                    thisWorkflow_1.experimentGroups.treat_rnai.plates.push(plateRecord);
                 });
+                mutantWormStrainImageDates_1 = lodash_1.uniq(mutantWormStrainImageDates_1);
+                thisWorkflow_1.experimentGroups.ctrl_rnai = {};
+                thisWorkflow_1.experimentGroups.ctrl_rnai.plates = [];
+                thisWorkflow_1.experimentGroups.ctrl_rnai.biosampleId = 4;
+                if (N2) {
+                    Object.keys(N2).map(function (plateId) {
+                        var plate = N2[plateId][0];
+                        var plateRecord = {
+                            "csPlateid": plate["experiment.plate_id"],
+                            "id": plate["experiment.plate_id"],
+                            "name": plate.barcode,
+                            "creationdate": plate["experimentplate.date"],
+                            "imagepath": plate['experiment.plate_id'],
+                            "platebarcode": plate.barcode,
+                            "instrumentPlateId": plate['experiment.plate_id']
+                        };
+                        if (lodash_1.includes(mutantWormStrainImageDates_1, plateRecord.creationdate)) {
+                            thisWorkflow_1.experimentGroups.ctrl_rnai.plates.push(plateRecord);
+                        }
+                    });
+                }
+                thisWorkflow_1.replicates = [];
+                thisWorkflow_1.experimentGroups.treat_rnai.plates.map(function (plate) {
+                    thisWorkflow_1.replicates.push([plate.id]);
+                });
+                thisWorkflow_1.experimentGroups.ctrl_rnai.plates.map(function (plate, index) {
+                    if (index < thisWorkflow_1.experimentGroups.treat_rnai.plates.length) {
+                        thisWorkflow_1.replicates[index].push(plate.id);
+                    }
+                    else {
+                        thisWorkflow_1.replicates[thisWorkflow_1.replicates.length - 1].push(plate.id);
+                    }
+                });
+                thisWorkflow_1.platePlanId = String(platePlan.id);
+                thisWorkflow_1.platePlan = platePlan;
+                thisWorkflow_1.instrumentLookUp = 'nyMicroscope';
+                workflows.push(thisWorkflow_1);
             }
-            thisWorkflow.replicates = [];
-            thisWorkflow.experimentGroups.treat_rnai.plates.map(function (plate) {
-                thisWorkflow.replicates.push([plate.id]);
-            });
-            thisWorkflow.experimentGroups.ctrl_rnai.plates.map(function (plate, index) {
-                if (index < thisWorkflow.experimentGroups.treat_rnai.plates.length) {
-                    thisWorkflow.replicates[index].push(plate.id);
-                }
-                else {
-                    thisWorkflow.replicates[_this.workflow.replicates.length - 1].push(plate.id);
-                }
-            });
-            thisWorkflow.platePlanId = String(platePlan.id);
-            thisWorkflow.platePlan = platePlan;
-            thisWorkflow.instrumentLookUp = 'nyMicroscope';
-            workflows.push(thisWorkflow);
         });
     });
     return new Promise(function (resolve, reject) {
         //@ts-ignore
         Promise.map(workflows, function (workflow) {
             return app.models.ExpScreenUploadWorkflow
-                .findOrCreate({ where: { name: workflow.name } }, workflow)
+                .findOrCreate({ where: { name: workflow.name } }, JSON.parse(JSON.stringify(workflow)))
                 .then(function (results) {
                 results[0].platePlanId = workflow.platePlanId;
                 results[0].instrumentLookUp = workflow.instrumentLookUp;
@@ -367,7 +463,7 @@ function createExpScreenWorkflows(groupedResults, screens, biosamples, platePlan
                 .catch(function (error) {
                 return new Error(error);
             });
-        })
+        }, { concurrency: 1 })
             .then(function (results) {
             resolve(results);
         })
@@ -384,7 +480,7 @@ function extractPlates(groupedResults) {
             var plates = Object.keys(groupedResults[group][wormStrain]);
             var plate = groupedResults[group][wormStrain][plates[0]];
             return createPlatePlan(plate, group);
-        })
+        }, { concurrency: 1 })
             .then(function (platePlans) {
             return createPlatePlans(platePlans);
         })
@@ -397,110 +493,144 @@ function extractPlates(groupedResults) {
     });
 }
 function createPlatePlan(plate, group) {
-    var geneNames = plate.map(function (well) {
-        return well['clone.id'].replace('sjj_', '');
-    });
-    var platePlan = new models_1.PlatePlan96ResultSet();
     return new Promise(function (resolve, reject) {
-        app.models.RnaiLibrary
-            .find({
-            where: {
-                and: [
-                    {
-                        geneName: {
-                            inq: geneNames,
-                        }
-                    },
-                    {
-                        plate: {
-                            nlike: 'S%',
+        if (lodash_1.isArray(plate)) {
+            var geneNames_1 = plate.map(function (well) {
+                return well['clone.id'].replace('sjj_', '');
+            });
+            //@ts-ignore
+            var growthHormones = plate.filter(function (well) {
+                var match = well['clone.id'].match('GHR-');
+                return match;
+            });
+            var growthHormoneRecords = growthHormones.map(function (ghr) {
+                return {
+                    libraryId: 1,
+                    geneName: ghr,
+                    plate: 'G',
+                    bioloc: 'G',
+                    stocktitle: 'G',
+                    well: 'GHR',
+                    fwdPrimer: 'GHR',
+                    revPrimer: 'GHR',
+                    chrom: 'GHR',
+                    rnaiType: 'GHR',
+                    stockloc: 'GHR'
+                };
+            });
+            var platePlan_1 = new models_1.PlatePlan96ResultSet();
+            //@ts-ignore
+            Promise.map(growthHormoneRecords, function (growthHormones) {
+                return app.models.RnaiLibrary
+                    //@ts-ignore
+                    .findOrCreate({ where: { geneName: growthHormones.geneName } }, growthHormones);
+            }, { concurrency: 1 })
+                .then(function (growthResults) {
+                return app.models.RnaiLibrary
+                    .find({
+                    where: {
+                        and: [
+                            {
+                                geneName: {
+                                    inq: geneNames_1,
+                                }
+                            },
+                            {
+                                plate: {
+                                    nlike: 'S%',
+                                },
+                            }
+                        ]
+                    }
+                });
+            })
+                .then(function (rnaiLibaryResults) {
+                return app.models.RnaiWormbaseXrefs
+                    .find({
+                    where: {
+                        wbGeneSequenceId: {
+                            inq: rnaiLibaryResults.map(function (rnaiLibraryResult) {
+                                return rnaiLibraryResult.geneName;
+                            })
                         },
                     }
-                ]
-            }
-        })
-            .then(function (rnaiLibaryResults) {
-            return app.models.RnaiWormbaseXrefs
-                .find({
-                where: {
-                    wbGeneSequenceId: {
-                        inq: rnaiLibaryResults.map(function (rnaiLibraryResult) {
-                            return rnaiLibraryResult.geneName;
-                        })
-                    },
-                }
-            })
-                .then(function (rnaiXrefs) {
-                //JOIN
-                plate.map(function (eegiResult) {
-                    platePlan[eegiResult['experiment.well']] = {};
-                    if (lodash_1.isEqual(eegiResult['clone.id'], 'L4440')) {
-                        //Its an L4440 Well
-                        platePlan[eegiResult['experiment.well']] = {
-                            "isValid": true,
-                            "well": eegiResult['experiment.well'],
-                            "taxTerm": "L4440",
-                            "geneName": "L4440",
-                            "lookUp": "L4440",
-                            "geneData": {}
-                        };
-                    }
-                    else {
-                        // Theres a gene
-                        var rnaiResult = lodash_1.find(rnaiLibaryResults, { 'geneName': eegiResult['clone.id'].replace('sjj_', '') });
-                        if (rnaiResult) {
-                            var rnaiXref = lodash_1.find(rnaiXrefs, { wbGeneSequenceId: String(rnaiResult.geneName) });
-                            platePlan[eegiResult['experiment.well']] = {
+                })
+                    .then(function (rnaiXrefs) {
+                    //JOIN
+                    plate.map(function (eegiResult) {
+                        platePlan_1[eegiResult['experiment.well']] = {};
+                        if (lodash_1.isEqual(eegiResult['clone.id'], 'L4440')) {
+                            //Its an L4440 Well
+                            platePlan_1[eegiResult['experiment.well']] = {
                                 "isValid": true,
                                 "well": eegiResult['experiment.well'],
-                                "taxTerm": eegiResult['clone.id'].replace('sjj_', ''),
-                                "geneName": eegiResult['clone.id'].replace('sjj_', ''),
-                                "lookUp": rnaiResult.bioloc,
-                                "geneData": rnaiXref,
-                                "parentLibrary": rnaiResult,
+                                "taxTerm": "L4440",
+                                "geneName": "L4440",
+                                "lookUp": "L4440",
+                                "geneData": {}
                             };
                         }
                         else {
-                            // Its an empty well
-                            platePlan[eegiResult['experiment.well']] = {
-                                "isValid": true,
-                                "well": eegiResult['experiment.well'],
-                                geneData: {},
-                            };
+                            // Theres a gene
+                            var rnaiResult = lodash_1.find(rnaiLibaryResults, { 'geneName': eegiResult['clone.id'].replace('sjj_', '') });
+                            if (rnaiResult) {
+                                var rnaiXref = lodash_1.find(rnaiXrefs, { wbGeneSequenceId: String(rnaiResult.geneName) });
+                                platePlan_1[eegiResult['experiment.well']] = {
+                                    "isValid": true,
+                                    "well": eegiResult['experiment.well'],
+                                    "taxTerm": eegiResult['clone.id'].replace('sjj_', ''),
+                                    "geneName": eegiResult['clone.id'].replace('sjj_', ''),
+                                    "lookUp": rnaiResult.bioloc,
+                                    "geneData": rnaiXref,
+                                    "parentLibrary": rnaiResult,
+                                };
+                            }
+                            else {
+                                // Its an empty well
+                                platePlan_1[eegiResult['experiment.well']] = {
+                                    "isValid": true,
+                                    "well": eegiResult['experiment.well'],
+                                    geneData: {},
+                                };
+                            }
                         }
-                    }
+                    });
+                    // @ts-ignore
+                    platePlan_1.platePlanUploadDate = new Date();
+                    platePlan_1.platePlanName = "NY " + group;
+                    platePlan_1.site = 'NY';
+                    return platePlan_1;
+                })
+                    .catch(function (error) {
+                    return new Error(error);
                 });
-                // @ts-ignore
-                platePlan.platePlanUploadDate = new Date();
-                platePlan.platePlanName = "NY " + group;
-                platePlan.site = 'NY';
-                return platePlan;
+            })
+                .then(function (platePlan) {
+                resolve(platePlan);
             })
                 .catch(function (error) {
-                return new Error(error);
+                reject(new Error(error));
             });
-        })
-            .then(function (platePlan) {
-            resolve(platePlan);
-        })
-            .catch(function (error) {
-            reject(new Error(error));
-        });
+        }
+        else {
+            resolve(null);
+        }
     });
 }
 function createPlatePlans(platePlans) {
     return new Promise(function (resolve, reject) {
+        platePlans = lodash_1.compact(platePlans);
         //@ts-ignore
         Promise.map(platePlans, function (platePlan) {
             return app.models.PlatePlan96
-                .findOrCreate({ where: { platePlanName: platePlan.platePlanName } }, platePlan)
+                .findOrCreate({ where: { platePlanName: platePlan.platePlanName } }, JSON.parse(JSON.stringify(platePlan)))
                 .then(function (results) {
                 return results[0];
             })
                 .catch(function (error) {
                 return new Error(error);
             });
-        })
+        }, { concurrency: 1 })
             .then(function (results) {
             resolve(results);
         })

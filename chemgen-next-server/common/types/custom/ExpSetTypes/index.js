@@ -18,6 +18,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 var lodash_1 = require("lodash");
 var lodash_decorators_1 = require("lodash-decorators");
+// The API definition for getting ExpSets
 var ExpSetSearch = /** @class */ (function () {
     function ExpSetSearch(data) {
         this.pageSize = 1;
@@ -156,9 +157,10 @@ var ExpsetModule = /** @class */ (function () {
         return lodash_1.orderBy(objects, 'manualscoreValue', 'desc');
     };
     ExpsetModule.prototype.findExpPlates = function (expWorkflowId) {
-        return this.expSets.expPlates.filter(function (expPlate) {
+        var expPlates = this.expSets.expPlates.filter(function (expPlate) {
             return lodash_1.isEqual(expWorkflowId, expPlate.expWorkflowId);
         });
+        return lodash_1.orderBy(expPlates, 'barcode');
     };
     ExpsetModule.prototype.findExpScreen = function (screenId) {
         return lodash_1.find(this.expSets.expScreens, function (screen) {

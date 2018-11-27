@@ -23,6 +23,7 @@ ExpSet.extract.workflows.orderByExpManualScores = function (search) {
             .groupBy('timestamp')
             .groupBy('manualscore_group')
             .groupBy('screen_id')
+            // .groupBy('manualscore_code')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -47,6 +48,7 @@ ExpSet.extract.workflows.orderByExpManualScoresPrimaryPhenotypes = function (sea
             .orWhere('manualscore_group', 'WT_ENH_STE')
             .groupBy('treatment_group_id')
             .groupBy('timestamp')
+            // .groupBy('manualscore_code')
             .groupBy('manualscore_group')
             .groupBy('screen_id')
             .orderBy('max_manualscore_value', 'desc')
@@ -72,6 +74,7 @@ ExpSet.extract.workflows.orderByExpManualScoresEmbLeth = function (search) {
             .groupBy('timestamp')
             .groupBy('manualscore_group')
             .groupBy('screen_id')
+            // .groupBy('manualscore_code')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -190,6 +193,7 @@ ExpSet.extract.workflows.orderByExpManualScoresEnhSte = function (search) {
             .groupBy('timestamp')
             .groupBy('manualscore_group')
             .groupBy('screen_id')
+            // .groupBy('manualscore_code')
             .orderBy('max_manualscore_value', 'desc')
             .then(function (results) {
             return ExpSet.extract.getExpAssay2reagentsByTreatmentGroupId(data, search, results);
@@ -217,6 +221,7 @@ ExpSet.extract.workflows.orderByExpManualScoresBaseQuery = function (search) {
         .select('treatment_group_id')
         .select('manualscore_group')
         .select('screen_id')
+        // .select('manualscore_code')
         .max('manualscore_value as max_manualscore_value')
         .min('manualscore_value as min_manualscore_value')
         .avg('manualscore_value as avg_manualscore_value');

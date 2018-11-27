@@ -89,6 +89,8 @@ var RnaiExpSet_1 = require("./services/custom/RnaiExpSet");
 var ChemicalExpSet_1 = require("./services/custom/ChemicalExpSet");
 var ExpSet_1 = require("./services/custom/ExpSet");
 var Models_1 = require("./services/custom/Models");
+var ReactomeEnity_1 = require("./services/custom/ReactomeEnity");
+var ReactomePathway_1 = require("./services/custom/ReactomePathway");
 /**
 * @module SDKBrowserModule
 * @description
@@ -147,11 +149,14 @@ var SDKBrowserModule = /** @class */ (function () {
                 ChemicalExpSet_1.ChemicalExpSetApi,
                 ExpSet_1.ExpSetApi,
                 Models_1.ModelsApi,
+                ReactomeEnity_1.ReactomeEnityApi,
+                ReactomePathway_1.ReactomePathwayApi,
                 internalStorageProvider,
                 { provide: storage_swaps_1.SDKStorage, useClass: storage_browser_1.StorageBrowser }
             ]
         };
     };
+    var SDKBrowserModule_1;
     SDKBrowserModule = SDKBrowserModule_1 = __decorate([
         core_1.NgModule({
             imports: [common_1.CommonModule, http_1.HttpClientModule],
@@ -163,7 +168,6 @@ var SDKBrowserModule = /** @class */ (function () {
         })
     ], SDKBrowserModule);
     return SDKBrowserModule;
-    var SDKBrowserModule_1;
 }());
 exports.SDKBrowserModule = SDKBrowserModule;
 /**

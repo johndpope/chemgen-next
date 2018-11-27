@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var app = require("../../../../server/server.js");
 var wellData_1 = require("../../../types/custom/wellData");
-var slug = require("slug");
 var Promise = require("bluebird");
 var _ = require("lodash");
 var lodash_1 = require("lodash");
@@ -115,7 +114,7 @@ WpTerms.load.genPlateTaxTerms = function (workflowData, expPlate) {
     ];
 };
 /**
- * TODO Add in Library / Primary/Secondary
+ * DEPRECATED - We no longer use WP for experiment interfaces!!
  * For primary add in library_plate, library_chrom, library_quadrant
  * WP Uses what it calls a taxonomy to relate posts to stuff
  * A Post has 1 or more taxonomies, and a taxonomy has 1 or more terms
@@ -138,70 +137,78 @@ WpTerms.load.genPlateTaxTerms = function (workflowData, expPlate) {
  */
 WpTerms.load.genWellTaxTerms = function (workflowData, expPlate, wellData) {
     //TODO Upto barcode are for the plate
-    var regexp = /([a-zA-Z]+)(\d+)/g;
-    var groups = regexp.exec(wellData.stockLibraryData.well);
-    var plateTaxTerms = null;
-    try {
-        plateTaxTerms = WpTerms.load.genPlateTaxTerms(workflowData, expPlate);
-    }
-    catch (error) {
-        throw new Error('Unable to generatore plateTaxTerms!');
-    }
-    var wellTaxTerms = [
-        {
-            taxonomy: 'envira-tag',
-            taxTerm: slug([
-                "AI-" + wellData.expAssay.assayId,
-            ].join('')),
-        },
-        {
-            taxonomy: 'envira-tag',
-            taxTerm: slug([
-                "SI-" + workflowData.screenId,
-                "_PI-" + expPlate.plateId,
-                "_R-" + groups[1],
-            ].join('')),
-        },
-    ];
-    return _.concat(plateTaxTerms, wellTaxTerms);
+    return [];
+    // let regexp = /([a-zA-Z]+)(\d+)/g;
+    // let groups = regexp.exec(wellData.stockLibraryData.well);
+    // let plateTaxTerms = null;
+    // try {
+    //   plateTaxTerms = WpTerms.load.genPlateTaxTerms(workflowData, expPlate);
+    // } catch (error) {
+    //   return [];
+    //   // throw new Error('Unable to generatore plateTaxTerms!');
+    // }
+    // let wellTaxTerms = [
+    //   {
+    //     taxonomy: 'envira-tag',
+    //     taxTerm: slug([
+    //       `AI-${wellData.expAssay.assayId}`,
+    //     ].join('')),
+    //   },
+    //   {
+    //     taxonomy: 'envira-tag',
+    //     taxTerm: slug([
+    //       `SI-${workflowData.screenId}`,
+    //       `_PI-${expPlate.plateId}`,
+    //       `_R-${groups[1]}`,
+    //     ].join('')),
+    //   },
+    // ];
+    //
+    // return _.concat(plateTaxTerms, wellTaxTerms);
 };
+/**
+ * Deprecated - No Longer using WP for experiment interfaces - instead using Angular2+
+ * @param taxTermsList
+ */
 WpTerms.load.createTerms = function (taxTermsList) {
     return new Promise(function (resolve, reject) {
         // Shuffle added to ensure we aren't creating multiples of the same thing
         // We do this so that if we process multiple screens at a time
         //We don't end up with duplicated wpTerms
+        resolve([]);
         // @ts-ignore
-        Promise.map(lodash_1.shuffle(taxTermsList), function (createTermObj) {
-            //This is just a sanity check, but probably shouldn't ever happen
-            if (_.isEmpty(createTermObj) || !_.get(createTermObj, 'taxTerm')) {
-                return {};
-            }
-            else {
-                var createObj = {
-                    name: createTermObj.taxTerm,
-                    slug: slug(createTermObj.taxTerm) || '',
-                    termGroup: 0,
-                };
-                return WpTerms
-                    .findOrCreate({ where: app.etlWorkflow.helpers.findOrCreateObj(createObj) }, createObj)
-                    .then(function (results) {
-                    //This is technically not ok, but will save some processing time later
-                    results[0].taxonomy = createTermObj.taxonomy;
-                    results[0].term = createTermObj.taxTerm;
-                    results[0].taxTerm = createTermObj.taxTerm;
-                    return results[0];
-                });
-            }
-        })
-            .then(function (results) {
-            var nonEmptyResults = results.filter(function (row) {
-                return !_.isEmpty(row);
-            });
-            resolve(nonEmptyResults);
-        })
-            .catch(function (error) {
-            reject(new Error(error));
-        });
+        // Promise.map(shuffle(taxTermsList), (createTermObj) => {
+        //   //This is just a sanity check, but probably shouldn't ever happen
+        //   if (_.isEmpty(createTermObj) || !_.get(createTermObj, 'taxTerm')) {
+        //     return {};
+        //   }
+        //   else {
+        //     let createObj = {
+        //       name: createTermObj.taxTerm,
+        //       slug: slug(createTermObj.taxTerm) || '',
+        //       termGroup: 0,
+        //     };
+        //
+        //     return WpTerms
+        //       .findOrCreate({where: app.etlWorkflow.helpers.findOrCreateObj(createObj)}, createObj)
+        //       .then((results) => {
+        //         //This is technically not ok, but will save some processing time later
+        //         results[0].taxonomy = createTermObj.taxonomy;
+        //         results[0].term = createTermObj.taxTerm;
+        //         results[0].taxTerm = createTermObj.taxTerm;
+        //         return results[0];
+        //       });
+        //   }
+        // })
+        //   .then((results: WpTermsResultSet[]) => {
+        //     let nonEmptyResults = results.filter((row) => {
+        //       return !_.isEmpty(row);
+        //     });
+        //     resolve(nonEmptyResults);
+        //   })
+        //   .catch((error) => {
+        //     reject(new Error(error));
+        //   });
     });
 };
 WpTerms.load.genTermTable = function (taxTermList) {

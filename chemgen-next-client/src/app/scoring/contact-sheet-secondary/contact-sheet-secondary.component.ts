@@ -1,7 +1,4 @@
-import {Component, OnInit, Renderer2, NgModule, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {MatTabsModule} from '@angular/material';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {SearchFormViewOptionsResults} from "../../search-forms/search-form-view-options/search-form-view-options.component";
+import {Component, OnInit, Renderer2, NgModule, ElementRef} from '@angular/core';
 import {SearchFormExpScreenFormResults} from "../../search-forms/search-form-exp-screen/search-form-exp-screen.component";
 import {SearchFormRnaiFormResults} from "../../search-forms/search-form-rnai/search-form-rnai.component";
 import {ExpManualScoresApi, ExpSetApi} from "../../../types/sdk/services/custom";
@@ -10,10 +7,9 @@ import {ExpSetSearchResults, ExpSetSearch} from "../../../types/custom/ExpSetTyp
 import {ExpsetModule} from "../expset/expset.module";
 import {Lightbox} from "angular2-lightbox";
 import {ContactSheetFormResults} from "../contact-sheet-primary/contact-sheet-primary.component";
-import {flatten, get, find, compact, isArray, remove, isUndefined, filter} from 'lodash';
+import {isEqual, flatten, get, find, compact, isArray, remove, isUndefined, filter} from 'lodash';
 import {ExpManualScoresResultSet} from "../../../types/sdk/models";
-import { HotkeysService, HotkeysDirective, Hotkey } from "angular2-hotkeys";
-import { group } from '@angular/animations';
+import {HotkeysService, Hotkey} from "angular2-hotkeys";
 
 // /Users/alan/projects/gunsiano/dockers/chemgen-next/chemgen-next-server/common/types/custom/ExpSetTypes/index.ts
 
@@ -32,18 +28,20 @@ import { group } from '@angular/animations';
 })
 
 export class ContactSheetSecondaryComponent implements OnInit {
-
     searchFormExpScreenResults: SearchFormExpScreenFormResults = new SearchFormExpScreenFormResults();
     searchFormRnaiFormResults: SearchFormRnaiFormResults = new SearchFormRnaiFormResults();
     // This seems to be the data structure (dict?) that has all the possible search terms and their values.
     // This is passed to the API - How? 
-    expSetSearch: ExpSetSearch = new ExpSetSearch();
+    public expSetSearch: ExpSetSearch = new ExpSetSearch();
 
     public expSets: ExpSetSearchResults = null;
 
     // expSetsModule is the interface to which experiments are queried?
     public expSetsModule: ExpsetModule;
     public formSubmitted: boolean = false;
+    public expSetsDeNorm: any;
+    public currentExpSet: any;
+    public currentExpSetIndex = 0;
 
     public expSetView = true;
 
@@ -58,11 +56,8 @@ export class ContactSheetSecondaryComponent implements OnInit {
                 private spinner: NgxSpinnerService,
                 private renderer: Renderer2,
                 public _lightbox: Lightbox,
+                public elementRef: ElementRef,
                 private hotkeysService: HotkeysService) {
-        // this.hotkeysService.add(new Hotkey('0', (event: KeyboardEvent): boolean => {
-        //     this.toggleScore('M_NO_EFFECT');
-        //     return false; // Prevent bubbling
-        // }, undefined, 'Toggle Mutant No Effect'));
         this.expSetSearch.currentPage = 1;
         const userName = document.getElementById('userName');
         const userId = document.getElementById('userId');
@@ -72,20 +67,94 @@ export class ContactSheetSecondaryComponent implements OnInit {
         if (userId) {
             this.userId = userId.innerText || 0;
         }
+        this.addReplicateContactSheetHotkeys();
     }
-
-    // addRepliacteContactSheetHotkeys(){
-    //     this.hotkeysService.add(new Hotkey('0', (event: KeyboardEvent): boolean => {
-    //         this.toggleScore('M_NO_EFFECT');
-    //         return false; // Prevent bubbling
-    //     }, undefined, 'Toggle Mutant No Effect'));
-    // }
 
     ngOnInit() {
     }
 
+    addReplicateContactSheetHotkeys() {
+        this.hotkeysService.add(new Hotkey('n', (event: KeyboardEvent): boolean => {
+            this.currentExpSetIndex = this.currentExpSetIndex + 1;
+            if (this.currentExpSetIndex >= this.expSetsDeNorm.length) {
+                this.currentExpSetIndex = 0;
+            }
+            this.currentExpSet = this.expSetsDeNorm[this.currentExpSetIndex];
+            this.setFocus();
+            return false; // Prevent bubbling
+        }, undefined, 'Move to next Experiment Set'));
+        this.hotkeysService.add(new Hotkey('i', (event: KeyboardEvent): boolean => {
+            if (get(this.contactSheetResults, ['interesting', this.currentExpSet.treatmentGroupId])) {
+                this.contactSheetResults.interesting[this.currentExpSet.treatmentGroupId] = false;
+            } else {
+                this.contactSheetResults.interesting[this.currentExpSet.treatmentGroupId] = true;
+            }
+            return false; // Prevent bubbling
+        }, undefined, 'Toggle Interesting Experiment Set'));
+
+        this.hotkeysService.add(new Hotkey('1', (event: KeyboardEvent): boolean => {
+            this.setTabInactive();
+            this.setTabActive('ts-reagent-tab-li');
+            return false; // Prevent bubbling
+        }, undefined, 'View Treatment + Reagent'));
+
+        this.hotkeysService.add(new Hotkey('2', (event: KeyboardEvent): boolean => {
+            this.setTabInactive();
+            this.setTabActive('n2-reagent-tab-li');
+            return false; // Prevent bubbling
+        }, undefined, 'View N2 + Reagent'));
+
+        this.hotkeysService.add(new Hotkey('3', (event: KeyboardEvent): boolean => {
+            this.setTabInactive();
+            this.setTabActive('ts-l4440-tab-li');
+            return false; // Prevent bubbling
+        }, undefined, 'View Reagent + L4440'));
+
+        this.hotkeysService.add(new Hotkey('4', (event: KeyboardEvent): boolean => {
+            this.setTabInactive();
+            this.setTabActive('n2-l4440-tab-li');
+            return false; // Prevent bubbling
+        }, undefined, 'View N2 + L4440'));
+
+        this.hotkeysService.add(new Hotkey('5', (event: KeyboardEvent): boolean => {
+            this.setTabInactive();
+            this.setTabActive('reagent-data-li');
+            return false; // Prevent bubbling
+        }, undefined, 'View Reagent Data'));
+
+        this.hotkeysService.add(new Hotkey('6', (event: KeyboardEvent): boolean => {
+            this.setTabInactive();
+            this.setTabActive('plate-data-li');
+            return false; // Prevent bubbling
+        }, undefined, 'View Reagent Data'));
+
+        this.hotkeysService.add(new Hotkey('shift+i', (event: KeyboardEvent): boolean => {
+            this.submitInteresting();
+            this.currentExpSetIndex = 0;
+            this.expSetsDeNorm = this.expSetsModule.deNormalizeExpSets();
+            this.currentExpSet = this.expSetsDeNorm[0];
+            return false; // Prevent bubbling
+        }, undefined, 'View Reagent Data'));
+        this.hotkeysService.add(new Hotkey('shift+a', (event: KeyboardEvent): boolean => {
+            this.submitAll();
+            return false; // Prevent bubbling
+        }, undefined, 'View Reagent Data'));
+    }
+
+    setTabInactive() {
+        [`ts-reagent-tab-li`, `ts-l4440-tab-li`, `n2-reagent-tab-li`, `n2-l4440-tab-li`, `plate-data-li`, `reagent-data-li`].map((id: string) => {
+            const elem = document.getElementById(`${id}-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
+            elem.className = '';
+        });
+    }
+
+    setTabActive(id: string) {
+        const elem = document.getElementById(`${id}-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
+        elem.className = 'active';
+    }
+
+
     getNewExpSets() {
-        // this.showProgress = false;
         this.onSubmit();
     }
 
@@ -107,12 +176,14 @@ export class ContactSheetSecondaryComponent implements OnInit {
             .toPromise()
             .then((results) => {
                 this.formSubmitted = true;
-                console.log('got contactSheetResults');
                 this.spinner.hide();
                 this.expSets = results.results;
                 this.expSetsModule = new ExpsetModule(this.expSets);
-                this.expSetsModule.deNormalizeExpSets();
+                this.expSetsDeNorm = this.expSetsModule.deNormalizeExpSets();
                 this.initializeInteresting();
+                this.currentExpSetIndex = 0;
+                this.currentExpSet = this.expSetsDeNorm[0];
+                this.setFocus();
             })
             .catch((error) => {
                 this.spinner.hide();
@@ -122,6 +193,22 @@ export class ContactSheetSecondaryComponent implements OnInit {
 
     }
 
+    getExpSetClass(index: number) {
+        if (isEqual(index, this.currentExpSetIndex)) {
+            return 'current-well';
+        } else {
+            return 'well';
+        }
+    }
+
+    setFocus() {
+        setTimeout(() => {
+            console.log('should be setting timeout....');
+            const elem = document.getElementById(`expSet-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
+            elem.scrollIntoView();
+        }, 100);
+    }
+
     open(album, index: number): void {
         // open lightbox
         this._lightbox.open(album, index);
@@ -129,15 +216,9 @@ export class ContactSheetSecondaryComponent implements OnInit {
 
     initializeInteresting() {
         // Loops over each type of assay ('treatReagent', 'ctrlReagent', 'ctrlNull', 'ctrlStrain')
-        // and creates an album for each type of treatment?
-        ['treatReagent', 'ctrlReagent', 'ctrlNull', 'ctrlStrain'].map((expGroupType) => {
-            if (get(this.expSets, 'expGroupTypeAlbums') && get(this.expSets.expGroupTypeAlbums, expGroupType)) {
-                this.expSets.expGroupTypeAlbums[expGroupType].map((imageMeta: any) => {
-                    if (imageMeta.treatmentGroupId) {
-                        this.contactSheetResults.interesting[imageMeta.treatmentGroupId] = false;
-                    }
-                });
-            }
+        // and creates an expSet for each type of treatment?
+        this.expSetsDeNorm.map((expSet: any) =>{
+            this.contactSheetResults.interesting[expSet.treatmentGroupId] = false;
         });
     }
 
@@ -176,9 +257,7 @@ export class ContactSheetSecondaryComponent implements OnInit {
     }
 
     removeByTreatmentGroupId(treatmentGroupId) {
-        ['treatReagent', 'ctrlReagent'].map((albumName) => {
-            remove(this.expSets.expGroupTypeAlbums[albumName], {treatmentGroupId: Number(treatmentGroupId)});
-        });
+        remove(this.expSetsDeNorm, {treatmentGroupId: Number(treatmentGroupId)});
         delete this.contactSheetResults.interesting[treatmentGroupId];
     }
 
@@ -227,7 +306,8 @@ export class ContactSheetSecondaryComponent implements OnInit {
                     'manualscoreValue': manualScoreValue,
                     'screenId': expScreen.screenId,
                     'screenName': expScreen.screenName,
-                    'assayId': imageMeta.assayId,
+                    // Since we are choosing the entire expSet, there is no assayId here
+                    // 'assayId': imageMeta.assayId,
                     'treatmentGroupId': treatmentGroupId,
                     'scoreCodeId': 66,
                     'userId': this.userId,

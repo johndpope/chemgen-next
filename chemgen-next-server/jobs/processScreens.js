@@ -13,23 +13,32 @@ program
     .option('-e --exit', 'Exit after completing the queueing process.', false)
     .parse(process.argv);
 processWorkflows(program);
+var search = {};
+search = {
+    // screenId: {inq: [3,4]},
+    screenId: 3,
+};
 function processWorkflows(program) {
-    var search = {};
     if (program.searchPattern) {
-        search = {
-            screenId: { inq: [1] },
-        };
+        // search = {
+        //   // screenId: {inq: [3,4]},
+        //   screenId: 3,
+        //   // name: new RegExp(program.searchPattern),
+        // }
     }
     app.models.ExpScreenUploadWorkflow
         .find({
-        where: search,
+        where: { site: 'NY' },
         limit: program.limit
     })
         .then(function (results) {
         //@ts-ignore
         return Promise.map(results, function (result) {
-            app.winston.info("Queueing: " + result.name + ".");
-            jobQueues.workflowQueue.add({ workflowData: result });
+            if (result.name) {
+                app.winston.info("Queueing: ScreenId: " + result.screenName + " Name: " + result.name);
+                // app.winston.info(`ScreenId: ${result.screenId}`);
+                jobQueues.workflowQueue.add({ workflowData: result });
+            }
         })
             .then(function () {
             app.winston.info('Completed queueing.');

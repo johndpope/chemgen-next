@@ -58,6 +58,7 @@ RnaiLibrary.extract.parseLibraryResults = function (workflowData, expPlate, libr
                         });
                         libraryResult.geneName = 'L4440';
                     }
+                    //In the secondary screen we have just genes
                     else if (libraryResult.geneName === 'empty') {
                         taxTerms.push({
                             taxonomy: 'wb_gene_sequence_id',

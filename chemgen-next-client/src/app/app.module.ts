@@ -178,6 +178,7 @@ import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/
 export class AppModule {
     constructor() {
         // TODO Need to add this to an environmental variables
+        // LoopBackConfig.setBaseURL('http://10.230.9.227:3001');
         // LoopBackConfig.setBaseURL('http://10.230.9.227:3000');
         LoopBackConfig.setBaseURL('http://localhost:3000');
         LoopBackConfig.setApiVersion('api');

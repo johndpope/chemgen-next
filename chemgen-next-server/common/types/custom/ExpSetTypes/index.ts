@@ -253,9 +253,10 @@ export class ExpsetModule {
 
   @Memoize()
   findExpPlates(expWorkflowId: string) {
-    return this.expSets.expPlates.filter((expPlate: ExpPlateResultSet) => {
+    const expPlates = this.expSets.expPlates.filter((expPlate: ExpPlateResultSet) => {
       return isEqual(expWorkflowId, expPlate.expWorkflowId);
     });
+    return orderBy(expPlates, 'barcode');
   }
 
   @Memoize()
