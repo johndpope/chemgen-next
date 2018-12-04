@@ -64,6 +64,11 @@ ExpScreenUploadWorkflow.load.workflows.worms.processWorkflow = function (workflo
             //Export to file
             return ExpScreenUploadWorkflow.load.workflows.worms.createExpInterfaces(workflowData, screenData);
         })
+            // .then((screenData: ScreenCollection) => {
+            //   app.winston.info('RETURNING Scores');
+            // TODO Add in counts here
+            //   return app.models.ModelPredictedPheno.load.workflows.parseScreen(workflowData, screenData)
+            // })
             .then(function () {
             // @ts-ignore
             console.log(chalk.cyan("Time: ExpScreenUploadWorkflow.doWork " + workflowData.name));

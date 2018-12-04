@@ -151,7 +151,7 @@ ExpSet.extract.buildExpAssay2reagentSearch = function (data, search) {
  /**
  * This is the main workflow
  * Once we have a set of expAssay2reagents, get the corresponding expAssays, includeCounts, expPlates, expScreens, and expWorkflows
- * Also generate an album for use in the interface
+ * Also generate an expSet for use in the interface
  * @param {ExpSetSearchResults} data
  * @param {ExpSetSearch} search
  */

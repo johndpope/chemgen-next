@@ -53,6 +53,10 @@ ExpScreenUploadWorkflow.load.workflows.worms.primary.processWorkflow = function 
             .then(function (screenData) {
             return ExpScreenUploadWorkflow.load.workflows.worms.createExpInterfaces(workflowData, screenData);
         })
+            // .then((screenData: ScreenCollection) => {
+            //   app.winston.info('RETURNING Scores');
+            //   return app.models.ModelPredictedPheno.load.workflows.parseScreen(workflowData, screenData)
+            // })
             .then(function () {
             resolve();
         })

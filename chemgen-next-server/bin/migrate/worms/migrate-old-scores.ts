@@ -662,12 +662,12 @@ let manualScoreCodes: ExpManualScoreCodeResultSet[] = [
   },
   {
     "manualscorecodeId": "68",
-    "description": "description",
-    "shortDescription": "shortDescription",
-    "formName": "formName",
-    "formCode": "formCode",
-    "manualValue": "0",
-    "manualGroup": "manualscore_group"
+    "description": "Is Junk?",
+    "shortDescription": "Is Junk",
+    "formName": "JUNK",
+    "formCode": "JUNK",
+    "manualValue": "1",
+    "manualGroup": "JUNK"
   }
 ];
 

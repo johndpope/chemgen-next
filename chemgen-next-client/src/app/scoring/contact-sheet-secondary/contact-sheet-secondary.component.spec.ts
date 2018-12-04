@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ContactSheetSecondaryComponent } from './contact-sheet-by-expset.component';
+import { ContactSheetSecondaryComponent } from './contact-sheet-secondary.component';
 
 describe('ContactSheetSecondaryComponent', () => {
   let component: ContactSheetSecondaryComponent;
