@@ -15,6 +15,8 @@ import {SearchFormContactSheetPrimaryComponent} from "./search-forms/search-form
 import {SearchFormScoreExpsetsComponent} from "./search-forms/search-form-score-expsets/search-form-score-expsets.component";
 import {ScoredSummaryComponent} from "./scoring/scored-summary/scored-summary.component";
 import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/contact-sheet-secondary.component";
+import {ExpWorkflowQcComponent} from "./scoring/exp-workflow-qc/exp-workflow-qc.component";
+import {SearchFormExpWorkflowQcComponent} from "./search-forms/search-form-exp-workflow-qc/search-form-exp-workflow-qc.component";
 
 // TODO Make Routing Modules
 
@@ -29,6 +31,7 @@ const appRoutes: Routes = [
     {path: 'search-form-contact-sheet-plate', component: SearchFormContactSheetPrimaryComponent},
     {path: 'search-expsets-worms', component: SearchFormExpsetsComponent},
     {path: 'score-expsets-worms', component: SearchFormScoreExpsetsComponent},
+    {path: 'search-form-exp-workflow-qc', component: SearchFormExpWorkflowQcComponent},
     {path: 'scored-summary', component: ScoredSummaryComponent},
     {path: 'contact-sheet-secondary', component: ContactSheetSecondaryComponent},
     /* WIP */

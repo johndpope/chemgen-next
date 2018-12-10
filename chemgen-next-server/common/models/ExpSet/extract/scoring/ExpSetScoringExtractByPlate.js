@@ -44,27 +44,7 @@ ExpSet.extract.workflows.getUnscoredExpSetsByPlate = function (search) {
                         resolve(data);
                     }
                     else {
-                        return ExpSet.extract.fetchFromCache(data, search, data.expPlates[0].expWorkflowId);
-                    }
-                })
-                    .then(function (data) {
-                    // Check to see if it was fetched from the cache
-                    if (!data.fetchedFromCache && lodash_1.has(data.expPlates, ['0', 'expWorkflowId'])) {
-                        return ExpSet.extract.getExpDataByExpWorkflowId(data, search, data.expPlates[0].expWorkflowId);
-                    }
-                    else {
-                        return data;
-                    }
-                })
-                    .then(function (data) {
-                    return ExpSet.extract.getExpManualScoresByExpWorkflowId(data, search);
-                })
-                    .then(function (data) {
-                    if (!lodash_1.isEqual(data.modelPredictedCounts.length, data.expAssays.length)) {
-                        return ExpSet.extract.getModelPredictedCountsByExpWorkflowId(data, search);
-                    }
-                    else {
-                        return data;
+                        return ExpSet.extract.buildExpSetsByExpWorkflowId(data, search, data.expPlates[0].expWorkflowId);
                     }
                 })
                     .then(function (data) {
@@ -76,7 +56,6 @@ ExpSet.extract.workflows.getUnscoredExpSetsByPlate = function (search) {
                     }
                     data = ExpSet.extract.genAlbumsByPlate(data, search);
                     data = ExpSet.extract.cleanUp(data, search);
-                    // resolve(data);
                     return data;
                 });
             }
@@ -209,7 +188,6 @@ ExpSet.extract.extractPlatesNoScore = function (data, search) {
  * @param search
  */
 ExpSet.extract.preferentiallyChooseScoresSamePlate = function (data, search) {
-    app.winston.info('Preferentially choosing by plate');
     if (lodash_1.has(data.expGroupTypeAlbums, 'ctrlStrain')) {
         var treatPlateId = data.expGroupTypeAlbums.treatReagent[0].plateId;
         var ctrlStrainSamePlate = lodash_1.filter(data.expGroupTypeAlbums.ctrlStrain, { plateId: treatPlateId });

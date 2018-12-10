@@ -48,6 +48,7 @@ ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search: ExpSetSearch
     if (or && or.length) {
       searchQuery.where = {or: or};
     }
+    app.winston.info(`SearchQuery: ${JSON.stringify(searchQuery)}`);
     ExpSet.extract.buildExpWorkflowPaginationData(data, search)
       .then((data) => {
         return app.models.ExpScreenUploadWorkflow
@@ -381,8 +382,8 @@ ExpSet.extract.fetchFromCache = function (data: ExpSetSearchResults, search: Exp
       .then((obj) => {
         if (obj) {
           data = JSON.parse(obj);
-          data.fetchedFromCache = true;
-          // data.fetchedFromCache = false;
+          // data.fetchedFromCache = true;
+          data.fetchedFromCache = false;
           resolve(data);
         } else {
           data.fetchedFromCache = false;

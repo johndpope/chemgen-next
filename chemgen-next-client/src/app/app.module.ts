@@ -11,6 +11,9 @@ import {PageNotFoundComponent} from './pages/not-found.component';
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 
+//Environment imports
+import {environment} from "../environments/environment";
+
 //Loopback SDK - generates model definition, services, etc
 import {SDKBrowserModule} from '../types/sdk';
 import {LoopBackConfig} from '../types/sdk';
@@ -35,7 +38,7 @@ import {TypeaheadModule} from 'ngx-bootstrap/typeahead';
 import {TooltipModule} from 'ngx-bootstrap/tooltip';
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
 import {ModalModule} from 'ngx-bootstrap/modal';
-import {BsDatepickerModule} from 'ngx-bootstrap';
+import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import {DndModule} from 'ng2-dnd';
 import {LightboxModule} from 'angular2-lightbox';
 import {NouisliderModule} from 'ng2-nouislider';
@@ -111,6 +114,8 @@ import {ScatterplotCountsComponent} from './viz/scatterplot-counts/scatterplot-c
 import {SearchFormFilterByScoresComponent} from './search-forms/search-form-filter-by-scores/search-form-filter-by-scores.component';
 import {SearchFormFilterByScoresAdvancedComponent} from './search-forms/search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component';
 import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/contact-sheet-secondary.component";
+import {ExpWorkflowQcComponent} from './scoring/exp-workflow-qc/exp-workflow-qc.component';
+import { SearchFormExpWorkflowQcComponent } from './search-forms/search-form-exp-workflow-qc/search-form-exp-workflow-qc.component';
 
 @NgModule({
     imports: [
@@ -129,6 +134,7 @@ import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/
         SDKBrowserModule.forRoot(),
         ModalModule.forRoot(),
         BsDropdownModule.forRoot(),
+        BsDatepickerModule.forRoot(),
         TooltipModule.forRoot(),
         TypeaheadModule.forRoot(),
         NgProgressModule.forRoot({}),
@@ -169,7 +175,9 @@ import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/
         ScoredSummaryComponent,
         SearchFormFilterByScoresComponent,
         SearchFormFilterByScoresAdvancedComponent,
-        ContactSheetSecondaryComponent
+        ContactSheetSecondaryComponent,
+        ExpWorkflowQcComponent,
+        SearchFormExpWorkflowQcComponent
     ],
     entryComponents: [],
     providers: [],
@@ -177,10 +185,7 @@ import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/
 })
 export class AppModule {
     constructor() {
-        // TODO Need to add this to an environmental variables
-        // LoopBackConfig.setBaseURL('http://10.230.9.227:3001');
-        // LoopBackConfig.setBaseURL('http://10.230.9.227:3000');
-        LoopBackConfig.setBaseURL('http://localhost:3000');
+        LoopBackConfig.setBaseURL(environment.loopbackApiUrl);
         LoopBackConfig.setApiVersion('api');
     }
 }

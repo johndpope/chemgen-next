@@ -148,7 +148,52 @@ ExpSet.extract.buildExpAssay2reagentSearch = function (data, search) {
     };
 };
 /**
- /**
+ * ExpSet.extract.buildExpSetsByExpWorkflowId
+ * Building the expSet with a single exp_workflow_id is much faster than using the individual assay_ids
+ * So if there are no explicit criteria for returning a set of genes or chemicals, then this is the go to workflow
+ * Also generate an expSet for use in the interface
+ * @param {ExpSetSearchResults} data
+ * @param {ExpSetSearch} search
+ */
+ExpSet.extract.buildExpSetsByExpWorkflowId = function (data, search, expWorkflowId) {
+    return new Promise(function (resolve, reject) {
+        if (!expWorkflowId) {
+            resolve(data);
+        }
+        ExpSet.extract.fetchFromCache(data, search, expWorkflowId)
+            .then(function (data) {
+            // Check to see if it was fetched from the cache
+            if (!data.fetchedFromCache && expWorkflowId) {
+                return ExpSet.extract.getExpDataByExpWorkflowId(data, search, expWorkflowId);
+            }
+            else {
+                return data;
+            }
+        })
+            .then(function (data) {
+            return ExpSet.extract.getExpManualScoresByExpWorkflowId(data, search);
+        })
+            .then(function (data) {
+            if (!lodash_1.isEqual(data.modelPredictedCounts.length, data.expAssays.length)) {
+                return ExpSet.extract.getModelPredictedCountsByExpWorkflowId(data, search);
+            }
+            else {
+                return data;
+            }
+        })
+            .then(function (data) {
+            data = ExpSet.extract.genExpSetAlbums(data, search);
+            data = ExpSet.extract.genExpGroupTypeAlbums(data, search);
+            data = ExpSet.extract.insertCountsDataImageMeta(data);
+            data = ExpSet.extract.insertExpManualScoresImageMeta(data);
+            resolve(data);
+        })
+            .catch(function (error) {
+            reject(new Error(error));
+        });
+    });
+};
+/**
  * This is the main workflow
  * Once we have a set of expAssay2reagents, get the corresponding expAssays, includeCounts, expPlates, expScreens, and expWorkflows
  * Also generate an expSet for use in the interface

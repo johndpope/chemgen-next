@@ -8,6 +8,7 @@ import {
   ModelPredictedCountsResultSet, RnaiLibraryResultSet, RnaiWormbaseXrefsResultSet,
 } from "../../../types/sdk/models/index";
 import {
+  has,
   get,
   find,
   uniqBy,
@@ -178,7 +179,52 @@ ExpSet.extract.buildExpAssay2reagentSearch = function (data: ExpSetSearchResults
 };
 
 /**
- /**
+ * ExpSet.extract.buildExpSetsByExpWorkflowId
+ * Building the expSet with a single exp_workflow_id is much faster than using the individual assay_ids
+ * So if there are no explicit criteria for returning a set of genes or chemicals, then this is the go to workflow
+ * Also generate an expSet for use in the interface
+ * @param {ExpSetSearchResults} data
+ * @param {ExpSetSearch} search
+ */
+ExpSet.extract.buildExpSetsByExpWorkflowId = function (data: ExpSetSearchResults, search: ExpSetSearch, expWorkflowId: string) {
+  return new Promise((resolve, reject) => {
+
+    if(!expWorkflowId){
+      resolve(data);
+    }
+
+    ExpSet.extract.fetchFromCache(data, search, expWorkflowId)
+      .then((data: ExpSetSearchResults) => {
+        // Check to see if it was fetched from the cache
+        if (!data.fetchedFromCache && expWorkflowId) {
+          return ExpSet.extract.getExpDataByExpWorkflowId(data, search, expWorkflowId);
+        } else {
+          return data;
+        }
+      })
+      .then((data: ExpSetSearchResults) => {
+        return ExpSet.extract.getExpManualScoresByExpWorkflowId(data, search);
+      })
+      .then((data: ExpSetSearchResults) => {
+        if (!isEqual(data.modelPredictedCounts.length, data.expAssays.length)) {
+          return ExpSet.extract.getModelPredictedCountsByExpWorkflowId(data, search);
+        } else {
+          return data;
+        }
+      })
+      .then((data: ExpSetSearchResults) => {
+        data = ExpSet.extract.genExpSetAlbums(data, search);
+        data = ExpSet.extract.genExpGroupTypeAlbums(data, search);
+        data = ExpSet.extract.insertCountsDataImageMeta(data);
+        data = ExpSet.extract.insertExpManualScoresImageMeta(data);
+        resolve(data);
+      })
+      .catch((error) => {
+        reject(new Error(error));
+      });
+  })
+};
+/**
  * This is the main workflow
  * Once we have a set of expAssay2reagents, get the corresponding expAssays, includeCounts, expPlates, expScreens, and expWorkflows
  * Also generate an expSet for use in the interface
@@ -553,7 +599,7 @@ ExpSet.extract.workflows.getReagentData = function (data: ExpSetSearchResults, s
 
   return new Promise((resolve, reject) => {
     //@ts-ignore
-    Promise.map(Object.keys(reagentTypes), (reagentType) => {
+    Promise.map(Object.keys(reagentTypes), (reagentType: string) => {
       if (reagentType) {
         return ExpSet.extract.workflows[`getReagentData${reagentType}`](data, reagentTypes[reagentType]);
       } else {

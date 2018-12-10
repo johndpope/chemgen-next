@@ -15,6 +15,8 @@ module.exports = function (ExpSet) {
     require('../extract/ExpSetExtractQueryByExpWorkflow')
     require('../extract/ExpSetExtractQueryByAssay')
     require('../extract/scoring/ExpSetScoringExtract')
+    require('../extract/scoring/ExpSetScoringExtractByBatchQC')
+    require('../extract/scoring/ExpSetScoringExtractSQLHelpers')
     require('../extract/scoring/ExpSetScoringExtractByCounts')
     require('../extract/scoring/ExpSetScoringExtractByPlate')
     require('../extract/scoring/ExpSetScoringExtractByManualScores')
@@ -35,6 +37,19 @@ module.exports = function (ExpSet) {
             reject(new Error(error));
           })
       }
+    })
+  }
+
+  // ExpSet.extract.workflows.getUnscoredExpWorkflowsByQCBatches = function (search: ExpSetSearch) {
+  ExpSet.getUnscoredExpWorkflowsByQCBatch = function (search, cb) {
+    return new Promise((resolve, reject) => {
+      ExpSet.extract.workflows.getUnscoredExpWorkflowsByQCBatch(search)
+        .then((results) => {
+          resolve(results)
+        })
+        .catch((error) => {
+          reject(new Error(error))
+        })
     })
   }
 
@@ -164,6 +179,14 @@ module.exports = function (ExpSet) {
   ExpSet.remoteMethod(
     'getUnscoredExpSetsByFirstPass', {
       http: {path: '/getUnscoredExpSetsByFirstPass', verb: 'post'},
+      accepts: {arg: 'search', type: 'any', http: {source: 'query'}},
+      returns: {arg: 'results', type: 'any'}
+    }
+  )
+
+  ExpSet.remoteMethod(
+    'getUnscoredExpWorkflowsByQCBatch', {
+      http: {path: '/getUnscoredExpWorkflowsByQCBatch', verb: 'post'},
       accepts: {arg: 'search', type: 'any', http: {source: 'query'}},
       returns: {arg: 'results', type: 'any'}
     }

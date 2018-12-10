@@ -59,9 +59,10 @@
                     <li><a><i class="fa fa-search-minus"></i> Score <span
                                     class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <!--RouterLink does not work in index.html-->
-                            <!--But the theme does not work if this is in a component-->
-                            <!--TODO Update the theme to an angular theme-->
+                            <li>
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-form-exp-workflow-qc">
+                                    QC A Batch</a>
+                            </li>
                             <li>
                                 <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-form-contact-sheet-plate">
                                     Score with 96 Well Contact Sheet</a>
@@ -83,9 +84,6 @@
                     <li><a><i class="fa fa-search"></i> Search <span
                                     class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <!--RouterLink does not work in index.html-->
-                            <!--But the theme does not work if this is in a component-->
-                            <!--TODO Update the theme to an angular theme-->
                             <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-expsets-worms">Search
                                     for Exp Sets</a>
                             </li>
