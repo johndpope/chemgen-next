@@ -502,6 +502,8 @@ ExpSet.extract.genExpSetAlbums = function (data, search) {
         album.expWorkflowId = expSet[0].expWorkflowId;
         album.treatmentReagentId = expSet[0].treatmentGroupId;
         album.treatmentGroupId = expSet[0].treatmentGroupId;
+        var expWorkflow = lodash_1.find(data.expWorkflows, { id: String(expSet[0].expWorkflowId) });
+        var site = lodash_1.get(expWorkflow, 'site') || config.get('site');
         try {
             album.ctrlReagentId = lodash_1.find(expSet, function (set) {
                 return lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_rnai') || lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_compound') || lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_chemical');
@@ -530,7 +532,7 @@ ExpSet.extract.genExpSetAlbums = function (data, search) {
             album[expGroupType + "Images"] = data.expAssays.filter(function (expAssay) {
                 return lodash_1.isEqual(expAssay.expGroupId, album[expGroupType + "Id"]);
             }).map(function (expAssay) {
-                return ExpSet.extract["buildImageObj" + config.get('site')](expAssay);
+                return ExpSet.extract["buildImageObj" + site](expAssay);
             });
             album[expGroupType + "Images"] = lodash_1.uniqBy(album[expGroupType + "Images"], 'assayImagePath');
         });
@@ -639,7 +641,7 @@ ExpSet.extract.buildImageObjDEV = function (expAssay) {
         assayImagePath: expAssay.assayImagePath,
         src: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
         caption: "Image " + expAssay.assayImagePath + " caption here",
-        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel-600x600.jpeg",
+        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
         assayId: expAssay.assayId,
         plateId: expAssay.plateId,
     };
@@ -649,7 +651,7 @@ ExpSet.extract.buildImageObjAD = function (expAssay) {
         assayImagePath: expAssay.assayImagePath,
         src: config.get('sites')['AD']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
         caption: "Image " + expAssay.assayImagePath + " caption here",
-        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel-600x600.jpeg",
+        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
         assayId: expAssay.assayId,
         plateId: expAssay.plateId,
     };
@@ -657,9 +659,9 @@ ExpSet.extract.buildImageObjAD = function (expAssay) {
 ExpSet.extract.buildImageObjNY = function (expAssay) {
     return {
         assayImagePath: expAssay.assayImagePath,
-        src: config.get('sites')['NY']['imageUrl'] + "/" + expAssay.assayImagePath + ".bmp",
+        src: config.get('sites')['NY']['imageUrl'] + "/" + expAssay.assayImagePath + ".jpeg",
         caption: "Image " + expAssay.assayImagePath + " caption here",
-        thumb: config.get('sites')['NY']['imageUrl'] + "/" + expAssay.assayImagePath + ".bmp",
+        thumb: config.get('sites')['NY']['imageUrl'] + "/" + expAssay.assayImagePath + ".jpeg",
         assayId: expAssay.assayId,
         plateId: expAssay.plateId,
     };

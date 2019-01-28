@@ -44,13 +44,7 @@ export class SearchFormExpWorkflowQcComponent implements OnInit {
         this.expSets = null;
         this.expSetSearch.pageSize = 1;
         this.expSetSearch.ctrlLimit = 4;
-        if (this.searchFormExpScreenResults.expScreen) {
-            this.expSetSearch.screenSearch = [this.searchFormExpScreenResults.expScreen.screenId];
-        }
-
-        if (this.searchFormExpScreenResults.expScreenWorkflow) {
-            this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
-        }
+        this.expSetSearch = this.searchFormExpScreenResults.setExpSetSearchCriteria(this.expSetSearch);
 
         //We don't need any of this stuff for QC
         this.expSetSearch.expSets = false;

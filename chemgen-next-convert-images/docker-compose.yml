@@ -1,0 +1,212 @@
+version: '3'
+
+# Run as
+# docker-compose build; docker-compose up -d
+# Check with
+# docker ps
+# Then check the logs with
+# docker logs --tail 50 $container_id
+# docker-compose logs --tail 20 tf_counts
+
+services:
+    # RabbitMQ, used by the flask app to queue up jobs whee
+    rabbit:
+        hostname: rabbit
+        image: rabbitmq:latest
+        environment:
+            - RABBITMQ_DEFAULT_USER=admin
+            - RABBITMQ_DEFAULT_PASS=mypass
+            - SERVICE_PORTS=5672
+            - TCP_PORTS=5672
+        ports:
+            - "5672:5672"
+        networks:
+          - app-tier
+
+
+    celery_results_mysql_db:
+        hostname: celery_results_mysql_db
+        image: mysql:5.7
+        environment:   # Set up mysql database name and password
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: celery
+          MYSQL_USER: celery
+          MYSQL_PASSWORD: password
+          MYSQL_HOST: localhost
+          C_FORCE_ROOT: 'true'
+        ports:    # Set up ports exposed for other containers to connect to
+          - 3310:3306
+        volumes:
+          #- ./mysql:/docker-entrypoint-initdb.d
+          - ./mysql:/etc/mysql/conf.d/
+        networks:
+          - app-tier
+
+    airflow_mysql_db:
+        hostname: airflow_mysql_db
+        image: mysql:5.7
+        environment:   # Set up mysql database name and password
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: airflow
+          MYSQL_USER: airflow
+          MYSQL_PASSWORD: password
+          MYSQL_HOST: localhost
+        ports:    # Set up ports exposed for other containers to connect to
+          - 3311:3306
+        volumes:
+          - ./mysql/:/etc/mysql/conf.d/
+        networks:
+          - app-tier
+
+    # In order to build the image run
+    # It needs to be retagged to upload to quay
+    # docker-compose build --force-rm
+    # docker tag sequence_automation_airflow quay.io/nyuad_cgsb/sequence_automation_airflow:latest
+    airflow_sequencer_automation:
+#        image: quay.io/nyuad_cgsb/sequence_automation_airflow
+        env_file:
+            - .env
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - celery_results_mysql_db
+            - airflow_mysql_db
+            - rabbit
+        links:
+            - celery_results_mysql_db
+            - airflow_mysql_db
+            - rabbit
+        environment:
+            RABBIT_RESULTS_HOST: celery_results_mysql_db
+            AIRFLOW_HOST: airflow_mysql_db
+            RABBIT_MQ_HOST: rabbit
+            C_FORCE_ROOT: 'true'
+        command: >
+            bash -c "/home/airflow/scripts/install_python_packages.sh; /home/airflow/scripts/wait-for-it.sh -p 3306 -h airflow_mysql_db -- airflow initdb; tail -f /dev/null"
+        volumes:
+            - ./mnt:/mnt:Z
+#            - ./airflow:/home/airflow/airflow
+            - ./pkgs:/home/airflow/pkgs
+            - ./plugins:/home/airflow/plugins
+            - ./dags:/home/airflow/dags
+            - ./.ssh:/home/airflow/.ssh:Z
+            - ./scripts:/home/airflow/scripts
+        networks:
+          - app-tier
+
+    airflow_sequencer_automation_scheduler:
+#        image: quay.io/nyuad_cgsb/sequence_automation_airflow
+        env_file:
+            - .env
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - celery_results_mysql_db
+            - airflow_mysql_db
+            - rabbit
+            - airflow_sequencer_automation
+        links:
+            - celery_results_mysql_db
+            - airflow_mysql_db
+            - rabbit
+        environment:
+            RABBIT_RESULTS_HOST: celery_results_mysql_db
+            AIRFLOW_HOST: airflow_mysql_db
+            RABBIT_MQ_HOST: rabbit
+            C_FORCE_ROOT: 'true'
+        command: >
+            bash -c "/home/airflow/scripts/install_python_packages.sh; /home/airflow/scripts/wait-for-it.sh -p 3306 -h airflow_mysql_db -- airflow scheduler"
+        volumes:
+            - ./mnt:/mnt:Z
+#            - ./airflow:/home/airflow/airflow
+            - ./pkgs:/home/airflow/pkgs
+            - ./html:/home/airflow/html:rw
+            - ./plugins:/home/airflow/plugins
+            - ./dags:/home/airflow/dags
+            - ./.ssh:/home/airflow/.ssh:Z
+            - ./scripts:/home/airflow/scripts
+        networks:
+          - app-tier
+
+    airflow_sequencer_automation_webserver:
+#        image: quay.io/nyuad_cgsb/sequence_automation_airflow
+        env_file:
+            - .env
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - celery_results_mysql_db
+            - airflow_mysql_db
+            - rabbit
+            - airflow_sequencer_automation
+            - airflow_sequencer_automation_scheduler
+        links:
+            - celery_results_mysql_db
+            - airflow_mysql_db
+            - rabbit
+        environment:
+            RABBIT_RESULTS_HOST: celery_results_mysql_db
+            AIRFLOW_HOST: airflow_mysql_db
+            RABBIT_MQ_HOST: rabbit
+            C_FORCE_ROOT: 'true'
+        command: >
+            bash -c "/home/airflow/scripts/install_python_packages.sh; /home/airflow/scripts/wait-for-it.sh -p 3306 -h airflow_mysql_db -- airflow webserver"
+        volumes:
+            - ./mnt:/mnt:Z
+#            - ./airflow:/home/airflow/airflow
+            - ./pkgs:/home/airflow/pkgs
+            - ./html:/home/airflow/html:rw
+            - ./plugins:/home/airflow/plugins
+            - ./dags:/home/airflow/dags
+            - ./.ssh:/home/airflow/.ssh:Z
+            - ./scripts:/home/airflow/scripts
+        ports:
+            - "8080:8080"
+            - "5001:5000"
+        networks:
+          - app-tier
+
+    airflow_sequencer_automation_worker:
+#        image: quay.io/nyuad_cgsb/sequence_automation_airflow
+        env_file:
+            - .env
+        build:
+            context: .
+            dockerfile: Dockerfile
+        depends_on:
+            - celery_results_mysql_db
+            - airflow_mysql_db
+            - rabbit
+            - airflow_sequencer_automation
+            - airflow_sequencer_automation_scheduler
+        links:
+            - celery_results_mysql_db
+            - airflow_mysql_db
+            - rabbit
+        environment:
+            RABBIT_RESULTS_HOST: celery_results_mysql_db
+            AIRFLOW_HOST: airflow_mysql_db
+            RABBIT_MQ_HOST: rabbit
+            C_FORCE_ROOT: 'true'
+        command: >
+            bash -c "/home/airflow/scripts/install_python_packages.sh; /home/airflow/scripts/wait-for-it.sh -p 3306 -h airflow_mysql_db -- airflow worker"
+        volumes:
+            - ./mnt:/mnt:Z
+#            - ./airflow:/home/airflow/airflow
+            - ./pkgs:/home/airflow/pkgs
+            - ./html:/home/airflow/html:rw
+            - ./plugins:/home/airflow/plugins
+            - ./dags:/home/airflow/dags
+            - ./.ssh:/home/airflow/.ssh:Z
+            - ./scripts:/home/airflow/scripts
+        ports:
+            - "8793:8793"
+        networks:
+          - app-tier
+
+networks:
+  app-tier:
+    driver: bridge

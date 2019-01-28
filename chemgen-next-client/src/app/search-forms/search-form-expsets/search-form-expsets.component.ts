@@ -77,13 +77,9 @@ export class SearchFormExpsetsComponent implements OnInit {
             //@ts-ignore
             this.expSetSearch.scoresQuery = this.searchFormFilterByScoresResults.query;
         }
-        if (this.searchFormExpScreenResults.expScreen) {
-            this.expSetSearch.screenSearch = [this.searchFormExpScreenResults.expScreen.screenId];
-        }
 
-        if (this.searchFormExpScreenResults.expScreenWorkflow) {
-            this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
-        }
+        this.expSetSearch = this.searchFormExpScreenResults.setExpSetSearchCriteria(this.expSetSearch);
+
         //TODO Add back in the RNAi endpoint
         if (!isEmpty(this.searchFormRnaiFormResults.rnaisList)) {
             //TODO The pagination when looking for genes is WONKY

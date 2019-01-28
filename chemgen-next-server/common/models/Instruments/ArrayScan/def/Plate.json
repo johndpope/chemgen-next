@@ -5,6 +5,10 @@
     "mssql": {
       "schema": "dbo",
       "table": "Plate"
+    },
+    "mysql": {
+      "schema": "dbo",
+      "table": "Plate"
     }
   },
   "properties": {
@@ -16,6 +20,14 @@
       "precision": 10,
       "scale": 0,
       "mssql": {
+        "columnName": "CS_PlateId",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "NO"
+      },
+      "mysql": {
         "columnName": "CS_PlateId",
         "dataType": "int",
         "dataLength": null,
@@ -38,6 +50,14 @@
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "NO"
+      },
+      "mysql": {
+        "columnName": "ID",
+        "dataType": "varchar",
+        "dataLength": 50,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "NO"
       }
     },
     "name": {
@@ -47,6 +67,14 @@
       "precision": null,
       "scale": null,
       "mssql": {
+        "columnName": "Name",
+        "dataType": "varchar",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "Name",
         "dataType": "varchar",
         "dataLength": 255,
@@ -68,6 +96,14 @@
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "Description",
+        "dataType": "varchar",
+        "dataLength": 4096,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     },
     "statusid": {
@@ -77,6 +113,14 @@
       "precision": 5,
       "scale": 0,
       "mssql": {
+        "columnName": "StatusID",
+        "dataType": "smallint",
+        "dataLength": null,
+        "dataPrecision": 5,
+        "dataScale": 0,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "StatusID",
         "dataType": "smallint",
         "dataLength": null,
@@ -98,6 +142,14 @@
         "dataPrecision": 10,
         "dataScale": 0,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "LogStat",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
       }
     },
     "creator": {
@@ -107,6 +159,14 @@
       "precision": null,
       "scale": null,
       "mssql": {
+        "columnName": "Creator",
+        "dataType": "varchar",
+        "dataLength": 50,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "Creator",
         "dataType": "varchar",
         "dataLength": 50,
@@ -128,6 +188,14 @@
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "CreationDate",
+        "dataType": "datetime",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     },
     "creationtime": {
@@ -137,6 +205,14 @@
       "precision": null,
       "scale": null,
       "mssql": {
+        "columnName": "CreationTime",
+        "dataType": "datetime",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "CreationTime",
         "dataType": "datetime",
         "dataLength": null,
@@ -159,6 +235,14 @@
         "dataPrecision": 10,
         "dataScale": 0,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "ProtocolID",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
       }
     },
     "detaildatapath": {
@@ -168,6 +252,14 @@
       "precision": null,
       "scale": null,
       "mssql": {
+        "columnName": "DetailDataPath",
+        "dataType": "varchar",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "DetailDataPath",
         "dataType": "varchar",
         "dataLength": 255,
@@ -189,6 +281,14 @@
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "ImagePath",
+        "dataType": "varchar",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     },
     "platestarttime": {
@@ -198,6 +298,14 @@
       "precision": null,
       "scale": null,
       "mssql": {
+        "columnName": "PlateStartTime",
+        "dataType": "datetime",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "PlateStartTime",
         "dataType": "datetime",
         "dataLength": null,
@@ -219,6 +327,14 @@
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "PlateFinishTime",
+        "dataType": "datetime",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     },
     "protocoldata": {
@@ -228,6 +344,14 @@
       "precision": null,
       "scale": null,
       "mssql": {
+        "columnName": "ProtocolData",
+        "dataType": "varchar",
+        "dataLength": 2000,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "ProtocolData",
         "dataType": "varchar",
         "dataLength": 2000,
@@ -249,6 +373,14 @@
         "dataPrecision": 10,
         "dataScale": 0,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "WellCount",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
       }
     },
     "wfieldcount": {
@@ -258,6 +390,14 @@
       "precision": 10,
       "scale": 0,
       "mssql": {
+        "columnName": "WFieldCount",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "WFieldCount",
         "dataType": "int",
         "dataLength": null,
@@ -279,6 +419,14 @@
         "dataPrecision": 10,
         "dataScale": 0,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "FImageCount",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
       }
     },
     "cellcount": {
@@ -288,6 +436,14 @@
       "precision": 10,
       "scale": 0,
       "mssql": {
+        "columnName": "CellCount",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "CellCount",
         "dataType": "int",
         "dataLength": null,
@@ -476,6 +632,14 @@
         "dataPrecision": 10,
         "dataScale": 0,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "pa_id",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
       }
     },
     "paVersion": {
@@ -486,6 +650,14 @@
       "precision": 10,
       "scale": 0,
       "mssql": {
+        "columnName": "pa_version",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "pa_version",
         "dataType": "int",
         "dataLength": null,
@@ -507,6 +679,14 @@
         "dataPrecision": 10,
         "dataScale": 0,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "parent_id",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
       }
     },
     "auxSource": {
@@ -522,6 +702,14 @@
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "aux_source",
+        "dataType": "varchar",
+        "dataLength": 255,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     },
     "owner": {
@@ -531,6 +719,14 @@
       "precision": null,
       "scale": null,
       "mssql": {
+        "columnName": "owner",
+        "dataType": "varchar",
+        "dataLength": 50,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
+      },
+      "mysql": {
         "columnName": "owner",
         "dataType": "varchar",
         "dataLength": 50,
@@ -553,6 +749,14 @@
         "dataPrecision": 10,
         "dataScale": 0,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "silo_id",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "YES"
       }
     },
     "guid": {
@@ -568,6 +772,14 @@
         "dataPrecision": null,
         "dataScale": null,
         "nullable": "YES"
+      },
+      "mysql": {
+        "columnName": "guid",
+        "dataType": "uniqueidentifier",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "YES"
       }
     }
   },
@@ -576,6 +788,6 @@
   "acls": [],
   "methods": {},
   "mixins": {
-    "ReadOnly" : true
+    "ReadOnly": true
   }
 }

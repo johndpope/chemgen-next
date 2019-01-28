@@ -55,10 +55,12 @@ ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search: ExpSetSearch
           .find(searchQuery);
       })
       .then((expWorkflows: ExpScreenUploadWorkflowResultSet[]) => {
+        //@ts-ignore
         data.expWorkflows = expWorkflows;
         if (!data.expWorkflows || !data.expWorkflows.length) {
           resolve();
         } else {
+          //@ts-ignore
           data.expWorkflows = compact(expWorkflows);
           return ExpSet.extract.fetchFromCache(data, search, String(data.expWorkflows[0].id));
         }
@@ -343,6 +345,7 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data: ExpSetSearchResults, 
           })
       })
       .then((expScreenWorkflow: ExpScreenUploadWorkflowResultSet) => {
+        //@ts-ignore
         data.expWorkflows = [expScreenWorkflow];
         return ExpSet.extract.getExpDesignsByExpWorkflowId(data, search);
       })
@@ -381,7 +384,7 @@ ExpSet.extract.fetchFromCache = function (data: ExpSetSearchResults, search: Exp
     redisClient.getAsync(key)
       .then((obj) => {
         if (obj) {
-          data = JSON.parse(obj);
+          // data = JSON.parse(obj);
           // data.fetchedFromCache = true;
           data.fetchedFromCache = false;
           resolve(data);

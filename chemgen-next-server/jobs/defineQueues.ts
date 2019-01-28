@@ -13,6 +13,20 @@ const jobQueues = {
       port: config.get('redisPort'),
       host: config.get('redisHost')
     },
+    limiter: {
+      max: 5,
+      duration: 10000,
+    }
+  }),
+  workflowQueueZeroExpSets: new Queue('Exp Workflow Queue: Look for ExpWorkflows not in the DB and process them', {
+    redis: {
+      port: config.get('redisPort'),
+      host: config.get('redisHost')
+    },
+    limiter: {
+      max: 1,
+      duration: 10000,
+    }
   }),
   testConcurrencyQueue: new Queue('test limit queue', {
     redis: {
@@ -44,6 +58,14 @@ jobQueues.workflowQueue.on('completed', function (job, result) {
   console.log(`Job completed ${new Date(Date.now())} ${job.id} ${result}`);
 });
 
+jobQueues.workflowQueueZeroExpSets.process(1, path.resolve(__dirname, 'processExpWorkflowsZeroExpSets.js'));
+jobQueues.workflowQueueZeroExpSets.on('completed', function(job){
+  console.log(`Job completed ${new Date(Date.now())} ${job.id}`);
+});
+
 app.jobQueues = jobQueues;
+
+jobQueues.workflowQueueZeroExpSets.add({}, {repeat: {every: 300000}});
+
 export = jobQueues;
 

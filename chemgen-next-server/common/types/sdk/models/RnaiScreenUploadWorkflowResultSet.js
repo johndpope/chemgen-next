@@ -178,6 +178,10 @@ var RnaiScreenUploadWorkflowResultSet = /** @class */ (function () {
                     name: 'site',
                     type: 'string'
                 },
+                "platePlanHash": {
+                    name: 'platePlanHash',
+                    type: 'any'
+                },
                 "instrumentPlateIdLookup": {
                     name: 'instrumentPlateIdLookup',
                     type: 'string'

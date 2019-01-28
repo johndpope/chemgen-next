@@ -36,6 +36,7 @@ export interface RnaiScreenUploadWorkflowResultSetInterface {
   "temperature"?: any;
   "librarycode"?: string;
   "site"?: string;
+  "platePlanHash"?: any;
   "instrumentPlateIdLookup"?: string;
   "id"?: any;
 }
@@ -74,6 +75,7 @@ export class RnaiScreenUploadWorkflowResultSet implements RnaiScreenUploadWorkfl
   "temperature": any;
   "librarycode": string;
   "site": string;
+  "platePlanHash": any;
   "instrumentPlateIdLookup": string;
   "id": any;
   constructor(data?: RnaiScreenUploadWorkflowResultSetInterface) {
@@ -251,6 +253,10 @@ export class RnaiScreenUploadWorkflowResultSet implements RnaiScreenUploadWorkfl
         "site": {
           name: 'site',
           type: 'string'
+        },
+        "platePlanHash": {
+          name: 'platePlanHash',
+          type: 'any'
         },
         "instrumentPlateIdLookup": {
           name: 'instrumentPlateIdLookup',

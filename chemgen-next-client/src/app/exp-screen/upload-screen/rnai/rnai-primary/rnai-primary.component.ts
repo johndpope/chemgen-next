@@ -39,6 +39,7 @@ export class RnaiPrimaryComponent implements OnInit {
     public errorMessages: Array<any> = [];
     public success: Boolean = false;
     public expScreenUpload: RNAiExpUpload;
+    public uploadedScreens: Array<string> = [];
 
     constructor(private plateApi: PlateApi,
                 private expBiosampleApi: ExpBiosampleApi,
@@ -49,11 +50,19 @@ export class RnaiPrimaryComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.initializeExpWorkflowFormUpload();
+    }
+
+    initializeExpWorkflowFormUpload() {
+        this.uploadedScreens = [];
         this.plateModels = [new RnaiScreenDesign(this.plateApi)];
         this.expBiosampleModel = new SearchExpBiosamples(this.expBiosampleApi);
         this.expDataModel = new ExperimentData(this.reagentLibraryApi, this.expScreenApi, 'RNAi');
         this.expBiosampleModel.searchSamples();
         this.expScreenUploads = [];
+        this.success = null;
+        this.expScreenUpload = new RNAiExpUpload();
+        this.errorMessages = [];
     }
 
     addNewScreenDesign() {
@@ -71,6 +80,10 @@ export class RnaiPrimaryComponent implements OnInit {
             console.log('Setting collapse');
         }
         this.plateModels.push(tPlate);
+    }
+
+    trackByFn(index: any, item: any) {
+        return index;
     }
 
     removeScreenDesign(index: number) {
@@ -112,14 +125,21 @@ export class RnaiPrimaryComponent implements OnInit {
             this.validateWorkflowData(model);
             this.expScreenUploads.push(model);
         });
-        this.expScreenUploadWorkflowApi.doWork(this.expScreenUploads)
-            .toPromise()
-            .then((results) => {
-                console.log('submittted results');
-            })
-            .catch((error) => {
-                console.error(`I have an error ${error}`);
-            });
+        this.success = true;
+        this.expScreenUploads.map((expScreenUpload) => {
+            this.expScreenUploadWorkflowApi.doWork(expScreenUpload)
+                .toPromise()
+                .then((results) => {
+                    console.log('submittted results');
+                })
+                .catch((error) => {
+                    this.success = false;
+                    this.errorMessages.push(error);
+                });
+        });
+        this.uploadedScreens = this.expScreenUploads.map((expScreenUpload) => {
+            return expScreenUpload.name;
+        });
     }
 
 

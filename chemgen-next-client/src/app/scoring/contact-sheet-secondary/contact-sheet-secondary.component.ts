@@ -13,15 +13,8 @@ import {HotkeysService, Hotkey} from "angular2-hotkeys";
 
 // /Users/alan/projects/gunsiano/dockers/chemgen-next/chemgen-next-server/common/types/custom/ExpSetTypes/index.ts
 
-@NgModule({
-    // imports: [MatTabsModule,BrowserAnimationsModule],
-    // exports: [MatTabsModule, BrowserAnimationsModule],
-    // schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    // have to declare to use with selectors: https://stackoverflow.com/questions/39062930/what-is-difference-between-declarations-providers-and-import-in-ngmodule
-    // declarations: [MatTabsModule],
-})
-
 @Component({
+    //Don't use selector when using a route
     // selector: 'app-contact-sheet-by-expset',
     templateUrl: './contact-sheet-secondary.component.html',
     styleUrls: ['./contact-sheet-secondary.component.css']
@@ -74,6 +67,7 @@ export class ContactSheetSecondaryComponent implements OnInit {
     }
 
     addReplicateContactSheetHotkeys() {
+
         this.hotkeysService.add(new Hotkey('n', (event: KeyboardEvent): boolean => {
             this.currentExpSetIndex = this.currentExpSetIndex + 1;
             if (this.currentExpSetIndex >= this.expSetsDeNorm.length) {
@@ -83,6 +77,7 @@ export class ContactSheetSecondaryComponent implements OnInit {
             this.setFocus();
             return false; // Prevent bubbling
         }, undefined, 'Move to next Experiment Set'));
+
         this.hotkeysService.add(new Hotkey('i', (event: KeyboardEvent): boolean => {
             if (get(this.contactSheetResults, ['interesting', this.currentExpSet.treatmentGroupId])) {
                 this.contactSheetResults.interesting[this.currentExpSet.treatmentGroupId] = false;
@@ -94,37 +89,37 @@ export class ContactSheetSecondaryComponent implements OnInit {
 
         this.hotkeysService.add(new Hotkey('1', (event: KeyboardEvent): boolean => {
             this.setTabInactive();
-            this.setTabActive('ts-reagent-tab-li');
+            this.setTabActive('ts-reagent-tab');
             return false; // Prevent bubbling
         }, undefined, 'View Treatment + Reagent'));
 
         this.hotkeysService.add(new Hotkey('2', (event: KeyboardEvent): boolean => {
             this.setTabInactive();
-            this.setTabActive('n2-reagent-tab-li');
+            this.setTabActive('n2-reagent-tab');
             return false; // Prevent bubbling
         }, undefined, 'View N2 + Reagent'));
 
         this.hotkeysService.add(new Hotkey('3', (event: KeyboardEvent): boolean => {
             this.setTabInactive();
-            this.setTabActive('ts-l4440-tab-li');
+            this.setTabActive('ts-l4440-tab');
             return false; // Prevent bubbling
         }, undefined, 'View Reagent + L4440'));
 
         this.hotkeysService.add(new Hotkey('4', (event: KeyboardEvent): boolean => {
             this.setTabInactive();
-            this.setTabActive('n2-l4440-tab-li');
+            this.setTabActive('n2-l4440-tab');
             return false; // Prevent bubbling
         }, undefined, 'View N2 + L4440'));
 
         this.hotkeysService.add(new Hotkey('5', (event: KeyboardEvent): boolean => {
             this.setTabInactive();
-            this.setTabActive('reagent-data-li');
+            this.setTabActive('reagent-data-tab');
             return false; // Prevent bubbling
         }, undefined, 'View Reagent Data'));
 
         this.hotkeysService.add(new Hotkey('6', (event: KeyboardEvent): boolean => {
             this.setTabInactive();
-            this.setTabActive('plate-data-li');
+            this.setTabActive('plate-data-tab');
             return false; // Prevent bubbling
         }, undefined, 'View Reagent Data'));
 
@@ -134,23 +129,50 @@ export class ContactSheetSecondaryComponent implements OnInit {
             this.expSetsDeNorm = this.expSetsModule.deNormalizeExpSets();
             this.currentExpSet = this.expSetsDeNorm[0];
             return false; // Prevent bubbling
-        }, undefined, 'View Reagent Data'));
+        }, undefined, 'Submit Interesting and clear from the view'));
+
         this.hotkeysService.add(new Hotkey('shift+a', (event: KeyboardEvent): boolean => {
             this.submitAll();
             return false; // Prevent bubbling
-        }, undefined, 'View Reagent Data'));
+        }, undefined, 'Submit all and get a new batch'));
+
+        this.hotkeysService.add(new Hotkey('s', (event: KeyboardEvent): boolean => {
+            const treatmentGroupId = this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId;
+            this.submitSingleExpGroup(treatmentGroupId);
+            return false; // Prevent bubbling
+        }, undefined, 'Submit currently selected well'));
     }
 
     setTabInactive() {
-        [`ts-reagent-tab-li`, `ts-l4440-tab-li`, `n2-reagent-tab-li`, `n2-l4440-tab-li`, `plate-data-li`, `reagent-data-li`].map((id: string) => {
+        [`ts-reagent-tab-li`, `ts-l4440-tab-li`, `n2-reagent-tab-li`, `n2-l4440-tab-li`, `plate-data-tab-li`, `reagent-data-tab-li`].map((id: string) => {
             const elem = document.getElementById(`${id}-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
             elem.className = '';
+        });
+        [`ts-reagent-tab-md`, `ts-l4440-tab-md`, `n2-reagent-tab-md`, `n2-l4440-tab-md`, `plate-data-tab-md`, `reagent-data-tab-md`].map((id: string) => {
+            const elem = document.getElementById(`${id}-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
+            elem.setAttribute("aria-expanded", 'false');
+        });
+        [`ts-reagent`, `ts-l4440`, `n2-reagent`, `n2-l4440`, `plate-data`, `reagent-data`].map((id: string) => {
+            const elem = document.getElementById(`${id}-tab-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
+            elem.className = 'row tab-pane fade';
         });
     }
 
     setTabActive(id: string) {
-        const elem = document.getElementById(`${id}-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
-        elem.className = 'active';
+        const elem = document.getElementById(`${id}-li-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
+        if (elem) {
+            elem.className = 'active';
+        }
+        const tabHref = document.getElementById(`${id}-md-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
+        tabHref.setAttribute("aria-expanded", 'true');
+
+        const tabPane = document.getElementById(`${id}-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
+        if (tabPane) {
+            tabPane.className = "row tab-pane fade active in";
+        } else {
+            console.error("Couldn't find tab id!!!");
+            console.error(`Tab ID: ${id}-tab-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
+        }
     }
 
 
@@ -162,14 +184,10 @@ export class ContactSheetSecondaryComponent implements OnInit {
         this.formSubmitted = false;
         this.expSets = null;
         this.expSetSearch.pageSize = 1;
+        //TODO There is a bug somewhere - setting this does not seem to actually matter
         this.expSetSearch.ctrlLimit = 20;
-        if (this.searchFormExpScreenResults.expScreen) {
-            this.expSetSearch.screenSearch = [this.searchFormExpScreenResults.expScreen.screenId];
-        }
 
-        if (this.searchFormExpScreenResults.expScreenWorkflow) {
-            this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
-        }
+        this.expSetSearch = this.searchFormExpScreenResults.setExpSetSearchCriteria(this.expSetSearch);
 
         this.spinner.show();
         this.expSetApi.getUnScoredExpSetsByPlate(this.expSetSearch)
@@ -201,11 +219,20 @@ export class ContactSheetSecondaryComponent implements OnInit {
         }
     }
 
+    //Set the view focus on the current ExpSet
+    //This is only triggered by the hotkey 'n'
     setFocus() {
         setTimeout(() => {
             console.log('should be setting timeout....');
-            const elem = document.getElementById(`expSet-${this.expSetsDeNorm[this.currentExpSetIndex].treatmentGroupId}`);
-            elem.scrollIntoView();
+            const expSetId = get(this.expSetsDeNorm[this.currentExpSetIndex], 'treatmentGroupId');
+            if (expSetId) {
+                const elem = document.getElementById(`expSet-${expSetId}`);
+                if (elem) {
+                    elem.scrollIntoView();
+                }
+            } else {
+                console.error('ExpSetId does not exist. Cannot scroll into view!!!!');
+            }
         }, 100);
     }
 
@@ -217,7 +244,7 @@ export class ContactSheetSecondaryComponent implements OnInit {
     initializeInteresting() {
         // Loops over each type of assay ('treatReagent', 'ctrlReagent', 'ctrlNull', 'ctrlStrain')
         // and creates an expSet for each type of treatment?
-        this.expSetsDeNorm.map((expSet: any) =>{
+        this.expSetsDeNorm.map((expSet: any) => {
             this.contactSheetResults.interesting[expSet.treatmentGroupId] = false;
         });
     }
@@ -246,6 +273,22 @@ export class ContactSheetSecondaryComponent implements OnInit {
                 .catch((error) => {
                     console.log(error);
                     this.errorMessage = 'There was an error submitting interesting scores!';
+                });
+        }
+    }
+
+    //Submit a single experiment Group and clear it from the view
+    // This is bound to the 'Submit Exp Group' button
+    submitSingleExpGroup(treatmentGroupId: number) {
+        const manualScore: any = this.createManualScore(this.contactSheetResults.interesting[treatmentGroupId], treatmentGroupId);
+        if (manualScore) {
+            this.submitScores([manualScore])
+                .then(() => {
+                    this.removeByTreatmentGroupId(treatmentGroupId);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    this.errorMessage = `There was an error expSet ${treatmentGroupId}`;
                 });
         }
     }

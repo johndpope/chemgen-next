@@ -1,5 +1,5 @@
 import app = require('../../../../../server/server.js');
-import {WorkflowModel} from "../../../index";
+import {WorkflowModel} from "../../..";
 import {RnaiLibraryResultSet} from "../../../../types/sdk/models";
 import {ChemicalLibraryResultSet} from "../../../../types/sdk/models";
 
@@ -41,6 +41,7 @@ ExpSet.extract.buildNativeQueryExpSearch = function (query, search: ExpSetSearch
   if (!isArray(fields) || isEmpty(fields)) {
     fields = ['screen', 'library', 'expWorkflow', 'plate', 'expGroup', 'assay'];
   }
+
   //Add Base experiment lookup
   fields.map((searchType) => {
     if (!isEmpty(search[`${searchType}Search`])) {

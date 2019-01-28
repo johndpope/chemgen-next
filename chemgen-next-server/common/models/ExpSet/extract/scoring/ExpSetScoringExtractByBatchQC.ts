@@ -2,20 +2,8 @@ import app = require('../../../../../server/server.js');
 import {WorkflowModel} from "../../../index";
 import Promise = require('bluebird');
 import {
-  filter,
-  uniq,
-  reduce,
-  flattenDeep,
   divide,
-  intersectionBy,
   shuffle,
-  isArray,
-  isNull,
-  isUndefined,
-  get,
-  isEmpty,
-  camelCase,
-  isEqual
 } from 'lodash';
 import {ExpSetSearch, ExpSetSearchResults} from "../../../../types/custom/ExpSetTypes";
 
@@ -54,11 +42,11 @@ ExpSet.extract.workflows.getUnscoredExpWorkflowsByQCBatch = function (search: Ex
       search.scoresExist = true;
     }
 
-    //TODO It is probably better to do this by the expWorkflowId
     //TODO REFACTOR
     ExpSet.extract.workflows.getExpAssay2reagentsByBatchQC(data, search, search.scoresExist)
       .then((data: ExpSetSearchResults) => {
-        return app.models.ExpSet.extract.buildExpSetsByExpWorkflowId(data, search, data.expAssay2reagents[0].expWorkflowId);
+        return app.models.ExpSet.extract
+          .buildExpSetsByExpWorkflowId(data, search, data.expAssay2reagents[0].expWorkflowId);
       })
       .then((data) => {
         data = ExpSet.extract.cleanUp(data, search);

@@ -7,7 +7,7 @@ import Promise = require('bluebird');
 
 const deepcopy = require('deepcopy');
 const fs = require('fs');
-import {uniq, range, has, get, isEqual, find} from 'lodash';
+import {uniqBy, range, has, get, isEqual, find} from 'lodash';
 import {
   ExpManualScoresResultSet,
   ExpAssay2reagentResultSet,
@@ -23,7 +23,7 @@ import {EegiResults} from "./parse_eegi_denorm";
 let defaultUserName = 'noah';
 let defaultUserId = 14;
 
-let file = 'eegi-denorm-2012-all.csv';
+let file = 'eegi-denorm-2011-all.csv';
 let eegi = path.resolve(__dirname, file);
 
 let usersFile = path.resolve(__dirname, 'eegi_users.csv');
@@ -852,6 +852,7 @@ function mapManualScores() {
       else {
         if (mappedResult) {
           let newManualScore = new ExpManualScoresResultSet({
+            assayId: mappedResult.expAssay2reagent.assayId,
             treatmentGroupId: mappedResult.expAssay2reagent.treatmentGroupId,
             screenId: mappedResult.expAssay2reagent.screenId,
             expWorkflowId: mappedResult.expAssay2reagent.expWorkflowId,
@@ -898,7 +899,7 @@ function addFirstPass(mappedResult, mappedManualScores, eegiResult) {
     'manualscoreCode': 'FIRST_PASS_INTERESTING',
     'manualscoreValue': 1,
     'screenId': expAssay2reagent.screenId,
-    'assayId': expAssay2reagent.assayId,
+    // 'assayId': expAssay2reagent.assayId,
     'screenName': find(expScreens, {screenId: expAssay2reagent.screenId}).screenName,
     'treatmentGroupId': expAssay2reagent.treatmentGroupId,
     'scoreCodeId': 66,
@@ -928,10 +929,12 @@ function addFirstPass(mappedResult, mappedManualScores, eegiResult) {
 
 function createNewManualScores(mappedManualScores) {
   return new Promise((resolve, reject) => {
+    mappedManualScores = uniqBy(mappedManualScores, isEqual);
     //@ts-ignore
     Promise.map(mappedManualScores, (manualScore: ExpManualScoresResultSet) => {
       let obj = {
         treatmentGroupId: manualScore.treatmentGroupId,
+        assayId: manualScore.assayId,
         userId: manualScore.userId,
         scoreCodeId: manualScore.scoreCodeId,
         manualscoreGroup: manualScore.manualscoreGroup,

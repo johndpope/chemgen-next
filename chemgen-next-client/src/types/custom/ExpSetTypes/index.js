@@ -21,6 +21,9 @@ var lodash_decorators_1 = require("lodash-decorators");
 // The API definition for getting ExpSets
 var ExpSetSearch = /** @class */ (function () {
     function ExpSetSearch(data) {
+        this.expWorkflowDeepSearch = {
+            temperature: null, temperatureRange: null, screenStage: null, screenType: null, instrumentPlateIds: null, wormStrains: null,
+        };
         this.pageSize = 1;
         this.ctrlLimit = 4;
         //Filter for scores existing

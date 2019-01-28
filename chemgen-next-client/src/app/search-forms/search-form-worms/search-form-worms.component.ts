@@ -49,14 +49,7 @@ export class SearchFormWormsComponent implements OnInit {
         this.expSets = null;
         this.expSetSearch.pageSize = 50;
         this.expSetSearch.ctrlLimit = 20;
-        // this.expSetSearch.skip = 18;
-        if (this.searchFormExpScreenResults.expScreen) {
-            this.expSetSearch.screenSearch = [this.searchFormExpScreenResults.expScreen.screenId];
-        }
-
-        if (this.searchFormExpScreenResults.expScreenWorkflow) {
-            this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
-        }
+        this.expSetSearch = this.searchFormExpScreenResults.setExpSetSearchCriteria(this.expSetSearch);
         // use the getRnais endpoint instead
         if (!isEmpty(this.searchFormRnaiFormResults.rnaisList)) {
             this.expSetSearch.rnaiSearch = this.searchFormRnaiFormResults.rnaisList;

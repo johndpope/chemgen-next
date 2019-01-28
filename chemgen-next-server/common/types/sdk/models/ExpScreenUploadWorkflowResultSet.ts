@@ -8,6 +8,7 @@ export interface ExpScreenUploadWorkflowResultSetInterface {
   "site"?: string;
   "platePlan"?: any;
   "platePlanId"?: any;
+  "platePlanHash"?: any;
   "assayViewType"?: string;
   "plateViewType"?: string;
   "instrumentPlateIdLookup"?: string;
@@ -46,6 +47,7 @@ export class ExpScreenUploadWorkflowResultSet implements ExpScreenUploadWorkflow
   "site": string;
   "platePlan": any;
   "platePlanId": any;
+  "platePlanHash": any;
   "assayViewType": string;
   "plateViewType": string;
   "instrumentPlateIdLookup": string;
@@ -127,6 +129,10 @@ export class ExpScreenUploadWorkflowResultSet implements ExpScreenUploadWorkflow
         },
         "platePlanId": {
           name: 'platePlanId',
+          type: 'any'
+        },
+        "platePlanHash": {
+          name: 'platePlanHash',
           type: 'any'
         },
         "assayViewType": {

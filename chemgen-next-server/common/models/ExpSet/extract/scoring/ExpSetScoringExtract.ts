@@ -57,14 +57,14 @@ const knex = config.get('knex');
 
 const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
 
+/**
+ * WIP - Create a decision tree to map the scores
+ * @param search
+ */
 ExpSet.extract.workflows.filterByScores = function (search: ExpSetSearch) {
   return new Promise((resolve, reject) => {
     search = new ExpSetSearch(search);
     let data = new ExpSetSearchResults({});
-    // if (isEmpty(search.rnaiSearch)) {
-    //   //Search the RnaiLibrary Api
-    //   resolve(app.models.RnaiExpSet.extract.workflows.getExpSetsByGeneList(search));
-    // }
     if (!search.scoresQuery) {
       resolve(data);
     } else {

@@ -2,6 +2,10 @@ import { NgModule , Renderer2} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {ExpSetApi, ExpManualScoresApi} from "../../../types/sdk/services/custom";
 
+/**
+ * WIP - Much of the functionality from the contact-sheet-primary and contact-sheet-secondary could be put in here
+ */
+
 @NgModule({
   imports: [
     CommonModule

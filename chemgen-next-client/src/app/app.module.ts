@@ -115,7 +115,7 @@ import {SearchFormFilterByScoresComponent} from './search-forms/search-form-filt
 import {SearchFormFilterByScoresAdvancedComponent} from './search-forms/search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component';
 import {ContactSheetSecondaryComponent} from "./scoring/contact-sheet-secondary/contact-sheet-secondary.component";
 import {ExpWorkflowQcComponent} from './scoring/exp-workflow-qc/exp-workflow-qc.component';
-import { SearchFormExpWorkflowQcComponent } from './search-forms/search-form-exp-workflow-qc/search-form-exp-workflow-qc.component';
+import {SearchFormExpWorkflowQcComponent} from './search-forms/search-form-exp-workflow-qc/search-form-exp-workflow-qc.component';
 
 @NgModule({
     imports: [

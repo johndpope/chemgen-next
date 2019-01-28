@@ -19,6 +19,7 @@ module.exports = function (app, cb) {
   //     app.agenda.now('testJob', {'hello': 'world'})
   //   })
   // }
+  app.jobQueues = require('../../jobs/defineQueues');
 
   process.nextTick(cb) // Remove if you pass `cb` to an async function yourself
 }

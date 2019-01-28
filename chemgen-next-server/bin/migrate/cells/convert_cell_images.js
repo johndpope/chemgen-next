@@ -5,8 +5,10 @@ var jsonfile = require('jsonfile');
 var path = require('path');
 var models_1 = require("../../../common/types/sdk/models");
 var lodash_1 = require("lodash");
+var axios = require("axios");
+var moment = require("moment");
+var now = moment().format();
 var fs = require('fs');
-var config = require("config");
 var request = require('request-promise');
 var Promise = require('bluebird');
 var genImageFileNames = function (expPlate, well) {
@@ -48,78 +50,60 @@ var genImageFileNames = function (expPlate, well) {
             plateId: plateId,
             random: random,
             tmpImage: tmpImage,
-            thumbSizes: [
-                '1024x1024',
-                '1080x1080',
-                '768x768',
-                '600x600',
-                '400x400',
-                '300x300',
-                '150x150',
-            ],
+            thumbSizes: [],
         };
     });
 };
 var submitImageJob = function (imagesList) {
-    console.log('In submitImageJob');
     return new Promise(function (resolve, reject) {
         Promise.map(imagesList, function (images) {
-            console.log(JSON.stringify(images));
-            return app.models.ExpAssay.helpers.genConvertImageCommands(images)
+            var uri = "http://pyrite.abudhabi.nyu.edu:8080/api/experimental/dags/image_conversion/dag_runs";
+            return app.models.ExpAssay.helpers.cells.genConvertImageCommands(images)
                 .then(function (commands) {
+                app.winston.info(commands);
+                // return;
                 var imageJob = {
-                    title: "convertImage-" + images.plateId + "-" + images.assayName,
-                    commands: commands,
-                    plateId: images.plateId,
+                    run_id: "convertImage-" + images.plateId + "-" + images.assayName + "-" + now,
+                    task_id: "convertImage-" + images.plateId + "-" + images.assayName + "-" + now,
+                    conf: JSON.stringify({ image_convert_command: commands })
                 };
-                var requestParams = {
-                    uri: "http://" + config.get('imageConversionHost') + ":" + config.get('imageConversionPort'),
-                    body: imageJob,
-                    method: 'POST',
-                    json: true,
-                };
-                console.log(JSON.stringify(requestParams));
-                if (!fs.existsSync(images.baseImage + "-autolevel.png")) {
-                    //TODO Make this a parameter somewhere
-                    return request({
-                        uri: "http://" + config.get('imageConversionHost') + ":" + config.get('imageConversionPort'),
-                        body: imageJob,
-                        method: 'POST',
-                        json: true,
-                    })
-                        .then(function (response) {
-                        console.log(JSON.stringify(response));
-                        return {
-                            baseImage: images.baseImage,
-                            script: imageJob.title,
-                            convert: 1
-                        };
-                    })
-                        .catch(function (error) {
-                        console.log(JSON.stringify(error));
-                        return {
-                            baseImage: images.baseImage,
-                            script: imageJob.title,
-                            convert: 0
-                        };
-                    });
-                }
-                else {
+                // @ts-ignore
+                return axios.post(uri, imageJob)
+                    .then(function (response) {
+                    app.winston.info('All fine');
                     return {
                         baseImage: images.baseImage,
+                        // @ts-ignore
+                        script: imageJob.title,
+                        convert: 1
+                    };
+                })
+                    .then(function () {
+                    return Promise.delay(5000);
+                })
+                    .catch(function (error) {
+                    app.winston.error('Got an error');
+                    // app.winston.error(error.error);
+                    return {
+                        baseImage: images.baseImage,
+                        // @ts-ignore
                         script: imageJob.title,
                         convert: 0
                     };
-                }
+                });
             })
                 .catch(function (error) {
                 console.log(JSON.stringify(error));
                 throw new Error(error);
             });
         }, { concurrency: 1 })
+            .then(function () {
+            return Promise.delay(5000);
+        })
             .then(function (results) {
             console.log('resolving contactSheetResults!');
-            resolve(results);
+            resolve();
+            // resolve(results);
         })
             .catch(function (error) {
             console.log(JSON.stringify(error));
@@ -129,15 +113,14 @@ var submitImageJob = function (imagesList) {
 };
 var plateDataList = jsonfile.readFileSync(path.resolve(__dirname, 'upload_these.json'));
 plateDataList = lodash_1.shuffle(plateDataList);
+plateDataList = plateDataList.slice(0, 10);
 Promise.map(plateDataList, function (plateData) {
     var expPlate = new models_1.ExpPlateResultSet({
         barcode: plateData.name,
         instrumentPlateImagePath: plateData.imagepath,
         instrumentPlateId: plateData.csPlateid
     });
-    console.log('got experiment plate!');
     var wells = app.etlWorkflow.helpers.list384Wells();
-    console.log('got wells!');
     return Promise.map(wells, function (well) {
         var imageData = genImageFileNames(expPlate, well);
         return submitImageJob(imageData);

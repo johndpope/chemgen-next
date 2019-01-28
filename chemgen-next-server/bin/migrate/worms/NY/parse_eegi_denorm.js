@@ -46,11 +46,11 @@ parseCSVFile(eegi)
                 return createExpScreenWorkflows(groupedResults, screens, biosamples, platePlans);
             })
                 .then(function (results) {
-                app.winston.info('Finished creating expScreenUploadWorkflows');
+                app.winston.info("Finished creating expScreenUploadWorkflows for " + results.length);
                 // return results;
                 //@ts-ignore
-                return Promise.map(results, function (workflow) {
-                    app.winston.info('Doing work...');
+                return Promise.map(results.slice(0, 100), function (workflow) {
+                    // app.winston.info('Doing work...');
                     return app.models.ExpScreenUploadWorkflow.load.workflows.worms.doWork(workflow);
                     // return app.models.ExpScreenUploadWorkflow.findOrCreate({where: {name: workflow.name}}, workflow)
                 }, { concurrency: 1 })
@@ -65,16 +65,25 @@ parseCSVFile(eegi)
                 return (new Error(error));
             });
         })
+            .then(function () {
+            return;
+        })
             .catch(function (error) {
             return new Error(error);
         });
         // console.log('finished');
         // process.exit(0);
     })
+        .then(function () {
+        return;
+    })
         .catch(function (error) {
-        console.log("Error: " + error);
-        process.exit(1);
+        return new Error(error);
     });
+})
+    .then(function () {
+    app.winston.info('Complete!');
+    process.exit(0);
 })
     .catch(function (error) {
     console.log("Error: " + error);
@@ -126,20 +135,39 @@ function groupByPlatePlanHash(eegiResults) {
                     var yearRegexp = new RegExp('\\d{4}');
                     var experimentDate = eegiResult['experimentplate.date'];
                     var year = yearRegexp.exec(experimentDate)[0];
-                    eegiResult.group = "RNAi--Ahringer--" + year + "--" + wormGene + "--" + temp + "--" + eegiResult['librarystock.plate_id'] + "--" + platePlanHash;
-                    eegiResult.name = "RNAi Ahringer " + year + " " + wormGene + " " + temp + " " + eegiResult['librarystock.plate_id'] + " " + platePlanHash;
-                    if (!lodash_1.isEqual(eegiResult["experiment.worm_strain_id"], 'N2')) {
-                        if (lodash_1.isEqual(eegiResult["experimentplate.temperature"], eegiResult['wormstrain.permissive_temperature'])) {
-                            eegiResult.screenType = 'permissive';
-                            eegiResult.screenStage = 'secondary';
-                            eegiResult.screenName = "NY RNAi Ahringer Secondary " + eegiResult["wormstrain.genotype"] + " Permissive Screen";
-                        }
-                        else {
-                            eegiResult.screenType = 'restrictive';
-                            eegiResult.screenStage = 'secondary';
-                            eegiResult.screenName = "NY RNAi Ahringer Secondary " + eegiResult["wormstrain.genotype"] + " Restrictive Screen";
-                        }
+                    eegiResult.group = "NY RNAi--Ahringer--" + year + "--" + wormGene + "--" + temp + "--" + eegiResult['librarystock.plate_id'] + "--" + platePlanHash;
+                    // eegiResult.name = `RNAi Ahringer ${year} ${wormGene} ${temp} ${eegiResult['librarystock.plate_id']} ${platePlanHash}`;
+                    eegiResult.name = "NY RNAi Ahringer " + year + " " + wormGene + " " + temp + " " + eegiResult['librarystock.plate_id'];
+                    // TODO Look at the libraryStock of the plate
+                    // IMPORTANT: the "E" or "F" suffix on each plate determines which screen that plate is for;
+                    // plates with an "E" suffix are Enhancer Secondary, and
+                    // plates with an "F" suffix are Suppressor Secondary.
+                    // librarystock = librarystock.plate_id
+                    if (eegiResult["librarystock.plate_id"].match(/-F\d+$/)) {
+                        eegiResult.screenType = 'restrictive';
+                        eegiResult.screenStage = 'secondary';
+                        eegiResult.screenName = "NY RNAi Ahringer Secondary " + eegiResult["wormstrain.genotype"] + " Restrictive Screen";
                     }
+                    else if (eegiResult["librarystock.plate_id"].match(/-F\d+$/)) {
+                        eegiResult.screenType = 'permissive';
+                        eegiResult.screenStage = 'secondary';
+                        eegiResult.screenName = "NY RNAi Ahringer Secondary " + eegiResult["wormstrain.genotype"] + " Permissive Screen";
+                    }
+                    else {
+                        throw new Error('Unknown library stock!');
+                    }
+                    // if (!isEqual(eegiResult["experiment.worm_strain_id"], 'N2')) {
+                    //   if (isEqual(eegiResult["experimentplate.temperature"], eegiResult['wormstrain.permissive_temperature'])) {
+                    //     eegiResult.screenType = 'permissive';
+                    //     eegiResult.screenStage = 'secondary';
+                    //     eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Permissive Screen`;
+                    //   } else {
+                    //     eegiResult.screenType = 'restrictive';
+                    //     eegiResult.screenStage = 'secondary';
+                    //     eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Restrictive Screen`;
+                    //   }
+                    // }
+                    //
                 });
                 var plateGroup = lodash_1.groupBy(temperatureGroup[temp], 'barcode');
                 var replicates = Object.keys(plateGroup).length;
@@ -321,7 +349,9 @@ function createBiosamples(groupedResults) {
  */
 function createExpScreenWorkflows(groupedResults, screens, biosamples, platePlans) {
     var workflows = [];
-    Object.keys(groupedResults).map(function (platePlanHash) {
+    var groupKeys = Object.keys(groupedResults);
+    groupKeys = groupKeys.slice(0, 10);
+    groupKeys.map(function (platePlanHash) {
         //Top Level is the Experiment Group Key
         var N2 = null;
         if (lodash_1.get(groupedResults[platePlanHash], 'N2')) {
@@ -454,10 +484,25 @@ function createExpScreenWorkflows(groupedResults, screens, biosamples, platePlan
                             thisWorkflow_1.platePlanId = String(platePlan.id);
                             thisWorkflow_1.platePlan = platePlan;
                             thisWorkflow_1.instrumentLookUp = 'nyMicroscope';
+                            if (lodash_1.isEqual(thisWorkflow_1.replicates.length, 2)) {
+                                thisWorkflow_1.name = thisWorkflow_1.name + " Control Temperature";
+                                // TODO Test that this is actually a control batch
+                                var eegiResult = firstWell;
+                                // if (isEqual(eegiResult["experimentplate.temperature"], eegiResult['wormstrain.permissive_temperature'])) {
+                                //   eegiResult.screenType = 'permissive';
+                                //   eegiResult.screenStage = 'secondary';
+                                //   eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Permissive Screen`;
+                                // } else {
+                                //   eegiResult.screenType = 'restrictive';
+                                //   eegiResult.screenStage = 'secondary';
+                                //   eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Restrictive Screen`;
+                                // }
+                            }
                         }
                         catch (error) {
                             throw new Error("There was an error with the last piece! " + error);
                         }
+                        app.winston.info("Adding: " + thisWorkflow_1.name + " to the queue");
                         workflows.push(thisWorkflow_1);
                     }
                 });
@@ -469,10 +514,17 @@ function createExpScreenWorkflows(groupedResults, screens, biosamples, platePlan
     });
     return new Promise(function (resolve, reject) {
         workflows = lodash_1.compact(workflows);
+        checkForDuplicateNames(workflows);
         //@ts-ignore
         Promise.map(workflows, function (workflow) {
             return app.models.ExpScreenUploadWorkflow
-                .findOrCreate({ where: { name: workflow.name } }, JSON.parse(JSON.stringify(workflow)))
+                .findOrCreate({
+                where: {
+                    and: [
+                        { name: workflow.name }, { platePlanHash: workflow.platePlanHash }
+                    ]
+                }
+            }, JSON.parse(JSON.stringify(workflow)))
                 .then(function (results) {
                 results[0].platePlanId = workflow.platePlanId;
                 results[0].instrumentLookUp = workflow.instrumentLookUp;
@@ -489,6 +541,16 @@ function createExpScreenWorkflows(groupedResults, screens, biosamples, platePlan
             .catch(function (error) {
             reject(new Error(error));
         });
+    });
+}
+function checkForDuplicateNames(workflows) {
+    workflows.map(function (workflow) {
+        var workflowsWithName = lodash_1.filter(workflows, function (tworkflow) {
+            return lodash_1.isEqual(workflow.name, tworkflow.name) && !lodash_1.isEqual(workflow.platePlanHash, tworkflow.platePlanHash);
+        });
+        if (lodash_1.isArray(workflowsWithName) && workflowsWithName.length) {
+            throw new Error('Duplicate names with workflow Names found!!!');
+        }
     });
 }
 function extractPlates(groupedResults) {

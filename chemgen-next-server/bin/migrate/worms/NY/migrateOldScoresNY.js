@@ -14,7 +14,7 @@ var index_1 = require("../../../../common/types/sdk/models/index");
  */
 var defaultUserName = 'noah';
 var defaultUserId = 14;
-var file = 'eegi-denorm-2012-all.csv';
+var file = 'eegi-denorm-2011-all.csv';
 var eegi = path.resolve(__dirname, file);
 var usersFile = path.resolve(__dirname, 'eegi_users.csv');
 //@ts-ignore
@@ -831,6 +831,7 @@ function mapManualScores() {
             else {
                 if (mappedResult) {
                     var newManualScore = new index_1.ExpManualScoresResultSet({
+                        assayId: mappedResult.expAssay2reagent.assayId,
                         treatmentGroupId: mappedResult.expAssay2reagent.treatmentGroupId,
                         screenId: mappedResult.expAssay2reagent.screenId,
                         expWorkflowId: mappedResult.expAssay2reagent.expWorkflowId,
@@ -874,7 +875,7 @@ function addFirstPass(mappedResult, mappedManualScores, eegiResult) {
         'manualscoreCode': 'FIRST_PASS_INTERESTING',
         'manualscoreValue': 1,
         'screenId': expAssay2reagent.screenId,
-        'assayId': expAssay2reagent.assayId,
+        // 'assayId': expAssay2reagent.assayId,
         'screenName': lodash_1.find(expScreens, { screenId: expAssay2reagent.screenId }).screenName,
         'treatmentGroupId': expAssay2reagent.treatmentGroupId,
         'scoreCodeId': 66,
@@ -903,10 +904,12 @@ function addFirstPass(mappedResult, mappedManualScores, eegiResult) {
 }
 function createNewManualScores(mappedManualScores) {
     return new Promise(function (resolve, reject) {
+        mappedManualScores = lodash_1.uniqBy(mappedManualScores, lodash_1.isEqual);
         //@ts-ignore
         Promise.map(mappedManualScores, function (manualScore) {
             var obj = {
                 treatmentGroupId: manualScore.treatmentGroupId,
+                assayId: manualScore.assayId,
                 userId: manualScore.userId,
                 scoreCodeId: manualScore.scoreCodeId,
                 manualscoreGroup: manualScore.manualscoreGroup,

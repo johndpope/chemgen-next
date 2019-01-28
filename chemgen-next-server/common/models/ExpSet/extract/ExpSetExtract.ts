@@ -189,7 +189,7 @@ ExpSet.extract.buildExpAssay2reagentSearch = function (data: ExpSetSearchResults
 ExpSet.extract.buildExpSetsByExpWorkflowId = function (data: ExpSetSearchResults, search: ExpSetSearch, expWorkflowId: string) {
   return new Promise((resolve, reject) => {
 
-    if(!expWorkflowId){
+    if (!expWorkflowId) {
       resolve(data);
     }
 
@@ -545,6 +545,8 @@ ExpSet.extract.genExpSetAlbums = function (data?: ExpSetSearchResults, search?: 
     album.expWorkflowId = expSet[0].expWorkflowId;
     album.treatmentReagentId = expSet[0].treatmentGroupId;
     album.treatmentGroupId = expSet[0].treatmentGroupId;
+    let expWorkflow = find(data.expWorkflows, {id: String(expSet[0].expWorkflowId)});
+    let site = get(expWorkflow, 'site') || config.get('site');
     try {
       album.ctrlReagentId = find(expSet, (set: ExpDesignResultSet) => {
         return isEqual(set.controlGroupReagentType, 'ctrl_rnai') || isEqual(set.controlGroupReagentType, 'ctrl_compound') || isEqual(set.controlGroupReagentType, 'ctrl_chemical');
@@ -571,7 +573,7 @@ ExpSet.extract.genExpSetAlbums = function (data?: ExpSetSearchResults, search?: 
       album[`${expGroupType}Images`] = data.expAssays.filter((expAssay: ExpAssayResultSet) => {
         return isEqual(expAssay.expGroupId, album[`${expGroupType}Id`]);
       }).map((expAssay: ExpAssayResultSet) => {
-        return ExpSet.extract[`buildImageObj${config.get('site')}`](expAssay);
+        return ExpSet.extract[`buildImageObj${site}`](expAssay);
       });
       album[`${expGroupType}Images`] = uniqBy(album[`${expGroupType}Images`], 'assayImagePath');
     });
@@ -688,7 +690,7 @@ ExpSet.extract.buildImageObjDEV = function (expAssay: ExpAssayResultSet) {
     assayImagePath: expAssay.assayImagePath,
     src: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
     caption: `Image ${expAssay.assayImagePath} caption here`,
-    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel-600x600.jpeg`,
+    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
     assayId: expAssay.assayId,
     plateId: expAssay.plateId,
   };
@@ -699,7 +701,7 @@ ExpSet.extract.buildImageObjAD = function (expAssay: ExpAssayResultSet) {
     assayImagePath: expAssay.assayImagePath,
     src: `${config.get('sites')['AD']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
     caption: `Image ${expAssay.assayImagePath} caption here`,
-    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel-600x600.jpeg`,
+    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
     assayId: expAssay.assayId,
     plateId: expAssay.plateId,
   };
@@ -708,9 +710,9 @@ ExpSet.extract.buildImageObjAD = function (expAssay: ExpAssayResultSet) {
 ExpSet.extract.buildImageObjNY = function (expAssay: ExpAssayResultSet) {
   return {
     assayImagePath: expAssay.assayImagePath,
-    src: `${config.get('sites')['NY']['imageUrl']}/${expAssay.assayImagePath}.bmp`,
+    src: `${config.get('sites')['NY']['imageUrl']}/${expAssay.assayImagePath}.jpeg`,
     caption: `Image ${expAssay.assayImagePath} caption here`,
-    thumb: `${config.get('sites')['NY']['imageUrl']}/${expAssay.assayImagePath}.bmp`,
+    thumb: `${config.get('sites')['NY']['imageUrl']}/${expAssay.assayImagePath}.jpeg`,
     assayId: expAssay.assayId,
     plateId: expAssay.plateId,
   };

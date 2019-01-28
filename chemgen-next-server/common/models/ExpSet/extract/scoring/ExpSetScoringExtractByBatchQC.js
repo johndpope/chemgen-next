@@ -35,11 +35,11 @@ ExpSet.extract.workflows.getUnscoredExpWorkflowsByQCBatch = function (search) {
         else {
             search.scoresExist = true;
         }
-        //TODO It is probably better to do this by the expWorkflowId
         //TODO REFACTOR
         ExpSet.extract.workflows.getExpAssay2reagentsByBatchQC(data, search, search.scoresExist)
             .then(function (data) {
-            return app.models.ExpSet.extract.buildExpSetsByExpWorkflowId(data, search, data.expAssay2reagents[0].expWorkflowId);
+            return app.models.ExpSet.extract
+                .buildExpSetsByExpWorkflowId(data, search, data.expAssay2reagents[0].expWorkflowId);
         })
             .then(function (data) {
             data = ExpSet.extract.cleanUp(data, search);

@@ -1,7 +1,20 @@
 #!/usr/bin/env node
 
 import app = require('../../../../server/server.js');
-import {filter,uniqWith, groupBy, isObject, uniqBy, isEqual, isArray, find, get, uniq, includes, compact} from 'lodash';
+import {
+  filter,
+  uniqWith,
+  groupBy,
+  isObject,
+  uniqBy,
+  isEqual,
+  isArray,
+  find,
+  get,
+  uniq,
+  includes,
+  compact
+} from 'lodash';
 import Promise = require('bluebird');
 import Papa = require('papaparse');
 import deepcopy = require('deepcopy');
@@ -56,11 +69,11 @@ parseCSVFile(eegi)
                 return createExpScreenWorkflows(groupedResults, screens, biosamples, platePlans);
               })
               .then((results: ExpScreenUploadWorkflowResultSet[]) => {
-                app.winston.info('Finished creating expScreenUploadWorkflows');
+                app.winston.info(`Finished creating expScreenUploadWorkflows for ${results.length}`);
                 // return results;
                 //@ts-ignore
-                return Promise.map(results, (workflow: ExpScreenUploadWorkflowResultSet) => {
-                  app.winston.info('Doing work...');
+                return Promise.map(results.slice(0,100), (workflow: ExpScreenUploadWorkflowResultSet) => {
+                  // app.winston.info('Doing work...');
                   return app.models.ExpScreenUploadWorkflow.load.workflows.worms.doWork(workflow);
                   // return app.models.ExpScreenUploadWorkflow.findOrCreate({where: {name: workflow.name}}, workflow)
                 }, {concurrency: 1})
@@ -75,6 +88,9 @@ parseCSVFile(eegi)
                 return (new Error(error));
               })
           })
+          .then(() => {
+            return;
+          })
           .catch((error) => {
             return new Error(error);
           })
@@ -82,10 +98,16 @@ parseCSVFile(eegi)
         // console.log('finished');
         // process.exit(0);
       })
+      .then(() => {
+        return;
+      })
       .catch((error) => {
-        console.log(`Error: ${error}`);
-        process.exit(1);
+        return new Error(error);
       });
+  })
+  .then(() => {
+    app.winston.info('Complete!');
+    process.exit(0);
   })
   .catch((error) => {
     console.log(`Error: ${error}`);
@@ -140,19 +162,37 @@ function groupByPlatePlanHash(eegiResults: EegiResults[]) {
           const yearRegexp = new RegExp('\\d{4}');
           let experimentDate = eegiResult['experimentplate.date'];
           const year = yearRegexp.exec(experimentDate)[0];
-          eegiResult.group = `RNAi--Ahringer--${year}--${wormGene}--${temp}--${eegiResult['librarystock.plate_id']}--${platePlanHash}`;
-          eegiResult.name = `RNAi Ahringer ${year} ${wormGene} ${temp} ${eegiResult['librarystock.plate_id']} ${platePlanHash}`;
-          if (!isEqual(eegiResult["experiment.worm_strain_id"], 'N2')) {
-            if (isEqual(eegiResult["experimentplate.temperature"], eegiResult['wormstrain.permissive_temperature'])) {
-              eegiResult.screenType = 'permissive';
-              eegiResult.screenStage = 'secondary';
-              eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Permissive Screen`;
-            } else {
-              eegiResult.screenType = 'restrictive';
-              eegiResult.screenStage = 'secondary';
-              eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Restrictive Screen`;
-            }
+          eegiResult.group = `NY RNAi--Ahringer--${year}--${wormGene}--${temp}--${eegiResult['librarystock.plate_id']}--${platePlanHash}`;
+          // eegiResult.name = `RNAi Ahringer ${year} ${wormGene} ${temp} ${eegiResult['librarystock.plate_id']} ${platePlanHash}`;
+          eegiResult.name = `NY RNAi Ahringer ${year} ${wormGene} ${temp} ${eegiResult['librarystock.plate_id']}`;
+          // TODO Look at the libraryStock of the plate
+          // IMPORTANT: the "E" or "F" suffix on each plate determines which screen that plate is for;
+          // plates with an "E" suffix are Enhancer Secondary, and
+          // plates with an "F" suffix are Suppressor Secondary.
+          // librarystock = librarystock.plate_id
+          if (eegiResult["librarystock.plate_id"].match(/-F\d+$/)) {
+            eegiResult.screenType = 'restrictive';
+            eegiResult.screenStage = 'secondary';
+            eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Restrictive Screen`;
+          } else if (eegiResult["librarystock.plate_id"].match(/-F\d+$/)) {
+            eegiResult.screenType = 'permissive';
+            eegiResult.screenStage = 'secondary';
+            eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Permissive Screen`;
+          } else {
+            throw new Error('Unknown library stock!');
           }
+          // if (!isEqual(eegiResult["experiment.worm_strain_id"], 'N2')) {
+          //   if (isEqual(eegiResult["experimentplate.temperature"], eegiResult['wormstrain.permissive_temperature'])) {
+          //     eegiResult.screenType = 'permissive';
+          //     eegiResult.screenStage = 'secondary';
+          //     eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Permissive Screen`;
+          //   } else {
+          //     eegiResult.screenType = 'restrictive';
+          //     eegiResult.screenStage = 'secondary';
+          //     eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Restrictive Screen`;
+          //   }
+          // }
+          //
         });
         let plateGroup: {} = groupBy(temperatureGroup[temp], 'barcode');
         let replicates = Object.keys(plateGroup).length;
@@ -213,7 +253,7 @@ function createScreens(groupedResults: any) {
 
     Object.keys(groupedResults).map((platePlanHash) => {
       Object.keys(groupedResults[platePlanHash]).map((wormStrain) => {
-        Object.keys(groupedResults[platePlanHash][wormStrain]).map((temperatureKey) =>{
+        Object.keys(groupedResults[platePlanHash][wormStrain]).map((temperatureKey) => {
           let plateR1Key = Object.keys(groupedResults[platePlanHash][wormStrain][temperatureKey])[0];
           let firstWell: EegiResults = groupedResults[platePlanHash][wormStrain][temperatureKey][plateR1Key][0];
           if (!find(createScreens, {screeName: firstWell['screenName']})) {
@@ -270,7 +310,7 @@ function createBiosamples(groupedResults: any) {
   let createThese: ExpBiosampleResultSet[] = [];
   Object.keys(groupedResults).map((platePlanHash) => {
     Object.keys(groupedResults[platePlanHash]).map((wormStrain) => {
-      Object.keys(groupedResults[platePlanHash][wormStrain]).map((temperatureKey) =>{
+      Object.keys(groupedResults[platePlanHash][wormStrain]).map((temperatureKey) => {
         let plateR1Key = Object.keys(groupedResults[platePlanHash][wormStrain][temperatureKey])[0];
         let plateR1 = groupedResults[platePlanHash][wormStrain][temperatureKey][plateR1Key][0];
         if (!find(createThese, {biosampleGene: plateR1['wormstrain.gene']})) {
@@ -346,7 +386,9 @@ function createBiosamples(groupedResults: any) {
  */
 function createExpScreenWorkflows(groupedResults: any, screens: ExpScreenResultSet[], biosamples: ExpBiosampleResultSet[], platePlans: PlatePlan96ResultSet[]) {
   let workflows: ExpScreenUploadWorkflowResultSet[] = [];
-  Object.keys(groupedResults).map((platePlanHash: string) => {
+  let groupKeys: Array<any> = Object.keys(groupedResults);
+  groupKeys = groupKeys.slice(0, 10);
+  groupKeys.map((platePlanHash: string) => {
     //Top Level is the Experiment Group Key
     let N2: any = null;
     if (get(groupedResults[platePlanHash], 'N2')) {
@@ -484,9 +526,24 @@ function createExpScreenWorkflows(groupedResults: any, screens: ExpScreenResultS
               thisWorkflow.platePlanId = String(platePlan.id);
               thisWorkflow.platePlan = platePlan;
               thisWorkflow.instrumentLookUp = 'nyMicroscope';
+              if (isEqual(thisWorkflow.replicates.length, 2)) {
+                thisWorkflow.name = `${thisWorkflow.name} Control Temperature`;
+                // TODO Test that this is actually a control batch
+                const eegiResult = firstWell;
+                // if (isEqual(eegiResult["experimentplate.temperature"], eegiResult['wormstrain.permissive_temperature'])) {
+                //   eegiResult.screenType = 'permissive';
+                //   eegiResult.screenStage = 'secondary';
+                //   eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Permissive Screen`;
+                // } else {
+                //   eegiResult.screenType = 'restrictive';
+                //   eegiResult.screenStage = 'secondary';
+                //   eegiResult.screenName = `NY RNAi Ahringer Secondary ${eegiResult["wormstrain.genotype"]} Restrictive Screen`;
+                // }
+              }
             } catch (error) {
               throw new Error(`There was an error with the last piece! ${error}`);
             }
+            app.winston.info(`Adding: ${thisWorkflow.name} to the queue`);
             workflows.push(thisWorkflow);
           }
         });
@@ -497,10 +554,17 @@ function createExpScreenWorkflows(groupedResults: any, screens: ExpScreenResultS
   });
   return new Promise((resolve, reject) => {
     workflows = compact(workflows);
+    checkForDuplicateNames(workflows);
     //@ts-ignore
     Promise.map(workflows, (workflow: ExpScreenUploadWorkflowResultSet) => {
       return app.models.ExpScreenUploadWorkflow
-        .findOrCreate({where: {name: workflow.name}}, JSON.parse(JSON.stringify(workflow)))
+        .findOrCreate({
+            where: {
+              and: [
+                {name: workflow.name}, {platePlanHash: workflow.platePlanHash}]
+            }
+          },
+          JSON.parse(JSON.stringify(workflow)))
         .then((results) => {
           results[0].platePlanId = workflow.platePlanId;
           results[0].instrumentLookUp = workflow.instrumentLookUp;
@@ -517,6 +581,17 @@ function createExpScreenWorkflows(groupedResults: any, screens: ExpScreenResultS
       .catch((error) => {
         reject(new Error(error));
       })
+  });
+}
+
+function checkForDuplicateNames(workflows: ExpScreenUploadWorkflowResultSet[]) {
+  workflows.map((workflow: ExpScreenUploadWorkflowResultSet) => {
+    const workflowsWithName = filter(workflows, (tworkflow: ExpScreenUploadWorkflowResultSet) => {
+      return isEqual(workflow.name, tworkflow.name) && !isEqual(workflow.platePlanHash, tworkflow.platePlanHash);
+    });
+    if (isArray(workflowsWithName) && workflowsWithName.length) {
+      throw new Error('Duplicate names with workflow Names found!!!');
+    }
   });
 }
 

@@ -21,8 +21,8 @@
                         <ul class="nav nav-tabs tabs-left">
                             <li class="active"><a href="#screenData" data-toggle="tab">Screen</a>
                             </li>
-                            <li><a href="#viewOptions" data-toggle="tab">View Options</a>
-                            </li>
+                            <!--<li><a href="#viewOptions" data-toggle="tab">View Options</a>-->
+                            <!--</li>-->
                         </ul>
                         <div class="clearfix"></div>
                         <button type="submit" id="searchFormSubmit" class="btn btn-success">Submit</button>
@@ -92,13 +92,26 @@
 
                 <br>
 
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3>{{ expSets.expWorkflows[0].name }}</h3>
+                    </div>
+                </div>
+
+                <!--Begin Hot key CheatSheet-->
+                <div class="row">
+                    <div class="col-md-12">
+                        <hotkeys-cheatsheet></hotkeys-cheatsheet>
+                    </div>
+                </div>
+                <!--End Hot key CheatSheet-->
                 <!--Begin Exp Set Albums-->
                 <div *ngFor="let expSet of expSetsDeNorm; let i = index">
 
                     <div [ngClass]="getExpSetClass(i)" id="expSet-{{expSet.treatmentGroupId}}">
-                        <!--Begin Toggle interesting on/of-->
                         <div class="row">
-                            <div class="col-md-12">
+                            <!--Begin Toggle interesting on/of-->
+                            <div class="col-md-6">
                                 <app-expset-toggle [treatmentGroupId]="expSet.treatmentGroupId"
                                                    [expScreen]="expSet.expScreen"
                                                    [expWorkflow]="expSet.expWorkflow"
@@ -107,14 +120,17 @@
                                                    [submit]="false"
                                 ></app-expset-toggle>
                             </div>
-                        </div>
-                        <!--End Toggle interesting on/of-->
-                        <br>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <h3>{{expSet.expWorkflow.name}}</h3>
+                            <!--End Toggle interesting on/of-->
+
+                            <!--Begin Submit and clear this expGroup-->
+                            <div class="col-md-6">
+                                <button (click)="submitSingleExpGroup(expSet.treatmentGroupId)"
+                                        class="btn btn-info">Submit Exp Group
+                                </button>
                             </div>
+                            <!--End Submit and clear this expGroup-->
                         </div>
+                        <br>
                         <!--Begin Tab Content-->
                         <div class="row">
                             <div class="col-md-12">
@@ -125,7 +141,7 @@
                                             class="active">
                                             <a id="ts-reagent-tab-md-{{expSet.treatmentGroupId}}"
                                                data-toggle="tab"
-                                               href="#treat-{{expSet.treatmentGroupId}}"
+                                               href="#ts-reagent-tab-{{expSet.treatmentGroupId}}"
                                                role="tab"
                                                aria-expanded="true">TS + Reagent</a>
                                         </li>
@@ -134,7 +150,7 @@
                                             class="">
                                             <a id="n2-reagent-tab-md-{{expSet.treatmentGroupId}}"
                                                data-toggle="tab"
-                                               href="#ctrl_reagent-{{expSet.treatmentGroupId}}"
+                                               href="#n2-reagent-tab-{{expSet.treatmentGroupId}}"
                                                role="tab"
                                                aria-expanded="false">N2 + Reagent</a>
                                         </li>
@@ -143,7 +159,7 @@
                                             class="">
                                             <a id="ts-l4440-tab-md-{{expSet.treatmentGroupId}}"
                                                data-toggle="tab"
-                                               href="#ctrl_strain-{{expSet.treatmentGroupId}}"
+                                               href="#ts-l4440-tab-{{expSet.treatmentGroupId}}"
                                                role="tab"
                                                aria-expanded="false">TS + L4440</a>
                                         </li>
@@ -152,23 +168,25 @@
                                             role="presentation">
                                             <a id="n2-l4440-tab-md-{{expSet.treatmentGroupId}}"
                                                data-toggle="tab"
-                                               href="#ctrl_null-{{expSet.treatmentGroupId}}" role="tab"
+                                               href="#n2-l4440-tab-{{expSet.treatmentGroupId}}" role="tab"
                                                aria-expanded="false">N2 + L4440</a>
                                         </li>
 
-                                        <li id="reagent-data-li-{{expSet.treatmentGroupId}}" role="presentation"
+                                        <li id="reagent-data-tab-li-{{expSet.treatmentGroupId}}" role="presentation"
                                             class="">
-                                            <a id="reagent-data-md-{{expSet.treatmentGroupId}}"
+                                            <a id="reagent-data-tab-md-{{expSet.treatmentGroupId}}"
                                                data-toggle="tab"
-                                               href="#reagent-data-{{expSet.treatmentGroupId}}"
+                                               href="#reagent-data-tab-{{expSet.treatmentGroupId}}"
                                                role="tab"
                                                aria-expanded="false">Reagent Data</a>
-                                        </li>
+                                        </li
+                                        >
 
-                                        <li id="plate-data-li-{{expSet.treatmentGroupId}}" role="presentation" class="">
-                                            <a id="plate-data-md-{{expSet.treatmentGroupId}}"
+                                        <li id="plate-data-tab-li-{{expSet.treatmentGroupId}}" role="presentation"
+                                            class="">
+                                            <a id="plate-data-tab-md-{{expSet.treatmentGroupId}}"
                                                data-toggle="tab"
-                                               href="#plate-data-{{expSet.treatmentGroupId}}"
+                                               href="#plate-data-tab-{{expSet.treatmentGroupId}}"
                                                role="tab"
                                                aria-expanded="false">Exp Plates</a>
                                         </li>
@@ -177,7 +195,7 @@
 
                                 <div class="tab-content card pt-5">
                                     <!--Begin CtrlStrain (mel+28 + L4440) Row - 4 images per row-->
-                                    <div class="row tab-pane fade" id="ctrl_strain-{{expSet.treatmentGroupId}}"
+                                    <div class="row tab-pane fade" id="ts-l4440-tab-{{expSet.treatmentGroupId}}"
                                          role="tabpanel"
                                          aria-labelledby="ts-l4440-tab-md">
                                         <div class="col-md-12">
@@ -189,7 +207,7 @@
                                                             <div class="col-md-3">
                                                                 <img tabindex="0" class="img-thumbnail"
                                                                      [src]="image.thumb"
-                                                                     (click)="open(expSet.ctrlStrainImages, i)"/>
+                                                                     (click)="open(expSet.albums.ctrlStrainImages, i)"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -200,12 +218,11 @@
                                     <!--End CtrlStrain Row - 4 images per row-->
 
                                     <!--Begin TreatReagent (mel-28 + rnai) Row - 4 images per row-->
-                                    <div class="row tab-pane fade active in" id="treat-{{expSet.treatmentGroupId}}"
+                                    <div class="row tab-pane fade active in"
+                                         id="ts-reagent-tab-{{expSet.treatmentGroupId}}"
                                          role="tabpanel"
                                          aria-labelledby="ts-reagent-tab-md">
                                         <div class="col-md-12">
-                                            <h3>{{expSet.expWorkflow.biosamples.experimentBiosample.name}} +
-                                                Reagent</h3>
                                             <div *ngIf="expSet.expWorkflow.screenStage == 'secondary'">
                                                 <div class="row">
                                                     <div *ngFor="let image of expSet.albums.treatmentReagentImages; let i=index">
@@ -213,7 +230,7 @@
                                                             <div class="col-md-3">
                                                                 <img tabindex="0" class="img-thumbnail"
                                                                      [src]="image.thumb"
-                                                                     (click)="open(expSet.treatmentReagentImages, i)"/>
+                                                                     (click)="open(expSet.albums.treatmentReagentImages, i)"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -226,7 +243,7 @@
                                                             <div class="col-md-3">
                                                                 <img tabindex="0" class="img-thumbnail"
                                                                      [src]="image.thumb"
-                                                                     (click)="open(expSet.treatmentReagentImages, i)"/>
+                                                                     (click)="open(expSet.albums.treatmentReagentImages, i)"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -238,7 +255,7 @@
                                     <!--End TreatReagent Row - 4 images per row-->
 
                                     <!--Begin CtrlNull Row (N2 + L4440) - 4 images per row-->
-                                    <div class="row tab-pane fade" id="ctrl_null-{{expSet.treatmentGroupId}}"
+                                    <div class="row tab-pane fade" id="n2-l4440-tab-{{expSet.treatmentGroupId}}"
                                          role="tabpanel"
                                          aria-labelledby="n2-l4440-tab-md">
                                         <div class="col-md-12">
@@ -248,7 +265,7 @@
                                                     <div *ngIf="image">
                                                         <div class="col-md-3">
                                                             <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
-                                                                 (click)="open(expSet.ctrlNullImages, i)"/>
+                                                                 (click)="open(expSet.albums.ctrlNullImages, i)"/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -257,12 +274,11 @@
                                     </div>
                                     <!--End CtrlNull Row - 4 images per row-->
 
-                                    <!--Begin CtrlReagent Row (N2 + L4440) - 4 images per row-->
-                                    <div class="row tab-pane fade" id="ctrl_reagent-{{expSet.treatmentGroupId}}"
+                                    <!--Begin CtrlReagent Row (N2 + Reagent) - 4 images per row-->
+                                    <div class="row tab-pane fade" id="n2-reagent-tab-{{expSet.treatmentGroupId}}"
                                          role="tabpanel"
                                          aria-labelledby="n2-reagent-tab-md">
                                         <div class="col-md-12">
-                                            <h3>Control Reagent</h3>
                                             <div *ngIf="expSet.expWorkflow.screenStage == 'secondary'">
                                                 <div class="row">
                                                     <div *ngFor="let image of expSet.albums.ctrlReagentImages; let i=index">
@@ -270,7 +286,7 @@
                                                             <div class="col-md-3">
                                                                 <img tabindex="0" class="img-thumbnail"
                                                                      [src]="image.thumb"
-                                                                     (click)="open(expSet.ctrlReagentImages, i)"/>
+                                                                     (click)="open(expSet.albums.ctrlReagentImages, i)"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -283,7 +299,7 @@
                                                             <div class="col-md-3">
                                                                 <img tabindex="0" class="img-thumbnail"
                                                                      [src]="image.thumb"
-                                                                     (click)="open(expSet.ctrlReagentImages, i)"/>
+                                                                     (click)="open(expSet.albums.ctrlReagentImages, i)"/>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -294,8 +310,8 @@
                                     <!--End CtrlReagent Row - 4 images per row-->
 
                                     <!--Begin Reagent Data Tab-->
-                                    <div role="tabpanel" class="tab-pane fade"
-                                         id="reagent-data-{{expSet.treatmentGroupId}}"
+                                    <div role="tabpanel" class="row tab-pane fade"
+                                         id="reagent-data-tab-{{expSet.treatmentGroupId}}"
                                          aria-labelledby="reagent-data-tab">
                                         <div *ngIf="expSet.rnaisList">
                                             <h2>RNAi Data</h2>
@@ -366,18 +382,23 @@
                                             </div>
 
                                         </div>
+
+                                        <!--Begin Chemicals-->
+                                        <!--This is just a placeholder!-->
                                         <div *ngIf="expSet.compoundsList?.length">
                                             <h2>Compounds Data</h2>
                                             <div *ngFor="let compound of expSet.compoundsList">
                                             </div>
                                         </div>
+                                        <!--This is just a placeholder!-->
+                                        <!--End Chemicals-->
 
 
                                     </div>
                                     <!--End Reagent Data Tab-->
                                     <!--Begin Plate Data Tab-->
                                     <div role="tabpanel" class="tab-pane fade"
-                                         id="plate-data-{{expSet.treatmentGroupId}}"
+                                         id="plate-data-tab-{{expSet.treatmentGroupId}}"
                                          aria-labelledby="plate-data-tab">
                                         <div class="row">
                                             <div class="col-md-12">
@@ -408,6 +429,7 @@
                         <!-- End Tab Content -->
                     </div>
                 </div>
+                <!--End Exp Set Albums-->
             </div>
 
             <!--End Content-->

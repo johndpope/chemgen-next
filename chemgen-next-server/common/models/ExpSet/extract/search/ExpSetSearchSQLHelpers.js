@@ -89,4 +89,4 @@ ExpSet.extract.serializeNativeSqlToLoopbackModel = function (rows, model) {
         return new app.models[model](JSON.parse(JSON.stringify(rawRowData)));
     });
 };
-//# sourceMappingURL=ExpSetScoringExtractSQLHelpers.js.map
+//# sourceMappingURL=ExpSetSearchSQLHelpers.js.map

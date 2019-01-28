@@ -76,4 +76,4 @@ describe('ExpSetExtractByPlate', function () {
         });
     });
 });
-//# sourceMappingURL=ExpSetExtractByPlate.test.js.map
+//# sourceMappingURL=ExpSetScoringExtractByPlate.test.js.map

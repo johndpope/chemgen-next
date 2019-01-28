@@ -28,14 +28,14 @@ var knex = config.get('knex');
  * For this reason we use knex, to generate some of the sql, and then execute it with the loopback native sql executor
  */
 var ExpSet = app.models.ExpSet;
+/**
+ * WIP - Create a decision tree to map the scores
+ * @param search
+ */
 ExpSet.extract.workflows.filterByScores = function (search) {
     return new Promise(function (resolve, reject) {
         search = new ExpSetTypes_1.ExpSetSearch(search);
         var data = new ExpSetTypes_1.ExpSetSearchResults({});
-        // if (isEmpty(search.rnaiSearch)) {
-        //   //Search the RnaiLibrary Api
-        //   resolve(app.models.RnaiExpSet.extract.workflows.getExpSetsByGeneList(search));
-        // }
         if (!search.scoresQuery) {
             resolve(data);
         }

@@ -1,6 +1,7 @@
 'use strict'
 const Promise = require('bluebird')
 const app = require('../../../../server/server')
+const lodash = require('lodash')
 
 module.exports = function (ExpScreenUploadWorkflow) {
   ExpScreenUploadWorkflow.load = {}
@@ -11,10 +12,8 @@ module.exports = function (ExpScreenUploadWorkflow) {
   ExpScreenUploadWorkflow.load.workflows.primary = {}
   ExpScreenUploadWorkflow.load.workflows.secondary = {}
 
-
   ExpScreenUploadWorkflow.load.primary = {}
   ExpScreenUploadWorkflow.load.secondary = {}
-
 
   ExpScreenUploadWorkflow.on('attached', function () {
     require('../load/ExpScreenUploadWorkflow')
@@ -24,11 +23,26 @@ module.exports = function (ExpScreenUploadWorkflow) {
 
   ExpScreenUploadWorkflow.doWork = function (workflowData) {
     return new Promise((resolve, reject) => {
-      // ExpScreenUploadWorkflow.load.workflows.worms.primary.doWork
-      // app.winston.info(JSON.stringify(workflowData, null, 2))
-      app.winston.info(`ExpScreenUploadWorkflow.doWork ${workflowData.name}`);
-      app.agenda.now('ExpScreenUploadWorkflow.doWork', {workflowData: workflowData})
-      resolve({'status': 'ok'})
+      // app.agenda.now('ExpScreenUploadWorkflow.doWork', {workflowData: workflowData})
+      if (lodash.isArray(workflowData)) {
+        workflowData.map((workflow) => {
+          app.winston.info(`ExpScreenUploadWorkflow.doWork ${workflow.name}`)
+          app.jobQueues.workflowQueue.add({workflowData: workflow})
+        })
+      } else {
+        app.winston.info(`ExpScreenUploadWorkflow.doWork ${workflowData.name}`)
+        app.jobQueues.workflowQueue.add({workflowData: workflowData})
+        workflowData = [workflowData]
+      }
+      Promise.map(workflowData, (workflow) => {
+        return ExpScreenUploadWorkflow.load.createWorkflowInstance(workflow)
+      })
+        .then(() => {
+          resolve({'status': 'ok'})
+        })
+        .catch((error) => {
+          reject(new Error(error))
+        })
     })
   }
 

@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Input} from '@angular/core';
 import {ExperimentData, SearchExpBiosamples} from '../helpers';
 
 @Component({
-  selector: 'app-exp-screen-info',
-  templateUrl: './exp-screen-info.component.html',
-  styleUrls: ['./exp-screen-info.component.css']
+    selector: 'app-exp-screen-info',
+    templateUrl: './exp-screen-info.component.html',
+    styleUrls: ['./exp-screen-info.component.css']
 })
 /**
  * This is the all the information shared among screens
@@ -17,11 +17,14 @@ import {ExperimentData, SearchExpBiosamples} from '../helpers';
  */
 export class ExpScreenInfoComponent implements OnInit {
 
-  @Input() expDataModel: ExperimentData;
-  @Input() expBiosampleModel: SearchExpBiosamples;
-  constructor() { }
+    @Input() expDataModel: ExperimentData;
+    @Input() expBiosampleModel: SearchExpBiosamples;
 
-  ngOnInit() {
-  }
+    constructor() {
+    }
+
+    ngOnInit() {
+    }
+
 
 }

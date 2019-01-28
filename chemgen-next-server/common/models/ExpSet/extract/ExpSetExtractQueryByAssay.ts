@@ -1,7 +1,7 @@
 import app = require('../../../../server/server.js');
 import {WorkflowModel} from "../../index";
 import Promise = require('bluebird');
-import {ExpSetSearch, ExpSetSearchResults} from "../../../types/custom/ExpSetTypes/index";
+import {ExpSetSearch, ExpSetSearchResults} from "../../../types/custom/ExpSetTypes";
 
 import config = require('config');
 
@@ -14,8 +14,10 @@ const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
  * @param {ExpSetSearchResults} data
  * @param {ExpSetSearch} search
  */
-ExpSet.extract.searchExpAssay2reagents = function (data: ExpSetSearchResults, search: ExpSetSearch) {
+ExpSet.extract.searchExpAssay2reagents = function (search: ExpSetSearch) {
   return new Promise((resolve, reject) => {
+    search = new ExpSetSearch(search);
+    let data = new ExpSetSearchResults({});
     let expAssay2reagentSearch = app.models.ExpSet.extract.buildExpAssay2reagentSearch(data, search);
 
     app.models.ExpAssay2reagent

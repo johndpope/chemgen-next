@@ -55,6 +55,10 @@ var ExpScreenUploadWorkflowResultSet = /** @class */ (function () {
                     name: 'platePlanId',
                     type: 'any'
                 },
+                "platePlanHash": {
+                    name: 'platePlanHash',
+                    type: 'any'
+                },
                 "assayViewType": {
                     name: 'assayViewType',
                     type: 'string'

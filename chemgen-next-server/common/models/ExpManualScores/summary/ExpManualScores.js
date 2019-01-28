@@ -20,7 +20,16 @@ ExpManualScores.extract.workflows.getScoresStatsPerScreen = function (search) {
     return new Promise(function (resolve, reject) {
         search = new ExpSetTypes_1.ExpSetSearch(search);
         var data = {};
-        var expWorkflowWhere = { fields: { id: true, name: true, screenName: true, screenId: true, screenType: true, screenStage: true }, where: {} };
+        var expWorkflowWhere = {
+            fields: {
+                id: true,
+                name: true,
+                screenName: true,
+                screenId: true,
+                screenType: true,
+                screenStage: true
+            }, where: {}
+        };
         if (!lodash_1.isEmpty(search.screenSearch)) {
             expWorkflowWhere.where.screenId = {
                 inq: search.screenSearch,
@@ -104,6 +113,18 @@ ExpManualScores.extract.buildNativeQueryDistinctTreatmentIds = function (expWork
         .countDistinct('treatment_group_id as count_treatment_group_id')
         .where('reagent_type', 'LIKE', 'treat%')
         .where('exp_workflow_id', String(expWorkflow.id));
+    return query;
+};
+/**
+ * This returns the total number of expSets for a given workflow
+ * @param expWorkflow
+ */
+ExpManualScores.extract.buildNativeQueryDistinctTreatmentIdsGroupBy = function () {
+    var query = knex('exp_assay2reagent')
+        .select('exp_workflow_id')
+        .countDistinct('treatment_group_id as count_treatment_group_id')
+        .groupBy('exp_workflow_id')
+        .where('reagent_type', 'LIKE', 'treat%');
     return query;
 };
 /**

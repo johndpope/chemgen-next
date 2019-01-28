@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var program = require('commander');
 var app = require("../server/server");
-var jobQueues = require("./defineQueues");
 var Promise = require("bluebird");
 program
     .version('0.1.0')
@@ -21,15 +20,15 @@ search = {
 function processWorkflows(program) {
     if (program.searchPattern) {
         // search = {
-        //   // screenId: {inq: [3,4]},
+        //   screenId: {inq: [3,4]},
         //   screenId: 3,
-        //   // name: new RegExp(program.searchPattern),
+        //   name: new RegExp(program.searchPattern),
         // }
     }
     app.models.ExpScreenUploadWorkflow
         .find({
-        where: { site: 'NY' },
-        limit: program.limit
+        where: {},
+        limit: 5
     })
         .then(function (results) {
         //@ts-ignore
@@ -37,7 +36,8 @@ function processWorkflows(program) {
             if (result.name) {
                 app.winston.info("Queueing: ScreenId: " + result.screenName + " Name: " + result.name);
                 // app.winston.info(`ScreenId: ${result.screenId}`);
-                jobQueues.workflowQueue.add({ workflowData: result });
+                // jobQueues.workflowQueue.add({workflowData: result});
+                return app.models.ExpScreenUploadWorkflow.load.workflows.doWork(result);
             }
         })
             .then(function () {

@@ -10,23 +10,23 @@ mkdir -p /tmp/{{{random}}}
 ##So instead we copy each image to a random temp dir and process it there
 cp -f "{{{images.instrumentImage}}}" "{{{images.tmpImage}}}"
 
-if [ ! -f {{{images.baseImage}}}-autolevel.bmp ]; then
-    /var/data/bftools/bfconvert -overwrite "{{{images.tmpImage}}}" "{{{images.baseImage}}}.tiff"
+if [ ! -f {{{images.baseImage}}}-autolevel.png ]; then
+    /var/data/bftools/bfconvert -nogroup -overwrite "{{{images.tmpImage}}}" "{{{images.baseImage}}}.png"
 
     ##This is the initial bmp that gets used for all downstream processing
-    convert -layers flatten -quality 100 "{{{images.baseImage}}}.tiff" "{{{images.baseImage}}}.bmp"
+    #convert -layers flatten -quality 100 "{{{images.baseImage}}}.tiff" "{{{images.baseImage}}}.bmp"
 
     ##These are the ones we use in the machine learning models
-    convert -auto-level "{{{images.baseImage}}}.bmp" "{{{images.baseImage}}}-autolevel.bmp"
+    convert -auto-level -quality 100 "{{{images.baseImage}}}.png" "{{{images.baseImage}}}-autolevel.png"
 fi
 
-if [ ! -f {{{images.baseImage}}}-autolevel.png ]; then
-    convert  "{{{images.baseImage}}}-autolevel.bmp" "{{{images.baseImage}}}-autolevel.png"
-fi
+#if [ ! -f {{{images.baseImage}}}-autolevel.png ]; then
+#    convert  "{{{images.baseImage}}}-autolevel.bmp" "{{{images.baseImage}}}-autolevel.png"
+#fi
 
 ## All the jpeg images are only for the web interface
 #if [ ! -f {{{images.baseImage}}}-autolevel.jpeg ]; then
-convert  -strip -layers flatten -quality 50 "{{{images.baseImage}}}-autolevel.bmp" "{{{images.baseImage}}}-autolevel.jpeg"
+convert  -strip -layers flatten -quality 50 "{{{images.baseImage}}}-autolevel.png" "{{{images.baseImage}}}-autolevel.jpeg"
 #fi
 
 {{#thumbSizes}}
