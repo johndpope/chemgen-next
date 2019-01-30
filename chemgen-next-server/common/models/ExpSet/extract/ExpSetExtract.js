@@ -18,12 +18,14 @@ ExpSet.extract.workflows.getExpSets = function (search) {
         app.winston.info("A: Search : " + JSON.stringify(search));
         var data = new index_1.ExpSetSearchResults({});
         if (search.scoresQuery) {
+            app.winston.info('Getting scores by scoresQuery');
             resolve(ExpSet.extract.workflows.filterByScores(search));
         }
         else if (lodash_1.isEqual(search.scoresExist, true)) {
             //search.scoresExist is a boolean value to say whether or not there exists an entry in the exp_manual_scores for a given treatmentGroupId
             //It does not do any further filtering
             //It uses the knex api, because it executes a nested select if exists, which is not possible through the loopback api
+            app.winston.info('Get UnscoredExpSets');
             resolve(ExpSet.extract.workflows.getUnscoredExpSet(search));
         }
         else if (lodash_1.isEqual(search.scoresExist, false)) {
@@ -31,6 +33,7 @@ ExpSet.extract.workflows.getExpSets = function (search) {
         }
         else if (lodash_1.isEqual(search.scoresExist, null) && !(lodash_1.isEmpty(search.rnaiSearch))) {
             //Search the RnaiLibrary Api
+            app.winston.info('Getting ExpSets by RNAi List');
             resolve(app.models.RnaiExpSet.extract.workflows.getExpSetsByGeneList(search));
         }
         else if (lodash_1.isEqual(search.scoresExist, null) && !(lodash_1.isEmpty(search.chemicalSearch))) {
@@ -41,6 +44,7 @@ ExpSet.extract.workflows.getExpSets = function (search) {
             //Get all the expSets for a single expWorkflowId
             search.pageSize = 1;
             //Return the expSet
+            app.winston.info('Getting the ExpSetsByWorkflowId');
             resolve(ExpSet.extract.workflows.getExpSetsByWorkflowId(search));
         }
     });

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var app = require("../../../../server/server.js");
 var _ = require("lodash");
+var models_1 = require("../../../types/sdk/models");
 //TODO This file needs a lot of cleaning up - lots of leftover logic from the last codebase
 var RnaiLibrary = app.models['RnaiLibrary'];
 RnaiLibrary.helpers.buildControlBarcode = function (barcode) {
@@ -229,8 +230,10 @@ RnaiLibrary.search = function (where) {
  */
 RnaiLibrary.helpers.genLibraryResult = function (barcode, libraryResults, well) {
     var thisWellLibraryResults = [];
-    var libraryResult = {};
+    // @ts-ignore
+    var libraryResult = new models_1.RnaiLibraryResultSet({});
     if (barcode.match('L4440')) {
+        // @ts-ignore
         libraryResult.name = 'L4440';
         libraryResult.geneName = 'L4440';
     }

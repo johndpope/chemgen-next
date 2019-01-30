@@ -124,7 +124,7 @@ Promise.map(plateDataList, function (plateData) {
     return Promise.map(wells, function (well) {
         var imageData = genImageFileNames(expPlate, well);
         return submitImageJob(imageData);
-    })
+    }, { concurrency: 1 })
         .then(function (results) {
         console.log(JSON.stringify(results));
         return results;

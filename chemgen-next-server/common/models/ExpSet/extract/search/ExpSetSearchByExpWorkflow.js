@@ -4,6 +4,8 @@ var app = require("../../../../../server/server.js");
 var Promise = require("bluebird");
 var lodash_1 = require("lodash");
 var ExpSetTypes_1 = require("../../../../types/custom/ExpSetTypes");
+var config = require("config");
+var knex = config.get('knex');
 var ExpSet = app.models.ExpSet;
 /**
  * ExpScreenUploadWorkflow is a config that can then be casted into the database,
@@ -214,6 +216,7 @@ ExpSet.extract.searchByScreenStage = function (search) {
             resolve(null);
         }
         else {
+            app.winston.info("Searching for screenStage: " + search.expWorkflowDeepSearch.screenStage);
             app.models.ExpScreenUploadWorkflow
                 .find({ where: { 'screenStage': search.expWorkflowDeepSearch.screenStage } })
                 .then(function (results) {
@@ -330,6 +333,99 @@ ExpSet.extract.searchByInstrumentPlateIds = function (search) {
                     });
                 });
             });
+        }
+    });
+};
+/**
+ * This resolves the expWorkflows that has a given gene name -
+ * Gene name can be the gene name, cosmid ID, or wormbase ID
+ * @param search
+ */
+ExpSet.extract.getExpWorkflowsByRNAiReagentData = function (search) {
+    return new Promise(function (resolve, reject) {
+        //Get the RNAiLibrary Results
+        //Search stocks for plates
+        //Search Plates for ExpWorkflowIds
+        //But this is stupid, the exp_workflow_id should be in the stock tables
+        //It would also be nice if everything was in the plate plan, and then could search there directly
+        search.rnaiSearch = lodash_1.compact(search.rnaiSearch);
+        if (search.rnaiSearch.length) {
+            app.models.RnaiLibrary.extract.workflows
+                .getRnaiLibraryFromUserGeneList(search.rnaiSearch, search)
+                .then(function (rnaiLibraryResults) {
+                var query = knex('rnai_library_stock')
+                    .distinct('plate_id');
+                rnaiLibraryResults.map(function (rnaiLibraryResult) {
+                    query
+                        .orWhere({ library_id: rnaiLibraryResult.libraryId, rnai_id: rnaiLibraryResult.rnaiId });
+                });
+                query.select();
+                return query;
+            })
+                .then(function (plateIds) {
+                // return;
+                return app.models.ExpPlate
+                    .find({
+                    where: {
+                        plateId: {
+                            inq: plateIds.map(function (plateId) {
+                                return plateId.plate_id;
+                            })
+                        }
+                    },
+                    fields: {
+                        expWorkflowId: true,
+                    }
+                });
+            })
+                .then(function (expPlateResults) {
+                resolve(lodash_1.uniq(expPlateResults.map(function (expPlate) {
+                    return expPlate.expWorkflowId;
+                })));
+            })
+                .catch(function (error) {
+                reject(new Error(error));
+            });
+        }
+        else {
+            resolve(null);
+        }
+    });
+};
+/**
+ * TODO - If we are ONLY searching for RNAi (no other values), then just return the expSet list
+ * TODO - BUT if we are searching for RNAis in permissive blahblahblah
+ * THEN we need to combine those
+ * This resolves the expSets that has a given gene name -
+ * Gene name can be the gene name, cosmid ID, or wormbase ID
+ * @param search
+ */
+ExpSet.extract.getExpSetsByRNAiReagentData = function (search) {
+    return new Promise(function (resolve, reject) {
+        search.rnaiSearch = lodash_1.compact(search.rnaiSearch);
+        if (search.rnaiSearch.length) {
+            app.models.RnaiLibrary.extract.workflows
+                .getRnaiLibraryFromUserGeneList(search.rnaiSearch, search)
+                .then(function (rnaiLibraryResults) {
+                var query = knex('exp_assay2reagent')
+                    .distinct('treatment_group_id');
+                rnaiLibraryResults.map(function (rnaiLibraryResult) {
+                    query
+                        .orWhere({ library_id: rnaiLibraryResult.libraryId, reagent_id: rnaiLibraryResult.rnaiId });
+                });
+                query.andWhere({ reagent_type: 'treat_rnai' });
+                query.select('exp_workflow_id');
+                return query;
+            })
+                .then(function (expAssay2ReagentResults) {
+                resolve(expAssay2ReagentResults);
+            })
+                .catch(function (error) {
+                reject(new Error(error));
+            });
+        }
+        else {
+            resolve(null);
         }
     });
 };

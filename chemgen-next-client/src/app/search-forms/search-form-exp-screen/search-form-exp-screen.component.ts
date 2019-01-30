@@ -22,6 +22,7 @@ export class SearchFormExpScreenComponent implements OnInit {
     temperatures: Array<number>;
     expBiosamples: ExpBiosampleResultSet[];
     noResult = false;
+    search: ExpSetSearch = new ExpSetSearch();
 
     constructor(private expScreenApi: ExpScreenApi,
                 private expSetApi: ExpSetApi,
@@ -140,10 +141,10 @@ export class SearchFormExpScreenComponent implements OnInit {
     addPlateId() {
         if (this.formResults.instrumentPlateId) {
             this.formResults.instrumentPlateIds = [this.formResults.instrumentPlateId];
-            let search = new ExpSetSearch({});
-            search.expWorkflowDeepSearch.instrumentPlateIds = this.formResults.instrumentPlateIds;
+            this.search = new ExpSetSearch({});
+            this.search.expWorkflowDeepSearch.instrumentPlateIds = this.formResults.instrumentPlateIds;
 
-            this.expSetApi.searchByExpWorkflowData(search)
+            this.expSetApi.searchByExpWorkflowData(this.search)
                 .subscribe((ids: any) => {
                     if (get(ids, 'results') && ids.results.length) {
                         //Plate with ID exists
@@ -243,27 +244,34 @@ export class SearchFormExpScreenComponent implements OnInit {
      * Once the form is filled out, get the corresponding expWorkflows
      */
     getExpWorkflows() {
-        let search = new ExpSetSearch({});
+        this.search = new ExpSetSearch({});
         this.formResults.expScreenWorkflows = null;
         if (this.formResults.expScreen) {
-            search.screenSearch = [this.formResults.expScreen.screenId];
+            this.search.screenSearch = [this.formResults.expScreen.screenId];
         }
         if (!this.formResults.expScreenWorkflow) {
             if (this.formResults.temperature) {
-                search.expWorkflowDeepSearch.temperature = this.formResults.temperature;
+                this.search.expWorkflowDeepSearch.temperature = this.formResults.temperature;
             }
             if (this.formResults.temperatureLower && this.formResults.temperatureUpper) {
-                search.expWorkflowDeepSearch.temperatureRange = [this.formResults.temperatureLower, this.formResults.temperatureUpper];
-                search.expWorkflowDeepSearch.temperatureRange = search.expWorkflowDeepSearch.temperatureRange.sort();
+                this.search.expWorkflowDeepSearch.temperatureRange = [this.formResults.temperatureLower, this.formResults.temperatureUpper];
+                this.search.expWorkflowDeepSearch.temperatureRange = this.search.expWorkflowDeepSearch.temperatureRange.sort();
             }
             if (this.formResults.wormStrain) {
-                search.expWorkflowDeepSearch.wormStrains = [this.formResults.wormStrain.biosampleId];
+                this.search.expWorkflowDeepSearch.wormStrains = [this.formResults.wormStrain.biosampleId];
+            }
+
+            if (this.formResults.screenType) {
+                this.search.expWorkflowDeepSearch.screenType = this.formResults.screenType;
+            }
+            if (this.formResults.screenStage) {
+                this.search.expWorkflowDeepSearch.screenStage = this.formResults.screenStage;
             }
 
             if (this.formResults.instrumentPlateIds) {
-                search.expWorkflowDeepSearch.instrumentPlateIds = this.formResults.instrumentPlateIds;
+                this.search.expWorkflowDeepSearch.instrumentPlateIds = this.formResults.instrumentPlateIds;
             }
-            this.expSetApi.searchByExpWorkflowData(search)
+            this.expSetApi.searchByExpWorkflowData(this.search)
                 .subscribe((ids: any) => {
                     if (get(ids, 'results') && ids.results.length) {
                         this.formResults.expScreenWorkflows = ids.results;
@@ -282,8 +290,8 @@ export class SearchFormExpScreenFormResults {
     expScreenFound = false;
     expWorkflowFound = false;
     biosampleFound = false;
-    expScreenWorkflow ?: ExpScreenUploadWorkflowResultSet;
-    expScreenWorkflows ?: ExpScreenUploadWorkflowResultSet[];
+    expScreenWorkflow ?: ExpScreenUploadWorkflowResultSet = null;
+    expScreenWorkflows ?: ExpScreenUploadWorkflowResultSet[] = null;
     expScreenWorkflowName ?: string;
     expScreen ?: ExpScreenResultSet;
     expScreenName ?: string = null;
@@ -300,6 +308,7 @@ export class SearchFormExpScreenFormResults {
 
     setExpSetSearchCriteria(search: ExpSetSearch) {
 
+        // search.expScreenWorkflows = null;
         if (this.expScreen) {
             search.screenSearch = [this.expScreen.screenId];
         }
@@ -308,6 +317,23 @@ export class SearchFormExpScreenFormResults {
             search.expWorkflowSearch = this.expScreenWorkflows;
         } else if (this.expScreenWorkflow) {
             search.expWorkflowSearch = [this.expScreenWorkflow.id];
+        }
+
+        if (this.expScreen) {
+            search.screenSearch = [this.expScreen.screenId];
+        }
+        if (!this.expScreenWorkflow && !this.expScreenWorkflows) {
+            search.expWorkflowDeepSearch.screenStage = this.screenStage;
+            search.expWorkflowDeepSearch.screenType = this.screenType;
+            if (this.temperatureLower && this.temperatureUpper) {
+                search.expWorkflowDeepSearch.temperatureRange = [this.temperatureLower, this.temperatureUpper];
+            }
+            if (this.instrumentPlateIds) {
+                search.expWorkflowDeepSearch.instrumentPlateIds = this.instrumentPlateIds;
+            }
+            if (this.wormStrain) {
+                search.expWorkflowDeepSearch.wormStrains = [this.wormStrain];
+            }
         }
         return search;
     }

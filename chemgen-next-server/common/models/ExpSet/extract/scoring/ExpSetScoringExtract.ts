@@ -27,9 +27,7 @@ import {
 import decamelize = require('decamelize');
 
 import * as client from "knex";
-
 import config = require('config');
-
 const knex = config.get('knex');
 
 /**

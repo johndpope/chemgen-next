@@ -3,8 +3,18 @@ import {WorkflowModel} from "../../../index";
 import Promise = require('bluebird');
 import {isObject, isEmpty, isArray, get, compact, uniq} from 'lodash';
 
-import {ExpScreenUploadWorkflowResultSet} from "../../../../types/sdk/models";
+import {
+  ExpAssay2reagentResultSet,
+  ExpPlateResultSet,
+  ExpScreenUploadWorkflowResultSet,
+  RnaiLibraryResultSet
+} from "../../../../types/sdk/models";
 import {ExpSetSearch} from "../../../../types/custom/ExpSetTypes";
+
+import * as client from "knex";
+import config = require('config');
+
+const knex = config.get('knex');
 
 const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
 
@@ -193,7 +203,7 @@ ExpSet.extract.searchByWormStrains = function (search: ExpSetSearch) {
     if (!get(search.expWorkflowDeepSearch, 'wormStrains')) {
       resolve(null);
     } else {
-      search.expWorkflowDeepSearch.wormStrains.map((wormStrain) =>{
+      search.expWorkflowDeepSearch.wormStrains.map((wormStrain) => {
         search.expWorkflowDeepSearch.wormStrains.push(String(wormStrain));
         search.expWorkflowDeepSearch.wormStrains.push(Number(wormStrain));
       });
@@ -226,6 +236,7 @@ ExpSet.extract.searchByScreenStage = function (search: ExpSetSearch) {
     if (!get(search.expWorkflowDeepSearch, 'screenStage')) {
       resolve(null);
     } else {
+      app.winston.info(`Searching for screenStage: ${search.expWorkflowDeepSearch.screenStage}`);
       app.models.ExpScreenUploadWorkflow
         .find({where: {'screenStage': search.expWorkflowDeepSearch.screenStage}})
         .then((results: ExpScreenUploadWorkflowResultSet[]) => {
@@ -348,6 +359,101 @@ ExpSet.extract.searchByInstrumentPlateIds = function (search: ExpSetSearch) {
 };
 
 /**
+ * This resolves the expWorkflows that has a given gene name -
+ * Gene name can be the gene name, cosmid ID, or wormbase ID
+ * @param search
+ */
+ExpSet.extract.getExpWorkflowsByRNAiReagentData = function (search: ExpSetSearch) {
+  return new Promise((resolve, reject) => {
+    //Get the RNAiLibrary Results
+    //Search stocks for plates
+    //Search Plates for ExpWorkflowIds
+    //But this is stupid, the exp_workflow_id should be in the stock tables
+    //It would also be nice if everything was in the plate plan, and then could search there directly
+    search.rnaiSearch = compact(search.rnaiSearch);
+    if (search.rnaiSearch.length) {
+      app.models.RnaiLibrary.extract.workflows
+        .getRnaiLibraryFromUserGeneList(search.rnaiSearch, search)
+        .then((rnaiLibraryResults: RnaiLibraryResultSet[]) => {
+          let query = knex('rnai_library_stock')
+            .distinct('plate_id');
+          rnaiLibraryResults.map((rnaiLibraryResult: RnaiLibraryResultSet) => {
+            query
+              .orWhere({library_id: rnaiLibraryResult.libraryId, rnai_id: rnaiLibraryResult.rnaiId})
+          });
+          query.select();
+          return query;
+        })
+        .then((plateIds: Array<{ plate_id }>) => {
+          // return;
+          return app.models.ExpPlate
+            .find({
+              where: {
+                plateId: {
+                  inq: plateIds.map((plateId) => {
+                    return plateId.plate_id;
+                  })
+                }
+              },
+              fields: {
+                expWorkflowId: true,
+              }
+            });
+        })
+        .then((expPlateResults: ExpPlateResultSet[]) => {
+          resolve(
+            uniq(expPlateResults.map((expPlate) => {
+              return expPlate.expWorkflowId;
+            }))
+          );
+        })
+        .catch((error) => {
+          reject(new Error(error));
+        });
+    } else {
+      resolve(null);
+    }
+  });
+};
+
+/**
+ * TODO - If we are ONLY searching for RNAi (no other values), then just return the expSet list
+ * TODO - BUT if we are searching for RNAis in permissive blahblahblah
+ * THEN we need to combine those
+ * This resolves the expSets that has a given gene name -
+ * Gene name can be the gene name, cosmid ID, or wormbase ID
+ * @param search
+ */
+ExpSet.extract.getExpSetsByRNAiReagentData = function (search: ExpSetSearch) {
+  return new Promise((resolve, reject) => {
+    search.rnaiSearch = compact(search.rnaiSearch);
+    if (search.rnaiSearch.length) {
+      app.models.RnaiLibrary.extract.workflows
+        .getRnaiLibraryFromUserGeneList(search.rnaiSearch, search)
+        .then((rnaiLibraryResults: RnaiLibraryResultSet[]) => {
+          let query = knex('exp_assay2reagent')
+            .distinct('treatment_group_id');
+          rnaiLibraryResults.map((rnaiLibraryResult: RnaiLibraryResultSet) => {
+            query
+              .orWhere({library_id: rnaiLibraryResult.libraryId, reagent_id: rnaiLibraryResult.rnaiId})
+          });
+          query.andWhere({reagent_type: 'treat_rnai'});
+          query.select('exp_workflow_id');
+          return query;
+        })
+        .then((expAssay2ReagentResults: Array<{ treatment_group_id , exp_workflow_id}>) => {
+          resolve(expAssay2ReagentResults);
+        })
+        .catch((error) => {
+          reject(new Error(error));
+        });
+    } else {
+      resolve(null);
+    }
+  });
+};
+
+/**
  * Thank you stack overflow!
  * Find values that are in all arrays
  * In this case we run a bunch of searches on the expWorkflows
@@ -375,3 +481,4 @@ function getCommonElements(arrays) {//Assumes that we are dealing with an array 
     return value;
   });
 }
+

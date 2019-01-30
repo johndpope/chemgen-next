@@ -40,7 +40,7 @@ RnaiExpSet.extract.workflows.getExpSetsByGeneList = function (search?: ExpSetSea
           resolve(data);
         } else {
           data.rnaisList = results;
-          app.models.ExpSet.extract.buildBasicPaginationData(data, search)
+          return app.models.ExpSet.extract.buildBasicPaginationData(data, search)
             .then((data: ExpSetSearchResults) => {
               return app.models.ExpSet.extract.searchExpAssay2reagents(data, search);
             })
