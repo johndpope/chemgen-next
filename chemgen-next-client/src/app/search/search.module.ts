@@ -8,7 +8,7 @@ import {
     LoopBackFilter
 } from "../../types/sdk/models";
 import {ExpSetSearch, ExpSetSearchResults} from "../../types/custom/ExpSetTypes";
-import {isObject, has, find, isEmpty, get, includes, isArray, orderBy, range, uniq} from 'lodash';
+import {shuffle, isObject, has, find, isEmpty, get, includes, isArray, orderBy, range, uniq} from 'lodash';
 import {NgxSpinnerService} from "ngx-spinner";
 import {ExpsetModule} from "../scoring/expset/expset.module";
 import {SearchFormFilterByScoresAdvancedResults} from "../search-forms/filter-components/search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component";
@@ -232,6 +232,7 @@ export class ScreenMetaDataSearch implements SearchInterface {
             .subscribe((results: any) => {
                 if (get(results, ['results', 'expWorkflowIds'])) {
                     this.expScreenWorkflowIds = results.results.expWorkflowIds;
+                    this.expScreenWorkflowIds = shuffle(this.expScreenWorkflowIds);
                 }
             }, (error) => {
                 this.error = error;
@@ -270,8 +271,6 @@ export class RNAiSearch implements SearchInterface {
     search() {
         this.expSetApi.getExpSetsByRNAiReagentData(this.reagentSearch)
             .subscribe((results: any) => {
-                console.log('Reagent Results');
-                console.log(results);
                 if (get(results, ['results', 'expGroupIds'])) {
                     if (isArray(results.results.expGroupIds)) {
                         this.expGroupIds = results.results.expGroupIds;
@@ -375,55 +374,8 @@ export class SearchFormRnaiFormResults {
     rnaisList: Array<string> = [];
 }
 
-export class SearchFormFilterByScoresResults {
-    manualScoresModule = new ManualScoresModule();
-    scores: any;
-    manualScores: ExpManualScoreCodeResultSet[];
-    query: any = {};
-
-    constructor() {
-        this.scores = this.manualScoresModule.scores;
-        this.manualScores = this.manualScoresModule.manualScores;
-    }
-
-    checkForOr() {
-        if (!has(this.query, 'or')) {
-            this.query.or = [];
-        }
-    }
-
-    createManualScoreQuery() {
-        this.query = {};
-        Object.keys(this.scores).map((key) => {
-
-            if (!has(this.scores, key)) {
-                throw new Error(`Score key ${key} does not exist in manual scores table!!!`);
-            }
-            const value = find(this.manualScores, {formCode: key});
-            if (!value) {
-                throw new Error('Could not find score with code!');
-            }
-
-            if (get(this.scores, key)) {
-                this.checkForOr();
-                let manualValue = value.manualValue;
-                let and = {and: []};
-                and.and.push({manualscoreValue: manualValue});
-                and.and.push({manualscoreGroup: value.manualGroup});
-                this.query.or.push(and);
-            }
-
-        });
-        if (isEmpty(this.query)) {
-            this.query = null;
-        }
-    }
-
-}
-
 export class SearchFormBaseComponentParams {
     public searchFormExpScreenResults: SearchFormExpScreenFormResults = new SearchFormExpScreenFormResults();
-    //TODO Is this needed anymore?
     public searchFormRnaiFormResults: SearchFormRnaiFormResults = new SearchFormRnaiFormResults();
     //These two are not ready yet, need to be refactored
     public searchFormFilterByScoresResults: SearchFormFilterByScoresResults = new SearchFormFilterByScoresResults();
@@ -522,7 +474,11 @@ export class SearchFormBaseComponentParams {
             this.expSetSearch.expGroupSearch = this.expGroupIds;
         } else if (isArray(this.expWorkflowIds) && this.expWorkflowIds.length) {
             this.paginationData = new Pagination(this.expWorkflowIds.length);
-            this.expSetSearch.expWorkflowSearch = [this.expWorkflowIds[this.paginationData.currentPage - 1]];
+            if (this.expWorkflowIds[this.paginationData.currentPage - 1]) {
+                this.expSetSearch.expWorkflowSearch = [this.expWorkflowIds[this.paginationData.currentPage - 1]];
+            } else {
+                this.message = 'There are no more results with your search parameters.';
+            }
         } else {
             this.message = 'Invalid search parameters';
         }
@@ -672,3 +628,53 @@ export class SearchFormParamsFilterByPassedContactSheet extends SearchFormBaseCo
             });
     }
 }
+
+/**
+ * WIP - Filter by Scores
+ */
+export class SearchFormFilterByScoresResults {
+    manualScoresModule = new ManualScoresModule();
+    scores: any;
+    manualScores: ExpManualScoreCodeResultSet[];
+    query: any = {};
+
+    constructor() {
+        this.scores = this.manualScoresModule.scores;
+        this.manualScores = this.manualScoresModule.manualScores;
+    }
+
+    checkForOr() {
+        if (!has(this.query, 'or')) {
+            this.query.or = [];
+        }
+    }
+
+    createManualScoreQuery() {
+        this.query = {};
+        Object.keys(this.scores).map((key) => {
+
+            if (!has(this.scores, key)) {
+                throw new Error(`Score key ${key} does not exist in manual scores table!!!`);
+            }
+            const value = find(this.manualScores, {formCode: key});
+            if (!value) {
+                throw new Error('Could not find score with code!');
+            }
+
+            if (get(this.scores, key)) {
+                this.checkForOr();
+                let manualValue = value.manualValue;
+                let and = {and: []};
+                and.and.push({manualscoreValue: manualValue});
+                and.and.push({manualscoreGroup: value.manualGroup});
+                this.query.or.push(and);
+            }
+
+        });
+        if (isEmpty(this.query)) {
+            this.query = null;
+        }
+    }
+
+}
+

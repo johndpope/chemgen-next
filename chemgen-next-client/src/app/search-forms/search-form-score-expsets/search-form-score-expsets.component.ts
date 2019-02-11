@@ -23,6 +23,8 @@ export class SearchFormScoreExpsetsComponent {
     }
 
     getNewExpSets() {
-        console.log('getting new expsets');
+        this.searchFormParams.expSets = null;
+        this.searchFormParams.formSubmitted = false;
+        this.searchFormParams.onSubmit();
     }
 }

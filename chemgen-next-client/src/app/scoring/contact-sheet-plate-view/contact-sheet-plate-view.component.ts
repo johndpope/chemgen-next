@@ -87,6 +87,7 @@ export class ContactSheetPlateViewComponent implements OnInit {
     }
 
     submitAll() {
+        console.log('SUBMITTING');
         let manualScores: ExpManualScoresResultSet[] = Object.keys(this.contactSheetResults.interesting).map((treatmentGroupId) => {
             let manualScoreValue = 0;
             if (this.contactSheetResults.interesting[treatmentGroupId]) {
@@ -100,6 +101,7 @@ export class ContactSheetPlateViewComponent implements OnInit {
         this.submitScores(manualScores)
             .then(() => {
                 this.didScore = true;
+                console.log('OK SUBMITTED');
                 this.expSetsScored.emit(true);
             })
             .catch((error) => {

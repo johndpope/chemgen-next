@@ -22,10 +22,12 @@ export class SearchFormContactSheetReplicateViewComponent implements OnInit {
   }
 
   getNewExpSets() {
-    // this.showProgress = false;
-    // this.searchFormParams.onSubmit();
+    //Ensure the list of expWorkflowIds is up to date
+    //Once a batch is finished it will be removed from the list
+    this.searchFormParams.searchModule.getExpWorkflows();
+    this.searchFormParams.expSets = null;
+    this.searchFormParams.formSubmitted = false;
     this.searchFormParams.onSubmit();
-    console.log('get some new exp sets');
   }
 
 }

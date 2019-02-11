@@ -126,34 +126,47 @@ let submitImageJob = function (imagesList) {
 };
 
 let plateDataList = jsonfile.readFileSync(path.resolve(__dirname, 'upload_these.json'));
-
 plateDataList = shuffle(plateDataList);
 // plateDataList = plateDataList.slice(0, 10);
 
-Promise.map(plateDataList, (plateData: PlateResultSet) => {
-  let expPlate = new ExpPlateResultSet({
-    barcode: plateData.name,
-    instrumentPlateImagePath: plateData.imagepath,
-    instrumentPlateId: plateData.csPlateid
-  });
-  let wells = app.etlWorkflow.helpers.list384Wells();
+app.models.Plate.find({
+  where: {
+    platebarcode: {like: '%SK_%'}
+  }
+})
+  .then((platesDataList: PlateResultSet[]) => {
+    // app.winston.info(`FIRST PLATE: ${JSON.stringify(plateDataList[0], null, 2)}`)
+    app.winston.info(`Found: ${platesDataList.length} plates`);
+    platesDataList = shuffle(platesDataList);
+    return Promise.map(plateDataList, (plateData: PlateResultSet) => {
+      let expPlate = new ExpPlateResultSet({
+        barcode: plateData.name,
+        instrumentPlateImagePath: plateData.imagepath,
+        instrumentPlateId: plateData.csPlateid
+      });
+      let wells = app.etlWorkflow.helpers.list384Wells();
+      wells = shuffle(wells);
 
-  return Promise.map(wells, (well) => {
-    let imageData = genImageFileNames(expPlate, well);
-    return submitImageJob(imageData);
-  }, {concurrency: 1})
-    .then((results) => {
-      console.log(JSON.stringify(results));
-      return results;
-    })
-    .catch((error) => {
-      console.log(JSON.stringify(error));
-      throw new Error(error);
-    });
-}, {concurrency: 1})
-  .then((results) => {
-    console.log('I think this is done!');
+      return Promise.map(wells, (well) => {
+        let imageData = genImageFileNames(expPlate, well);
+        return submitImageJob(imageData);
+      }, {concurrency: 1})
+        .then((results) => {
+          console.log(JSON.stringify(results));
+          return results;
+        })
+        .catch((error) => {
+          console.log(JSON.stringify(error));
+          throw new Error(error);
+        });
+    }, {concurrency: 1})
+      .then((results) => {
+        console.log('I think this is done!');
+      })
+      .catch((error) => {
+        console.log(JSON.stringify(error));
+      });
   })
   .catch((error) => {
-    console.log(JSON.stringify(error));
+    app.winston.error(error);
   });

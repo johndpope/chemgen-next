@@ -114,30 +114,44 @@ var submitImageJob = function (imagesList) {
 var plateDataList = jsonfile.readFileSync(path.resolve(__dirname, 'upload_these.json'));
 plateDataList = lodash_1.shuffle(plateDataList);
 // plateDataList = plateDataList.slice(0, 10);
-Promise.map(plateDataList, function (plateData) {
-    var expPlate = new models_1.ExpPlateResultSet({
-        barcode: plateData.name,
-        instrumentPlateImagePath: plateData.imagepath,
-        instrumentPlateId: plateData.csPlateid
-    });
-    var wells = app.etlWorkflow.helpers.list384Wells();
-    return Promise.map(wells, function (well) {
-        var imageData = genImageFileNames(expPlate, well);
-        return submitImageJob(imageData);
+app.models.Plate.find({
+    where: {
+        platebarcode: { like: '%SK_%' }
+    }
+})
+    .then(function (platesDataList) {
+    // app.winston.info(`FIRST PLATE: ${JSON.stringify(plateDataList[0], null, 2)}`)
+    app.winston.info("Found: " + platesDataList.length + " plates");
+    platesDataList = lodash_1.shuffle(platesDataList);
+    return Promise.map(plateDataList, function (plateData) {
+        var expPlate = new models_1.ExpPlateResultSet({
+            barcode: plateData.name,
+            instrumentPlateImagePath: plateData.imagepath,
+            instrumentPlateId: plateData.csPlateid
+        });
+        var wells = app.etlWorkflow.helpers.list384Wells();
+        wells = lodash_1.shuffle(wells);
+        return Promise.map(wells, function (well) {
+            var imageData = genImageFileNames(expPlate, well);
+            return submitImageJob(imageData);
+        }, { concurrency: 1 })
+            .then(function (results) {
+            console.log(JSON.stringify(results));
+            return results;
+        })
+            .catch(function (error) {
+            console.log(JSON.stringify(error));
+            throw new Error(error);
+        });
     }, { concurrency: 1 })
         .then(function (results) {
-        console.log(JSON.stringify(results));
-        return results;
+        console.log('I think this is done!');
     })
         .catch(function (error) {
         console.log(JSON.stringify(error));
-        throw new Error(error);
     });
-}, { concurrency: 1 })
-    .then(function (results) {
-    console.log('I think this is done!');
 })
     .catch(function (error) {
-    console.log(JSON.stringify(error));
+    app.winston.error(error);
 });
 //# sourceMappingURL=convert_cell_images.js.map
