@@ -32,4 +32,43 @@ ExpScreenUploadWorkflow.load.workflows.doWork = function (workflowData) {
         }
     });
 };
+/**
+ * THIS IS A DANGEROUS FUNCTION
+ * IT REMOVES WORKFLOWS FROM THE DB
+ * ONLY USE WITH EXTREME CAUTION
+ * THERE IS NO WAY TO GET THIS DATA BACK ONCE ITS DELETED, EXCEPT BY RESTORING A BACKUP
+ */
+app.models.ExpScreenUploadWorkflow.load.removeWorkflowsFromDB = function (result) {
+    return new Promise(function (resolve, reject) {
+        app.models.ExpPlate
+            .destroyAll({ expWorkflowId: String(result.id) })
+            .then(function () {
+            return app.models.ExpGroup.destroyAll({ expWorkflowId: String(result.id) });
+        })
+            .then(function () {
+            return app.models.ExpAssay2reagent.destroyAll({ expWorkflowId: String(result.id) });
+        })
+            .then(function () {
+            return app.models.ExpAssay.destroyAll({ expWorkflowId: String(result.id) });
+        })
+            .then(function () {
+            return app.models.ExpDesign.destroyAll({ expWorkflowId: String(result.id) });
+        })
+            .then(function () {
+            return app.models.ExpManualScores.destroyAll({ expWorkflowId: String(result.id) });
+        })
+            .then(function () {
+            return app.models.ModelPredictedCounts.destroyAll({ expWorkflowId: String(result.id) });
+        })
+            .then(function () {
+            return app.models.ExpScreenUploadWorkflow.destroyById(result.id);
+        })
+            .then(function (results) {
+            resolve();
+        })
+            .catch(function (error) {
+            reject(new Error(error));
+        });
+    });
+};
 //# sourceMappingURL=ExpScreenUploadWorkflow.js.map

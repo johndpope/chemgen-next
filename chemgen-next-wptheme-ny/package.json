@@ -1,0 +1,15 @@
+{
+  "name": "wpadmin",
+  "version": "1.0.0",
+  "description": "[![Build Status](https://travis-ci.org/Automattic/_s.svg?branch=master)](https://travis-ci.org/Automattic/_s)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fancyapps/fancybox": "^3.5.1",
+    "gentelella": "^1.4.0"
+  }
+}

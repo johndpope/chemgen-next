@@ -11,19 +11,31 @@ var knex = config.get('knex');
  * ExpSetExtractScoring* are a list of apis to get ExpSets for scoring
  */
 /**
+ * There are a few main workflows at play here:
+ * 1. FIRST_PASS Scoring: On the front end, this gives users a contact sheet, either by plate or by expSet.
+ * They quickly (hopefully) scroll through and preselect interesting wells for more detailed scoring.
+ * This corresponds to the ExpManualScores Table. The manualscoreGroup == 'FIRST_PASS' with the manualscoreValue being 0/1.
+ * ExpSets or Assays with a manualscoreGroup=FIRST_PASS and manualscoreValue=1 are queued up for more detailed scoring
+ * 2. MANUAL_SCORE: Normally, these come from the FIRST_PASS queue, but occasionally a user will want to score a gene of interest
+ * immediately without going through the FIRST_PASS. For details on the kinds of scores see the codes in the ExpManualScoreCodes table
+ * 3. BATCH_QC: This is an optional stage where the users can take a look at a batch of plates
+ * (RNAiIII.1A_M_1, RNAiIII.1A_M_2, RNAiIII.1A_N2_1, RNAiIII.1A_N2_2, L4440_1, L4440_2 in either suppressor or enhancer).
+ * They can choose to junk a plate, or to junk individual wells.
+ */
+/**
  * The ExpSetExtractScoring* libraries require more complex sql functionality than given by loopback alone
  * (loopback does not support exists, min, max, nested sql, etc)
  * For this reason we use knex, to generate some of the sql, and then execute it with the loopback native sql executor
  */
 var ExpSet = app.models.ExpSet;
+/**
+ * WIP - Create a decision tree to map the scores
+ * @param search
+ */
 ExpSet.extract.workflows.filterByScores = function (search) {
     return new Promise(function (resolve, reject) {
         search = new ExpSetTypes_1.ExpSetSearch(search);
         var data = new ExpSetTypes_1.ExpSetSearchResults({});
-        // if (isEmpty(search.rnaiSearch)) {
-        //   //Search the RnaiLibrary Api
-        //   resolve(app.models.RnaiExpSet.extract.workflows.getExpSetsByGeneList(search));
-        // }
         if (!search.scoresQuery) {
             resolve(data);
         }
@@ -85,6 +97,7 @@ ExpSet.extract.getScoresByFilter = function (data, search, treatmentGroupIds) {
     });
 };
 /**
+ * WIP - This seems really buggy
  * This builds pagination for the amount of expWorkflows
  * @param {ExpSetSearchResults} data
  * @param {treatmentGroupIds} Optional array of treatmentGroupIds
@@ -111,6 +124,10 @@ ExpSet.extract.buildExpManualScorePaginationData = function (data, search, treat
     });
 };
 /**
+ * Filter Detailed Scores by Query
+ */
+/**
+ * WIP - This does not work entirely correctly as written. Need to pull in all the scores, and then do additional rule based filtering in memory
  * If there's a query with mutliple wheres, we have to run each query individually, and then get the common treatmentGroupIds
  * @param data
  * @param search
@@ -170,6 +187,14 @@ ExpSet.extract.getScoresByFilterAdvanced = function (data, search, treatmentGrou
         }
     });
 };
+/**
+ * WIP - This is meant to query the scores and return expSets where an expSet is M_EMB_LETH_HIGH and the WT_EMB_LETH_LOW (for example)
+ * But it doesn't quite work as written
+ * What we need to do is to fulfill one query, then do the others in memory
+ * @param data
+ * @param search
+ * @param treatmentGroupIds
+ */
 ExpSet.extract.buildFilterByScoresQuery = function (data, search, treatmentGroupIds) {
     var expScreenSearch = ExpSet.extract.buildScreenDataQuery(data, search);
     var query = {};
@@ -200,6 +225,7 @@ ExpSet.extract.buildFilterByScoresQuery = function (data, search, treatmentGroup
  * @param search
  */
 ExpSet.extract.workflows.getUnscoredExpSetsByFirstPass = function (search) {
+    app.winston.info('Should be getting unscored expsets by first pass!');
     return new Promise(function (resolve, reject) {
         search = new ExpSetTypes_1.ExpSetSearch(search);
         var data = new ExpSetTypes_1.ExpSetSearchResults({});
@@ -355,6 +381,10 @@ ExpSet.extract.buildUnscoredPaginationData = function (data, search, sqlQuery) {
     });
 };
 /**
+ * The FIRST_PASS is used in the ExpManualScores Table as a flag to indicate an assay or expSet
+ * has passed a first round of 'interesting/not interesting'
+ * All FIRST_PASS Scores are then queued up for more detailed scoring
+ * Detailed scores have a flag of HAS_MANUAL_SCORE, which acts as a flag that an assay or expset has been through detailed scoring
  * Pull out all expAssay2reagents that have a FIRST_PASS score but not any other
  * scoresExist: True
  * Selects all assay2reagents that have a FIRST_PASS=1 but no HAS_MANUAL_SCORE
@@ -369,38 +399,10 @@ ExpSet.extract.buildNativeQueryByFirstPass = function (data, search, hasManualSc
     query = query
         .where('reagent_type', 'LIKE', 'treat%')
         .whereNot({ reagent_id: null });
-    //Add Base experiment lookup
-    ['screen', 'library', 'expWorkflow', 'plate', 'expGroup', 'assay'].map(function (searchType) {
-        if (!lodash_1.isEmpty(search[searchType + "Search"])) {
-            var sql_col = decamelize(searchType + "Id");
-            var sql_values = search[searchType + "Search"];
-            query = query.whereIn(sql_col, sql_values);
-        }
-    });
-    //Add Rnai reagent Lookup
-    if (!lodash_1.isEmpty(data.rnaisList)) {
-        query = query
-            .where(function () {
-            var firstVal = data.rnaisList.shift();
-            var firstWhere = this.orWhere({ 'reagent_id': firstVal.rnaiId, library_id: firstVal.libraryId });
-            data.rnaisList.map(function (rnai) {
-                firstWhere = firstWhere.orWhere({ reagent_id: rnai.rnaiId, library_id: firstVal.libraryId });
-            });
-            data.rnaisList.push(firstVal);
-        });
-    }
-    //Add Chemical Lookup
-    if (!lodash_1.isEmpty(data.compoundsList)) {
-        query = query
-            .where(function () {
-            var firstVal = data.compoundsList.shift();
-            var firstWhere = this.orWhere({ 'reagent_id': firstVal.compoundId, library_id: firstVal.libraryId });
-            data.compoundsList.map(function (compound) {
-                firstWhere = firstWhere.orWhere({ reagent_id: compound.compoundId, library_id: firstVal.libraryId });
-            });
-            data.compoundsList.push(firstVal);
-        });
-    }
+    //Query for base experiment details (screen_id, library_id, etc)
+    //Optionally query for reagents
+    query = ExpSet.extract.buildNativeQueryExpSearch(query, search, null);
+    query = ExpSet.extract.buildNativeQueryReagents(data, query, search);
     //If it has a FIRST_PASS=1 and no HAS_MANUAL_SCORE, grab it
     if (hasManualScores) {
         query = query
@@ -427,7 +429,8 @@ ExpSet.extract.buildNativeQueryByFirstPass = function (data, search, hasManualSc
     return query;
 };
 /**
- * The expPlates will have much fewer contactSheetResults, and so it will be faster to manualScoresAdvancedQuery, and more possible to pull a random plate for scoring
+ * The expPlates will have much fewer contactSheetResults, and so it will be faster to manualScoresAdvancedQuery,
+ * and more possible to pull a random plate for scoring
  * @param data
  * @param search
  * @param hasManualScores
@@ -471,13 +474,16 @@ ExpSet.extract.buildNativeQueryExpWorkflowId = function (data, search, hasManual
             data.compoundsList.push(firstVal);
         });
     }
+    /**
+     * Filter By FIRST_PASS
+     */
     //Get if value exists in the manual score table
     if (hasManualScores) {
         query = query
             .whereExists(function () {
             this.select(1)
                 .from('exp_manual_scores')
-                .whereRaw('exp_assay2reagent.assay_id = exp_manual_scores.assay_id');
+                .whereRaw('(exp_assay2reagent.assay_id = exp_manual_scores.assay_id ) AND (exp_manual_scores.manualscore_group = \'FIRST_PASS\')');
         });
     }
     else {
@@ -485,7 +491,7 @@ ExpSet.extract.buildNativeQueryExpWorkflowId = function (data, search, hasManual
             .whereNotExists(function () {
             this.select(1)
                 .from('exp_manual_scores')
-                .whereRaw('exp_assay2reagent.assay_id = exp_manual_scores.assay_id');
+                .whereRaw('(exp_assay2reagent.assay_id = exp_manual_scores.assay_id ) AND (exp_manual_scores.manualscore_group = \'FIRST_PASS\')');
         });
     }
     return query;
@@ -510,6 +516,8 @@ ExpSet.extract.buildNativeQuery = function (data, search, hasManualScores) {
             query = query.whereIn(sql_col, sql_values);
         }
     });
+    // For the reagent lookups they must have the reagent_id and the library id
+    //You cannot look up here by arbitrary names
     //Add Rnai reagent Lookup
     if (!lodash_1.isEmpty(data.rnaisList)) {
         query = query
@@ -552,5 +560,37 @@ ExpSet.extract.buildNativeQuery = function (data, search, hasManualScores) {
         });
     }
     return query;
+};
+/**
+ * Get a list of expWorkflowIds that have not gone through the Contact Sheet (or not)
+ * @param search
+ * @param hasManualScores
+ */
+ExpSet.extract.workflows.getExpWorkflowIdsNotScoredContactSheet = function (search) {
+    return new Promise(function (resolve, reject) {
+        ExpSet.extract.workflows.getExpWorkflowIdsContactSheet(search, false)
+            .then(function (expWorkflowIds) {
+            resolve(expWorkflowIds);
+        })
+            .catch(function (error) {
+            reject(new Error(error));
+        });
+    });
+};
+ExpSet.extract.workflows.getExpWorkflowIdsContactSheet = function (search, hasManualScores) {
+    return new Promise(function (resolve, reject) {
+        var data = new ExpSetTypes_1.ExpSetSearchResults({});
+        var sqlQuery = ExpSet.extract.buildNativeQuery(data, search, hasManualScores);
+        sqlQuery
+            .then(function (expWorkflowIds) {
+            resolve(lodash_1.uniq(expWorkflowIds.map(function (expWorkflowId) {
+                return expWorkflowId.exp_workflow_id;
+            })));
+        })
+            .catch(function (error) {
+            app.winston.error(error);
+            reject(new Error(error));
+        });
+    });
 };
 //# sourceMappingURL=ExpSetScoringExtract.js.map

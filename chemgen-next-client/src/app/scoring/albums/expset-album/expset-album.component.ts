@@ -1,9 +1,9 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Input} from '@angular/core';
-import {ModelPredictedCountsResultSet} from '../../../../types/sdk/models';
+import {ExpManualScoresResultSet, ModelPredictedCountsResultSet} from '../../../../types/sdk/models';
 import {Lightbox} from 'angular2-lightbox';
 
-import {isEmpty} from 'lodash';
+import {get, find, isEqual, isEmpty} from 'lodash';
 import {ExpsetModule} from "../../expset/expset.module";
 
 @Component({
@@ -27,6 +27,28 @@ export class ExpsetAlbumComponent implements OnInit {
     }
 
     ngOnInit() {
+    }
+
+    junkClass(album, index: number) {
+        if (this.expSet && get(this.expSet, 'albums')) {
+            let well = get(this.expSet.albums, album)[index];
+            let assayId = get(well, 'assayId');
+            if (assayId && get(this.expSetModule, ['expSets', 'expManualScores'])) {
+                let junk = find(this.expSetModule.expSets.expManualScores, (manualScore: ExpManualScoresResultSet) => {
+                    return isEqual(manualScore.assayId, assayId) &&
+                        isEqual(manualScore.manualscoreGroup, 'JUNK') &&
+                        isEqual(manualScore.manualscoreValue, 1)
+                });
+                if (junk) {
+                    return 'junk';
+                } else {
+                    return '';
+                }
+            } else {
+                //Something weird happened!
+            }
+            return '';
+        }
     }
 
     open(album, index: number): void {

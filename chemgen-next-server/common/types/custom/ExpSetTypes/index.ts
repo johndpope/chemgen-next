@@ -11,6 +11,13 @@ import {Memoize} from 'lodash-decorators';
 
 declare var Object: any;
 
+/**
+ * ExpSetSearch Interface is the main interface used by the Angular frontEnd to search for expSets
+ * Its used at a few different points in a few different ways, but you can see it in action here -
+ * ExpSet.extract.buildNativeQueryExpWorkflowId
+ */
+
+// This is only for intellisense/autocomplete in IDEs and nothing else
 export interface ExpSetSearchInterface {
   chemicalSearch?: Array<string>;
   rnaiSearch?: Array<string>;
@@ -18,6 +25,7 @@ export interface ExpSetSearchInterface {
   librarySearch?: Array<any>;
   screenSearch?: Array<any>;
   expWorkflowSearch?: Array<any>;
+  expWorkflowDeepSearch?: { temperature, temperatureRange, screenStage, screenType, instrumentPlateIds, wormStrains };
   plateSearch?: Array<number>;
   currentPage?: number;
   expGroupSearch?: Array<number>;
@@ -41,6 +49,9 @@ export interface ExpSetSearchInterface {
   expGroupTypeAlbums?: Boolean;
 }
 
+// The API definition for getting ExpSets
+// TODO COMPLETELY REDO THIS CLASS
+// ONLY WANT TO ACCEPT expWorkflowIds and expGroupIds
 export class ExpSetSearch {
   rnaiSearch ?: Array<string>;
   chemicalSearch ?: Array<string>;
@@ -48,6 +59,14 @@ export class ExpSetSearch {
   librarySearch ?: Array<any>;
   screenSearch ?: Array<any>;
   expWorkflowSearch ?: Array<any>;
+  expWorkflowDeepSearch?: { temperature, temperatureRange, screenStage, screenType, instrumentPlateIds, wormStrains } = {
+    temperature: null,
+    temperatureRange: null,
+    screenStage: null,
+    screenType: null,
+    instrumentPlateIds: null,
+    wormStrains: null,
+  };
   plateSearch ?: Array<number>;
   expGroupSearch ?: Array<number>;
   currentPage ?: number;
@@ -223,9 +242,11 @@ export class ExpsetModule {
 
   constructor(expSets: ExpSetSearchResults) {
     this.expSets = expSets;
-    this.expSets.expWorkflows = this.expSets.expWorkflows.map((expWorkflow) => {
-      return this.findExpWorkflow(String(expWorkflow.id));
-    });
+    if (get(this, ['expSets', 'expWorkflows']) && isArray(this.expSets.expWorkflows)) {
+      this.expSets.expWorkflows = this.expSets.expWorkflows.map((expWorkflow) => {
+        return this.findExpWorkflow(String(expWorkflow.id));
+      });
+    }
   }
 
   @Memoize()
@@ -251,9 +272,10 @@ export class ExpsetModule {
 
   @Memoize()
   findExpPlates(expWorkflowId: string) {
-    return this.expSets.expPlates.filter((expPlate: ExpPlateResultSet) => {
+    const expPlates = this.expSets.expPlates.filter((expPlate: ExpPlateResultSet) => {
       return isEqual(expWorkflowId, expPlate.expWorkflowId);
     });
+    return orderBy(expPlates, 'barcode');
   }
 
   @Memoize()

@@ -2,17 +2,14 @@ import app = require('../../../../server/server.js');
 import {WorkflowModel} from "../../index";
 import Promise = require('bluebird');
 import {memoize, get, groupBy, shuffle, isEqual, find, round, filter, has, isObject} from 'lodash';
-import {interpolateYlOrBr, interpolateViridis} from 'd3';
+import {interpolateYlOrBr} from 'd3';
 import {ExpSetSearch, ExpSetSearchResults} from "../../../types/custom/ExpSetTypes/index";
 import {
-  ChemicalLibraryResultSet,
   ExpAssay2reagentResultSet,
-  ExpAssayResultSet, ExpDesignResultSet, ExpManualScoreCodeResultSet, ExpManualScoresResultSet,
-  ExpPlateResultSet,
+  ExpAssayResultSet, ExpDesignResultSet, ExpManualScoresResultSet,
   ExpScreenResultSet,
   ExpScreenUploadWorkflowResultSet,
   ModelPredictedCountsResultSet,
-  RnaiLibraryResultSet
 } from "../../../types/sdk/models/index";
 import decamelize = require('decamelize');
 

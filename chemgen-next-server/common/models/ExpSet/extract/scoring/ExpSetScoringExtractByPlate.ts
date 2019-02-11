@@ -17,7 +17,6 @@ import {
 import {ExpSetSearch, ExpSetSearchResults} from "../../../../types/custom/ExpSetTypes";
 
 import config = require('config');
-
 let knex = config.get('knex');
 
 import redis = require('redis');
@@ -60,26 +59,7 @@ ExpSet.extract.workflows.getUnscoredExpSetsByPlate = function (search: ExpSetSea
               if (!data.expPlates || !data.expPlates.length) {
                 resolve(data);
               } else {
-                return ExpSet.extract.fetchFromCache(data, search, data.expPlates[0].expWorkflowId);
-              }
-            })
-            .then((data: ExpSetSearchResults) => {
-              // Check to see if it was fetched from the cache
-              if (!data.fetchedFromCache && has(data.expPlates, ['0', 'expWorkflowId'])) {
-                return ExpSet.extract.getExpDataByExpWorkflowId(data, search, data.expPlates[0].expWorkflowId);
-              } else {
-                return data;
-              }
-
-            })
-            .then((data: ExpSetSearchResults) => {
-              return ExpSet.extract.getExpManualScoresByExpWorkflowId(data, search);
-            })
-            .then((data: ExpSetSearchResults) => {
-              if (!isEqual(data.modelPredictedCounts.length, data.expAssays.length)) {
-                return ExpSet.extract.getModelPredictedCountsByExpWorkflowId(data, search);
-              } else {
-                return data;
+                return ExpSet.extract.buildExpSetsByExpWorkflowId(data, search, data.expPlates[0].expWorkflowId);
               }
             })
             .then((data: ExpSetSearchResults) => {
@@ -90,7 +70,6 @@ ExpSet.extract.workflows.getUnscoredExpSetsByPlate = function (search: ExpSetSea
               }
               data = ExpSet.extract.genAlbumsByPlate(data, search);
               data = ExpSet.extract.cleanUp(data, search);
-              // resolve(data);
               return data;
             })
         }
@@ -148,7 +127,7 @@ ExpSet.extract.genExpGroupTypeAlbums = function (data: ExpSetSearchResults, sear
 
   data.albums.map((album) => {
     ['ctrlNullImages', 'ctrlStrainImages'].map((albumType) => {
-      // album[albumType] = shuffle(album[albumType].slice(0, search.ctrlLimit));
+      // expSet[albumType] = shuffle(expSet[albumType].slice(0, search.ctrlLimit));
     });
   });
 
@@ -235,7 +214,6 @@ ExpSet.extract.extractPlatesNoScore = function (data: ExpSetSearchResults, searc
  * @param search
  */
 ExpSet.extract.preferentiallyChooseScoresSamePlate = function (data: ExpSetSearchResults, search: ExpSetSearch) {
-  app.winston.info('Preferentially choosing by plate');
   if (has(data.expGroupTypeAlbums, 'ctrlStrain')) {
     let treatPlateId = data.expGroupTypeAlbums.treatReagent[0].plateId;
     let ctrlStrainSamePlate = filter(data.expGroupTypeAlbums.ctrlStrain, {plateId: treatPlateId});

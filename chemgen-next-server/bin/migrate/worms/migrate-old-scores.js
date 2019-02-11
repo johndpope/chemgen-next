@@ -653,12 +653,12 @@ var manualScoreCodes = [
     },
     {
         "manualscorecodeId": "68",
-        "description": "description",
-        "shortDescription": "shortDescription",
-        "formName": "formName",
-        "formCode": "formCode",
-        "manualValue": "0",
-        "manualGroup": "manualscore_group"
+        "description": "Is Junk?",
+        "shortDescription": "Is Junk",
+        "formName": "JUNK",
+        "formCode": "JUNK",
+        "manualValue": "1",
+        "manualGroup": "JUNK"
     }
 ];
 var data = {
@@ -715,6 +715,7 @@ function getNewAssayIds() {
                 .then(function (newPlate) {
                 if (newPlate) {
                     return app.models.ExpAssay
+                        //@ts-ignore
                         .findOne({ where: { and: [{ plateId: newPlate.plateId }, { assayWell: expAssay.well }] } })
                         .then(function (newExpAssay) {
                         return app.models.ExpAssay2reagent
@@ -738,6 +739,9 @@ function getNewAssayIds() {
                 }
             });
         })
+            // .then(() => {
+            //   return cleanManualScores();
+            // })
             .then(function () {
             var mappedManualScores = mapManualScores();
             return createNewManualScores(mappedManualScores);

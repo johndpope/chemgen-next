@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var program = require('commander');
 var app = require("../server/server");
-var jobQueues = require("./defineQueues");
 var Promise = require("bluebird");
 program
     .version('0.1.0')
@@ -13,23 +12,33 @@ program
     .option('-e --exit', 'Exit after completing the queueing process.', false)
     .parse(process.argv);
 processWorkflows(program);
+var search = {};
+search = {
+    // screenId: {inq: [3,4]},
+    screenId: 3,
+};
 function processWorkflows(program) {
-    var search = {};
     if (program.searchPattern) {
-        search = {
-            screenId: { inq: [3, 4] },
-        };
+        // search = {
+        //   screenId: {inq: [3,4]},
+        //   screenId: 3,
+        //   name: new RegExp(program.searchPattern),
+        // }
     }
     app.models.ExpScreenUploadWorkflow
         .find({
-        where: search,
-        limit: program.limit
+        where: {},
+        limit: 5
     })
         .then(function (results) {
         //@ts-ignore
         return Promise.map(results, function (result) {
-            app.winston.info("Queueing: " + result.name + ".");
-            jobQueues.workflowQueue.add({ workflowData: result });
+            if (result.name) {
+                app.winston.info("Queueing: ScreenId: " + result.screenName + " Name: " + result.name);
+                // app.winston.info(`ScreenId: ${result.screenId}`);
+                // jobQueues.workflowQueue.add({workflowData: result});
+                return app.models.ExpScreenUploadWorkflow.load.workflows.doWork(result);
+            }
         })
             .then(function () {
             app.winston.info('Completed queueing.');

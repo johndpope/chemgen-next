@@ -22,3 +22,11 @@
     border-radius: 0;
 }
 
+.ngx-form-control {
+    border-radius: 4px;
+}
+
+.junk {
+    border: 2px solid #a94442; /* red */
+    border-radius: 4px;
+}

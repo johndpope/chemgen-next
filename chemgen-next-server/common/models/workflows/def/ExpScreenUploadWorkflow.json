@@ -21,6 +21,9 @@
     "platePlanId": {
       "type": "any"
     },
+    "platePlanHash": {
+      "type": "any"
+    },
     "assayViewType": {
       "type": "string"
     },

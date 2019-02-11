@@ -7,6 +7,7 @@ import {
   ModelPredictedCountsResultSet
 } from "../../../types/sdk/";
 import {
+  get,
   compact,
   find,
   uniqBy,
@@ -48,16 +49,19 @@ ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search: ExpSetSearch
     if (or && or.length) {
       searchQuery.where = {or: or};
     }
+    app.winston.info(`SearchQuery: ${JSON.stringify(searchQuery)}`);
     ExpSet.extract.buildExpWorkflowPaginationData(data, search)
       .then((data) => {
         return app.models.ExpScreenUploadWorkflow
           .find(searchQuery);
       })
       .then((expWorkflows: ExpScreenUploadWorkflowResultSet[]) => {
+        //@ts-ignore
         data.expWorkflows = expWorkflows;
         if (!data.expWorkflows || !data.expWorkflows.length) {
           resolve();
         } else {
+          //@ts-ignore
           data.expWorkflows = compact(expWorkflows);
           return ExpSet.extract.fetchFromCache(data, search, String(data.expWorkflows[0].id));
         }
@@ -111,6 +115,7 @@ ExpSet.extract.buildQueryExpWorkflow = function (data: ExpSetSearchResults, sear
 };
 
 /**
+ * TODO Move all this to the frontend
  * This builds pagination for the amount of expWorkflows
  * @param {ExpSetSearchResults} data
  * @param {ExpSetSearch} search
@@ -129,7 +134,8 @@ ExpSet.extract.buildExpWorkflowPaginationData = function (data: ExpSetSearchResu
         data.currentPage = search.currentPage;
         data.skip = search.skip;
         data.pageSize = search.pageSize;
-        data.totalPages = pagination.totalPages;
+        // data.totalPages = pagination.totalPages;
+        data.totalPages = 1;
         resolve(data);
       })
       .catch((error) => {
@@ -310,16 +316,20 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data: ExpSetSearchResults, 
         return data;
       })
       .then((data: ExpSetSearchResults) => {
-        return app.models.ExpScreen
-          .findOne({
-            where: {screenId: data.expAssay2reagents[0].screenId},
-            fields: {
-              screenId: true,
-              screenName: true,
-              screenType: true,
-              screenStage: true,
-            }
-          })
+        if (data.expAssay2reagents && isArray(data.expAssay2reagents) && data.expAssay2reagents.length) {
+          return app.models.ExpScreen
+            .findOne({
+              where: {screenId: data.expAssay2reagents[0].screenId},
+              fields: {
+                screenId: true,
+                screenName: true,
+                screenType: true,
+                screenStage: true,
+              }
+            })
+        } else {
+          return {};
+        }
       })
       .then((expScreens: ExpScreenResultSet) => {
         data.expScreens = [expScreens];
@@ -342,6 +352,7 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data: ExpSetSearchResults, 
           })
       })
       .then((expScreenWorkflow: ExpScreenUploadWorkflowResultSet) => {
+        //@ts-ignore
         data.expWorkflows = [expScreenWorkflow];
         return ExpSet.extract.getExpDesignsByExpWorkflowId(data, search);
       })
@@ -367,7 +378,8 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data: ExpSetSearchResults, 
       .catch((error) => {
         app.winston.error(`Error in getExpDataByWorkflowId`);
         app.winston.error(error);
-        reject(new Error(error));
+        resolve(new ExpSetSearchResults({}));
+        // reject(new Error(error));
       });
   });
 };
@@ -380,9 +392,9 @@ ExpSet.extract.fetchFromCache = function (data: ExpSetSearchResults, search: Exp
     redisClient.getAsync(key)
       .then((obj) => {
         if (obj) {
-          data = JSON.parse(obj);
-          data.fetchedFromCache = true;
-          // data.fetchedFromCache = false;
+          // data = JSON.parse(obj);
+          // data.fetchedFromCache = true;
+          data.fetchedFromCache = false;
           resolve(data);
         } else {
           data.fetchedFromCache = false;
@@ -407,18 +419,23 @@ ExpSet.extract.saveToCache = function (data: ExpSetSearchResults, search: ExpSet
 
 ExpSet.extract.getExpDesignsByExpWorkflowId = function (data: ExpSetSearchResults, search: ExpSetSearch) {
   return new Promise((resolve, reject) => {
-    app.models.ExpDesign
-      .find({where: {expWorkflowId: data.expPlates[0].expWorkflowId}})
-      .then((expDesigns: ExpDesignResultSet[]) => {
-        let groups = groupBy(expDesigns, 'treatmentGroupId');
-        data.expSets = Object.keys(groups).map((treatmentGroupId) => {
-          return groups[treatmentGroupId];
+    if (get(data, ['expPlates', 0, 'expWorkflowId'])) {
+      app.winston.info('Getting ExpPlates');
+      app.models.ExpDesign
+        .find({where: {expWorkflowId: data.expPlates[0].expWorkflowId}})
+        .then((expDesigns: ExpDesignResultSet[]) => {
+          let groups = groupBy(expDesigns, 'treatmentGroupId');
+          data.expSets = Object.keys(groups).map((treatmentGroupId) => {
+            return groups[treatmentGroupId];
+          });
+          resolve(data);
+        })
+        .catch((error) => {
+          reject(new Error(error));
         });
-        resolve(data);
-      })
-      .catch((error) => {
-        reject(new Error(error));
-      });
+    } else {
+      resolve(data);
+    }
   });
 };
 

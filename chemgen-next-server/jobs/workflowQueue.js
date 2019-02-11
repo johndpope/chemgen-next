@@ -4,7 +4,6 @@ var Promise = require("bluebird");
 var app = require("../server/server");
 var workflowQueue = function (job) {
     return new Promise(function (resolve, reject) {
-        app.winston.info("Starting workflowQueue " + new Date(Date.now()));
         console.log("Starting workflowQueue " + new Date(Date.now()));
         app.models.ExpScreenUploadWorkflow.load.workflows.doWork(job.data.workflowData)
             .then(function () {

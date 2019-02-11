@@ -257,8 +257,10 @@ RnaiLibrary.search = function(where : object) {
  */
 RnaiLibrary.helpers.genLibraryResult = function(barcode : string, libraryResults : RnaiLibraryResultSet[], well : string) {
   let thisWellLibraryResults = [];
-  let libraryResult : RnaiLibraryResultSet = {};
+  // @ts-ignore
+  let libraryResult : RnaiLibraryResultSet = new RnaiLibraryResultSet({});
   if (barcode.match('L4440')) {
+    // @ts-ignore
     libraryResult.name = 'L4440';
     libraryResult.geneName = 'L4440';
   } else {

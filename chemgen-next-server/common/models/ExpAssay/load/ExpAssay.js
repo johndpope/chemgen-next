@@ -48,6 +48,7 @@ ExpAssay.load.workflows.processExpPlates = function (workflowData, expPlates) {
                 return ExpAssay.load.prepareAnnotationData(workflowData, results);
             });
         }, { concurrency: 1 })
+            // @ts-ignore
             .then(function (results) {
             resolve(results);
         })

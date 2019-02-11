@@ -30,17 +30,20 @@ ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search) {
         if (or && or.length) {
             searchQuery.where = { or: or };
         }
+        app.winston.info("SearchQuery: " + JSON.stringify(searchQuery));
         ExpSet.extract.buildExpWorkflowPaginationData(data, search)
             .then(function (data) {
             return app.models.ExpScreenUploadWorkflow
                 .find(searchQuery);
         })
             .then(function (expWorkflows) {
+            //@ts-ignore
             data.expWorkflows = expWorkflows;
             if (!data.expWorkflows || !data.expWorkflows.length) {
                 resolve();
             }
             else {
+                //@ts-ignore
                 data.expWorkflows = lodash_1.compact(expWorkflows);
                 return ExpSet.extract.fetchFromCache(data, search, String(data.expWorkflows[0].id));
             }
@@ -94,6 +97,7 @@ ExpSet.extract.buildQueryExpWorkflow = function (data, search) {
     return expOr;
 };
 /**
+ * TODO Move all this to the frontend
  * This builds pagination for the amount of expWorkflows
  * @param {ExpSetSearchResults} data
  * @param {ExpSetSearch} search
@@ -112,7 +116,8 @@ ExpSet.extract.buildExpWorkflowPaginationData = function (data, search) {
             data.currentPage = search.currentPage;
             data.skip = search.skip;
             data.pageSize = search.pageSize;
-            data.totalPages = pagination.totalPages;
+            // data.totalPages = pagination.totalPages;
+            data.totalPages = 1;
             resolve(data);
         })
             .catch(function (error) {
@@ -288,16 +293,21 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             return data;
         })
             .then(function (data) {
-            return app.models.ExpScreen
-                .findOne({
-                where: { screenId: data.expAssay2reagents[0].screenId },
-                fields: {
-                    screenId: true,
-                    screenName: true,
-                    screenType: true,
-                    screenStage: true,
-                }
-            });
+            if (data.expAssay2reagents && lodash_1.isArray(data.expAssay2reagents) && data.expAssay2reagents.length) {
+                return app.models.ExpScreen
+                    .findOne({
+                    where: { screenId: data.expAssay2reagents[0].screenId },
+                    fields: {
+                        screenId: true,
+                        screenName: true,
+                        screenType: true,
+                        screenStage: true,
+                    }
+                });
+            }
+            else {
+                return {};
+            }
         })
             .then(function (expScreens) {
             data.expScreens = [expScreens];
@@ -320,6 +330,7 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             });
         })
             .then(function (expScreenWorkflow) {
+            //@ts-ignore
             data.expWorkflows = [expScreenWorkflow];
             return ExpSet.extract.getExpDesignsByExpWorkflowId(data, search);
         })
@@ -346,7 +357,8 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             .catch(function (error) {
             app.winston.error("Error in getExpDataByWorkflowId");
             app.winston.error(error);
-            reject(new Error(error));
+            resolve(new ExpSetTypes_1.ExpSetSearchResults({}));
+            // reject(new Error(error));
         });
     });
 };
@@ -357,9 +369,9 @@ ExpSet.extract.fetchFromCache = function (data, search, expWorkflowId) {
         redisClient.getAsync(key)
             .then(function (obj) {
             if (obj) {
-                data = JSON.parse(obj);
-                data.fetchedFromCache = true;
-                // data.fetchedFromCache = false;
+                // data = JSON.parse(obj);
+                // data.fetchedFromCache = true;
+                data.fetchedFromCache = false;
                 resolve(data);
             }
             else {
@@ -383,18 +395,24 @@ ExpSet.extract.saveToCache = function (data, search) {
 };
 ExpSet.extract.getExpDesignsByExpWorkflowId = function (data, search) {
     return new Promise(function (resolve, reject) {
-        app.models.ExpDesign
-            .find({ where: { expWorkflowId: data.expPlates[0].expWorkflowId } })
-            .then(function (expDesigns) {
-            var groups = lodash_1.groupBy(expDesigns, 'treatmentGroupId');
-            data.expSets = Object.keys(groups).map(function (treatmentGroupId) {
-                return groups[treatmentGroupId];
+        if (lodash_1.get(data, ['expPlates', 0, 'expWorkflowId'])) {
+            app.winston.info('Getting ExpPlates');
+            app.models.ExpDesign
+                .find({ where: { expWorkflowId: data.expPlates[0].expWorkflowId } })
+                .then(function (expDesigns) {
+                var groups = lodash_1.groupBy(expDesigns, 'treatmentGroupId');
+                data.expSets = Object.keys(groups).map(function (treatmentGroupId) {
+                    return groups[treatmentGroupId];
+                });
+                resolve(data);
+            })
+                .catch(function (error) {
+                reject(new Error(error));
             });
+        }
+        else {
             resolve(data);
-        })
-            .catch(function (error) {
-            reject(new Error(error));
-        });
+        }
     });
 };
 //# sourceMappingURL=ExpSetExtractQueryByExpWorkflow.js.map

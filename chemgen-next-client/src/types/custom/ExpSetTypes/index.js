@@ -18,8 +18,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 var lodash_1 = require("lodash");
 var lodash_decorators_1 = require("lodash-decorators");
+// The API definition for getting ExpSets
+// TODO COMPLETELY REDO THIS CLASS
+// ONLY WANT TO ACCEPT expWorkflowIds and expGroupIds
 var ExpSetSearch = /** @class */ (function () {
     function ExpSetSearch(data) {
+        this.expWorkflowDeepSearch = {
+            temperature: null, temperatureRange: null, screenStage: null, screenType: null, instrumentPlateIds: null, wormStrains: null,
+        };
         this.pageSize = 1;
         this.ctrlLimit = 4;
         //Filter for scores existing
@@ -156,9 +162,10 @@ var ExpsetModule = /** @class */ (function () {
         return lodash_1.orderBy(objects, 'manualscoreValue', 'desc');
     };
     ExpsetModule.prototype.findExpPlates = function (expWorkflowId) {
-        return this.expSets.expPlates.filter(function (expPlate) {
+        var expPlates = this.expSets.expPlates.filter(function (expPlate) {
             return lodash_1.isEqual(expWorkflowId, expPlate.expWorkflowId);
         });
+        return lodash_1.orderBy(expPlates, 'barcode');
     };
     ExpsetModule.prototype.findExpScreen = function (screenId) {
         return lodash_1.find(this.expSets.expScreens, function (screen) {

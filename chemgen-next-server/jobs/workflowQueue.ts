@@ -3,7 +3,6 @@ import app = require('../server/server');
 
 const workflowQueue = function (job) {
   return new Promise((resolve, reject) => {
-    app.winston.info(`Starting workflowQueue ${new Date(Date.now())}`);
     console.log(`Starting workflowQueue ${new Date(Date.now())}`);
     app.models.ExpScreenUploadWorkflow.load.workflows.doWork(job.data.workflowData)
       .then(() => {

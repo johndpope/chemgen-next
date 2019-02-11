@@ -87,6 +87,7 @@ RnaiLibrary.extract.parseLibraryResults = function (workflowData, expPlate: ExpP
               //This is the skeleton for the stock creator
               //But it does not actually get created until
               //The assay is created
+              // @ts-ignore
               let createStock: RnaiLibraryStockResultSet = new RnaiLibraryStockResultSet({
                 plateId: plateId,
                 libraryId: workflowData.libraryId,
@@ -98,6 +99,7 @@ RnaiLibrary.extract.parseLibraryResults = function (workflowData, expPlate: ExpP
                 preparedBy: '',
               });
 
+              // @ts-ignore
               return new WellCollection({
                 well: well,
                 stockLibraryData: createStock,

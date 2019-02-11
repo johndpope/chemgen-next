@@ -251,6 +251,7 @@ function assignCountsToAssay(assays, counts) {
                 }
             });
         })
+            //@ts-ignore
             .then(function () {
             app.winston.info("Complete assigning counts to assay " + assays[0].assayImagePath);
             resolve();

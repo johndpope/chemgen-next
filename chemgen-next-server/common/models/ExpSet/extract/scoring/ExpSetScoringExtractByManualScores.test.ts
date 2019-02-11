@@ -44,4 +44,5 @@ describe('ExpSetScoringExtractByManualScores.test.ts', function () {
         done(new Error(error));
       })
   });
+
 });

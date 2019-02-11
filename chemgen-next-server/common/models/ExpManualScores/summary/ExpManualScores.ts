@@ -21,11 +21,20 @@ const ExpManualScores = app.models.ExpManualScores as (typeof WorkflowModel);
  * Returns an array of results
  * @param search
  */
-ExpManualScores.extract.workflows.getScoresStatsPerScreen = function (search: ExpSetSearch) :Promise<any> {
+ExpManualScores.extract.workflows.getScoresStatsPerScreen = function (search: ExpSetSearch): Promise<any> {
   return new Promise((resolve, reject) => {
     search = new ExpSetSearch(search);
     let data: any = {};
-    let expWorkflowWhere: any = {fields: {id: true, name: true, screenName: true, screenId: true, screenType: true, screenStage: true}, where: {}};
+    let expWorkflowWhere: any = {
+      fields: {
+        id: true,
+        name: true,
+        screenName: true,
+        screenId: true,
+        screenType: true,
+        screenStage: true
+      }, where: {}
+    };
     if (!isEmpty(search.screenSearch)) {
       expWorkflowWhere.where.screenId = {
         inq: search.screenSearch,
@@ -42,9 +51,9 @@ ExpManualScores.extract.workflows.getScoresStatsPerScreen = function (search: Ex
         data.expWorkflows = expWorkflowResults;
         return ExpManualScores.extract.getScoreStatsPerExpWorkflow(data);
       })
-      .then((results: any) =>{
+      .then((results: any) => {
         // results = orderBy(results, ['screenId', 'expWorkflowName']);
-        results = results.filter((res) =>{
+        results = results.filter((res) => {
           return res.screenName;
         });
         results = orderBy(results, 'screenId');
@@ -59,21 +68,21 @@ ExpManualScores.extract.workflows.getScoresStatsPerScreen = function (search: Ex
 ExpManualScores.extract.getScoreStatsPerExpWorkflow = function (data) {
   return new Promise((resolve, reject) => {
     //@ts-ignore
-    Promise.map(data.expWorkflows, (expWorkflow) => {
+    Promise.map(data.expWorkflows, (expWorkflow: ExpScreenUploadWorkflowResultSet) => {
       let queries: any = {
         allExpSets: ExpManualScores.extract.buildNativeQueryDistinctTreatmentIds(expWorkflow),
         allFirstPassExpSets: ExpManualScores.extract.buildNativeQueryWithFirstPassAll(expWorkflow),
         interestingFirstPassExpSets: ExpManualScores.extract.buildNativeQueryWithFirstPassTrue(expWorkflow),
         detailScoresExpSets: ExpManualScores.extract.buildNativeQueryWithDetailedScores(expWorkflow),
       };
-      let results = {
+      let results: any = {
         screenId: expWorkflow.screenId,
         expWorkflowId: String(expWorkflow.id),
         expWorkflowName: expWorkflow.name,
         screenName: expWorkflow.screenName,
       };
       //@ts-ignore
-      return Promise.map(Object.keys(queries), (queryKey) => {
+      return Promise.map(Object.keys(queries), (queryKey: string) => {
         return queries[queryKey]
           .then((countResults: any) => {
             results[queryKey] = countResults[0]['count_treatment_group_id'];
@@ -87,7 +96,7 @@ ExpManualScores.extract.getScoreStatsPerExpWorkflow = function (data) {
         .then(() => {
           return results;
         })
-        .catch((error) =>{
+        .catch((error) => {
           app.winston.error(error);
           return new Error(error);
         });
@@ -95,7 +104,7 @@ ExpManualScores.extract.getScoreStatsPerExpWorkflow = function (data) {
       .then((results: Array<any>) => {
         resolve(results);
       })
-      .catch((error) =>{
+      .catch((error) => {
         app.winston.error(error);
         reject(new Error(error));
       });
@@ -111,6 +120,19 @@ ExpManualScores.extract.buildNativeQueryDistinctTreatmentIds = function (expWork
     .countDistinct('treatment_group_id as count_treatment_group_id')
     .where('reagent_type', 'LIKE', 'treat%')
     .where('exp_workflow_id', String(expWorkflow.id));
+  return query;
+};
+
+/**
+ * This returns the total number of expSets for a given workflow
+ * @param expWorkflow
+ */
+ExpManualScores.extract.buildNativeQueryDistinctTreatmentIdsGroupBy = function () {
+  let query = knex('exp_assay2reagent')
+    .select('exp_workflow_id')
+    .countDistinct('treatment_group_id as count_treatment_group_id')
+    .groupBy('exp_workflow_id')
+    .where('reagent_type', 'LIKE', 'treat%');
   return query;
 };
 

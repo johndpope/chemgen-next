@@ -36,7 +36,8 @@
                     <div class="row">
                         <!--Begin Screen Data-->
                         <div class="col-md-8">
-                            <h2>{{expSet.expScreen.screenName}}</h2>
+                            <h4>{{expSet.expScreen.screenName}}</h4>
+                            <h4>{{expSet.expWorkflow.name}}</h4>
                             <div class="row">
                                 <!--Begin Exp Workflow Data-->
                                 <div class="col-md-4">
@@ -116,7 +117,7 @@
                                         <div class="row">
                                             <div *ngFor="let image of expSet.albums.treatmentReagentImages; let i=index">
                                                 <div *ngIf="image">
-                                                    <div class="col-md-3">
+                                                    <div class="col-md-3 {{junkClass('treatmentReagentImages', i)}}">
                                                         <img tabindex="0" class="img-thumbnail" [src]="image.thumb"
                                                              (click)="open(expSet.albums.treatmentReagentImages, i)"/>
                                                     </div>
@@ -289,6 +290,7 @@
                                     <thead>
                                     <tr>
                                         <td>User</td>
+                                        <td>AssayId</td>
                                         <td>Group</td>
                                         <td>Code</td>
                                         <td>Value</td>
@@ -297,8 +299,8 @@
                                     </thead>
                                     <tbody>
                                     <tr *ngFor="let manualscore of expSet.expManualScores">
-                                        <td>{{manualscore.scoreCodeId}}</td>
                                         <td>{{manualscore.userName}}</td>
+                                        <td>{{manualscore.assayId}}</td>
                                         <td>{{manualscore.manualscoreGroup}}</td>
                                         <td>{{manualscore.manualscoreCode}}</td>
                                         <td>{{manualscore.manualscoreValue}}</td>

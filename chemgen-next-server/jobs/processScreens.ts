@@ -17,31 +17,43 @@ program
 
 processWorkflows(program);
 
+let search: any = {};
+search = {
+  // screenId: {inq: [3,4]},
+  screenId: 3,
+  // name: new RegExp(program.searchPattern),
+};
+
 function processWorkflows(program) {
-  let search: any = {};
   if (program.searchPattern) {
-    search = {
-      screenId: {inq: [3,4]},
-      // name: new RegExp(program.searchPattern),
-    }
+    // search = {
+    //   screenId: {inq: [3,4]},
+    //   screenId: 3,
+    //   name: new RegExp(program.searchPattern),
+    // }
   }
   app.models.ExpScreenUploadWorkflow
     .find({
-      where: search,
-      limit: program.limit
+      where: {
+      },
+      limit: 5
     })
     .then((results: ExpScreenUploadWorkflowResultSet[]) => {
       //@ts-ignore
-      return Promise.map(results, (result) => {
-        app.winston.info(`Queueing: ${result.name}.`);
-        jobQueues.workflowQueue.add({workflowData: result});
+      return Promise.map(results, (result: ExpScreenUploadWorkflowResultSet) => {
+        if (result.name) {
+          app.winston.info(`Queueing: ScreenId: ${result.screenName} Name: ${result.name}`);
+          // app.winston.info(`ScreenId: ${result.screenId}`);
+          // jobQueues.workflowQueue.add({workflowData: result});
+          return app.models.ExpScreenUploadWorkflow.load.workflows.doWork(result);
+        }
       })
         .then(() => {
           app.winston.info('Completed queueing.');
-          if(program.exit){
+          if (program.exit) {
             process.exit(0);
-          }else{
-           app.winston.info(`You should see output to the screen. Continue to run this script in the background with ctrl+c`);
+          } else {
+            app.winston.info(`You should see output to the screen. Continue to run this script in the background with ctrl+c`);
           }
 
         })

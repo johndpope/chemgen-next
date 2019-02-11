@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+set -x -e
+
+if [ -f {{{images.instrumentImage}}} ]; then
+    mkdir -p {{{images.makeDir}}}
+    mkdir -p /tmp/{{{random}}}
+
+    ## If you process an entire directory of images using bftools it tries to do some manner of normalization across the plates
+    ## This takes FOREVER and does not seem to be very beneficial
+    ## So instead we copy each image to a random temp dir and process it there
+    cp -f "{{{images.instrumentImage}}}" "{{{images.tmpImage}}}"
+
+    if [ ! -f {{{images.baseImage}}}.png ]; then
+        ##Starting to use airflow
+        bfconvert -nogroup -overwrite "{{{images.tmpImage}}}" "{{{images.baseImage}}}.png"
+    fi
+
+    cd /tmp
+    rm -rf /tmp/{{{random}}}
+fi

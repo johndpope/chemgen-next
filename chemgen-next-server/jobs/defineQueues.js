@@ -5,6 +5,7 @@ var app = require("../server/server");
 var Promise = require("bluebird");
 var config = require("config");
 var path = require("path");
+var lodash_1 = require("lodash");
 var jobQueues = {
     testQueue: new Queue('test queue', config.get('redisUrl')),
     workflowQueue: new Queue('Exp Workflow Queue: Process Exp Workflows in the DB', {
@@ -12,6 +13,20 @@ var jobQueues = {
             port: config.get('redisPort'),
             host: config.get('redisHost')
         },
+        limiter: {
+            max: 5,
+            duration: 10000,
+        }
+    }),
+    workflowQueueZeroExpSets: new Queue('Exp Workflow Queue: Look for ExpWorkflows not in the DB and process them', {
+        redis: {
+            port: config.get('redisPort'),
+            host: config.get('redisHost')
+        },
+        limiter: {
+            max: 1,
+            duration: 10000,
+        }
     }),
     testConcurrencyQueue: new Queue('test limit queue', {
         redis: {
@@ -38,6 +53,13 @@ jobQueues.workflowQueue.process(1, path.resolve(__dirname, 'workflowQueue.js'));
 jobQueues.workflowQueue.on('completed', function (job, result) {
     console.log("Job completed " + new Date(Date.now()) + " " + job.id + " " + result);
 });
+if (lodash_1.isEqual(process.env.NODE_ENV, 'PRODUCTION') || lodash_1.isEqual(process.env.NODE_ENV, 'production')) {
+    // jobQueues.workflowQueueZeroExpSets.process(1, path.resolve(__dirname, 'processExpWorkflowsZeroExpSets.js'));
+    // jobQueues.workflowQueueZeroExpSets.on('completed', function(job){
+    //   console.log(`Job completed ${new Date(Date.now())} ${job.id}`);
+    // });
+    // jobQueues.workflowQueueZeroExpSets.add({}, {repeat: {every: 300000}});
+}
 app.jobQueues = jobQueues;
 module.exports = jobQueues;
 //# sourceMappingURL=defineQueues.js.map

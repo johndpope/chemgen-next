@@ -61,12 +61,34 @@ ExpAssay.helpers.genImageFileNames = function(expPlate: ExpPlateResultSet, well:
 };
 
 //TODO This is NYUAD Specific
+//TODO This is WORM specific
 ExpAssay.helpers.genConvertImageCommands = function(images) {
   let templateFile = path.join(path.dirname(__filename), '../../../views/exp/assay/worm/convertImages.mustache');
   return new Promise(function(resolve, reject) {
+    // @ts-ignore
     readFile(templateFile, 'utf8')
       .then(function(contents) {
         var commands = Mustache.render(contents, {
+          random: images.random,
+          thumbSizes: images.thumbSizes,
+          images: images
+        });
+        resolve(commands);
+      })
+      .catch(function(error) {
+        reject(new Error(error));
+      });
+  });
+};
+
+ExpAssay.helpers.cells = {};
+ExpAssay.helpers.cells.genConvertImageCommands = function(images) {
+  let templateFile = path.join(path.dirname(__filename), '../../../views/exp/assay/cell/convertImages.mustache');
+  return new Promise(function(resolve, reject) {
+    // @ts-ignore
+    readFile(templateFile, 'utf8')
+      .then(function(contents) {
+        const commands = Mustache.render(contents, {
           random: images.random,
           thumbSizes: images.thumbSizes,
           images: images

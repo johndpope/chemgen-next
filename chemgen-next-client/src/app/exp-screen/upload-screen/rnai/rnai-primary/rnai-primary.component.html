@@ -1,392 +1,418 @@
 <div *ngIf="expDataModel" class="container">
 
-  <!--Title-->
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Primary RNAi - Upload Screen Data</h1>
-    </div>
-  </div>
-  <!--Title-->
-
-  <br>
-  <hr>
-
-  <app-exp-screen-info [expDataModel]="expDataModel" [expBiosampleModel]="expBiosampleModel"></app-exp-screen-info>
-
-  <hr>
-
-  <!--Begin add new plateModel to list-->
-  <div class="row">
-    <div class="col-md-6">
-      <h2>Plate Set Search And Assign</h2>
-    </div>
-    <div class="col-md-6">
-      <button type="button" class="btn btn-primary" (click)="addNewScreenDesign()">Add Plate Set
-      </button>
-    </div>
-  </div>
-  <br>
-  <!--End add new plateModel to list-->
-  <div id="all-search_and_assign_plates" *ngFor="let plateModel of plateModels;  let plate_model_index= index"
-       [attr.data-index]="plate_model_index">
-    <!--Begin Search and Assign Plates-->
-    <div id="search_and_assign_plates-{{plate_model_index}}" class="x_panel">
-      <div class="x_title">
-        <div class="row">
-          <div class="col-md-6">
-            <h2>Plate Set {{plate_model_index + 1}}</h2>
-          </div>
-          <div class="col-md-2 col-sm-2">
-            <button type="button" class="btn btn-danger" (click)="removeScreenDesign(plate_model_index)">Remove</button>
-          </div>
-          <div class="col-md-4 col-sm-4 pull-right">
-            <ul class="nav navbar-right panel_toolbox">
-              <li><a class="collapse-link" (click)="toggleCollapse(plate_model_index)"><i class="fa fa-chevron-up"></i></a>
-              </li>
-            </ul>
-          </div>
+    <!--Title-->
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Primary RNAi - Upload Screen Data</h1>
         </div>
-      </div>
-      <div class="x_content" [ngStyle]="{ 'display': (plateModel.collapse ? 'none' : '') }">
-        <!--Begin Search For Plates-->
+    </div>
+    <!--Title-->
+
+    <br>
+    <hr>
+
+    <app-exp-screen-info [expDataModel]="expDataModel" [expBiosampleModel]="expBiosampleModel"></app-exp-screen-info>
+
+    <hr>
+
+    <div *ngIf="expBiosampleModel.expBiosample?.biosampleName && expDataModel.expScreen">
+        <!--Begin add new plateModel to list-->
         <div class="row">
-          <div class="col-md-12">
-            <div *ngIf="!plate_model_index">
-              <p> The sections 'Plate Imaging Dates' and 'Library and Barcode Information' build the search parameters
-                for the
-                Arrayscan DB and the experimental data for the Chemgen DB.</p>
+            <div class="col-md-6">
+                <h2>Plate Set Search And Assign</h2>
             </div>
-            <!--Begin Plate Imaging Dates Search Form-->
-            <div class="row" [hidden]="plateModel.submitted">
-              <div class="col-md-12">
-                <h2>Plate Imaging Dates</h2>
-                <div *ngIf="!plate_model_index">
-                  <p>Dates should correspond to those in the Arrayscan DB.</p>
-                  <p>Select a date by clicking on the field with the date to the right of 'Select Imaging Date' (Default
-                    is todays date).</p>
-                  <p>Add dates by clicking the 'Add Imaging Date' button.</p>
-                  <p>Remove a date by the 'Remove Imaging Date' button next to the corresponding date.</p>
-                </div>
-                <form (ngSubmit)="plateModel.getPlates()" #plateSearchForm="ngForm">
-
-                  <!--Begin add new imaging date to list-->
-                  <app-plate-imaging-dates [plateModel]="plateModel"></app-plate-imaging-dates>
-                  <!--End add new imaging date to list-->
-
-                  <br>
-                  <hr>
-                  <!--End Loop to Add/Remove Dates-->
-                  <!--End FormGroup CreationDates-->
-
-                  <!--Begin Library Info / Barcode Identifier Section-->
-                  <div class="row">
-                    <div class="col-md-12">
-                      <h2>Library and Barcode Information</h2>
-                      <div *ngIf="!plate_model_index">
-                        <p>This section builds the library information, as well as the search codes for querying the
-                          database.</p>
-                        <p>LibraryPlate: 3 Quadrant: A1, Chromosome: I, Condition: Permissive </p>
-                        <p>Builds the barcode search patterns: RnaiI.3A1E% and L4440E%, where '%' means match
-                          anything.</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-
-                    <!--Begin : Only for primary Screen-->
-
-                    <!--Plate Number -->
-                    <div class="col-md-2">
-                      <div class="form-group">
-                        <label for="libraryPlate">Add Library Plate</label>
-                        <input type="text" class="form-control" id="libraryPlate"
-                               required
-                               [(ngModel)]="plateModel.libraryPlate" (ngModelChange)="plateModel.buildSearchNames()"
-                               name="libraryPlate"
-                        >
-                      </div>
-                    </div>
-                    <!--! Plate Number -->
-
-                    <!--Quadrant-->
-                    <div class="col-md-2">
-                      <div class="form-group">
-                        <label for="quadrant">Add Library Quadrant</label>
-                        <input type="text" class="form-control" id="quadrant"
-                               required
-                               [(ngModel)]="plateModel.libraryQuadrant" (ngModelChange)="plateModel.buildSearchNames()"
-                               name="quadrant"
-                        >
-                      </div>
-                    </div>
-                    <!--Quadrant-->
-
-                    <!--Input Chromosome-->
-                    <div class="col-md-2">
-                      <div class="form-group">
-                        <label for="chrom">Add Chromosome</label>
-                        <input type="text" class="form-control" id="chrom"
-                               required
-                               [(ngModel)]="plateModel.chromosome" (ngModelChange)="plateModel.buildSearchNames()"
-                               name="chrom"
-                        >
-                      </div>
-                    </div>
-                    <!-- !Input Chromosome-->
-
-                    <!--End: Only for primary Screen-->
-
-                    <!--Begin Select for Conditions-->
-                    <div class="col-md-4">
-                      <div class="form-group">
-                        <label for="conditions">Condition</label>
-                        <select class="form-control" id="conditions"
-                                required
-                                [(ngModel)]="plateModel.conditionCode" (ngModelChange)="plateModel.buildSearchNames()"
-                                name="condition"
-                        >
-                          <option *ngFor="let condition of plateModel.conditions" [ngValue]="condition.code">
-                            {{condition.condition}}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                    <!--End Select for Conditions-->
-
-                  </div>
-                  <!--End Library Info / Barcode Identifier Section-->
-
-                  <!--Begin Barcode Editing Section-->
-                  <div class="row">
-                    <div class="col-md-12">
-                      <h5>Barcode Search Patterns</h5>
-                      <div id="all-search-terms" *ngFor="let searchTerm of plateModel.searchNamePatterns; let i = index"
-                           [attr.data-index]="i">
-                        <div class="row">
-                          <div class="col-sm-4 col-md-4">
-                            <label for="searchTerm-{{i}}">Barcode Pattern:</label>
-                          </div>
-                          <div class="col-sm-4 col-md-4">
-                            <input type="text" id="searchTerm-{{i}}" name="searchTerm-{{i}}"
-                                   class="form-control"
-                                   [(ngModel)]="plateModel.searchNamePatterns[i]"
-                                   value="{{searchTerm}}">
-                          </div>
-                          <div class="col-sm-4 col-md-4">
-                            <button type="button" class="btn btn-danger" (click)="plateModel.removeSearchTerm(i)">Remove
-                            </button>
-                          </div>
+            <div class="col-md-6">
+                <button type="button" class="btn btn-primary" (click)="addNewScreenDesign()">Add Plate Set
+                </button>
+            </div>
+        </div>
+        <br>
+        <!--End add new plateModel to list-->
+        <div id="all-search_and_assign_plates" *ngFor="let plateModel of plateModels;  let plate_model_index= index"
+             [attr.data-index]="plate_model_index">
+            <!--Begin Search and Assign Plates-->
+            <div id="search_and_assign_plates-{{plate_model_index}}" class="x_panel">
+                <div class="x_title">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2>Plate Set {{plate_model_index + 1}}</h2>
                         </div>
-                        <br>
-                      </div>
+                        <div class="col-md-2 col-sm-2">
+                            <button type="button" class="btn btn-danger"
+                                    (click)="removeScreenDesign(plate_model_index)">Remove
+                            </button>
+                        </div>
+                        <div class="col-md-4 col-sm-4 pull-right">
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link" (click)="toggleCollapse(plate_model_index)"><i
+                                        class="fa fa-chevron-up"></i></a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                  </div>
-                  <!--End Barcode Editing Section-->
-                  <br>
-                  <hr>
+                </div>
+                <div class="x_content" [ngStyle]="{ 'display': (plateModel.collapse ? 'none' : '') }">
+                    <!--Begin Search For Plates-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div *ngIf="!plate_model_index">
+                                <p> The sections 'Plate Imaging Dates' and 'Library and Barcode Information' build the
+                                    search parameters
+                                    for the
+                                    Arrayscan DB and the experimental data for the Chemgen DB.</p>
+                            </div>
+                            <!--Begin Plate Imaging Dates Search Form-->
+                            <div class="row" [hidden]="plateModel.submitted">
+                                <div class="col-md-12">
+                                    <h2>Plate Imaging Dates</h2>
+                                    <div *ngIf="!plate_model_index">
+                                        <p>Dates should correspond to those in the Arrayscan DB.</p>
+                                        <p>Select a date by clicking on the field with the date to the right of 'Select
+                                            Imaging Date' (Default
+                                            is todays date).</p>
+                                        <p>Add dates by clicking the 'Add Imaging Date' button.</p>
+                                        <p>Remove a date by the 'Remove Imaging Date' button next to the corresponding
+                                            date.</p>
+                                    </div>
+                                    <form (ngSubmit)="plateModel.getPlates()" #plateSearchForm="ngForm">
 
-                  <div class="row">
+                                        <!--Begin add new imaging date to list-->
+                                        <app-plate-imaging-dates [plateModel]="plateModel"></app-plate-imaging-dates>
+                                        <!--End add new imaging date to list-->
 
-                    <div class="col-md-12">
-                      <button type="submit" class="btn btn-success" [disabled]="!plateSearchForm.form.valid">Submit
-                        Plate
-                        Search
-                      </button>
-                      <button type="button" class="btn btn-default"
-                              (click)="plateModel.clearForm(); plateSearchForm.reset()">
-                        Reset Plate Search
-                      </button>
+                                        <br>
+                                        <hr>
+                                        <!--End Loop to Add/Remove Dates-->
+                                        <!--End FormGroup CreationDates-->
+
+                                        <!--Begin Library Info / Barcode Identifier Section-->
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h2>Library and Barcode Information</h2>
+                                                <div *ngIf="!plate_model_index">
+                                                    <p>This section builds the library information, as well as the
+                                                        search codes for querying the
+                                                        database.</p>
+                                                    <p>LibraryPlate: 3 Quadrant: A1, Chromosome: I, Condition:
+                                                        Permissive </p>
+                                                    <p>Builds the barcode search patterns: RNAiI.3A1E% and L4440E%,
+                                                        where '%' means match
+                                                        anything.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                            <!--Begin : Only for primary Screen-->
+
+                                            <!--Plate Number -->
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="libraryPlate">Add Library Plate</label>
+                                                    <input type="text" class="form-control" id="libraryPlate"
+                                                           required
+                                                           [(ngModel)]="plateModel.libraryPlate"
+                                                           (ngModelChange)="plateModel.buildSearchNames()"
+                                                           name="libraryPlate"
+                                                    >
+                                                </div>
+                                            </div>
+                                            <!--! Plate Number -->
+
+                                            <!--Quadrant-->
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="quadrant">Add Library Quadrant</label>
+                                                    <input type="text" class="form-control" id="quadrant"
+                                                           required
+                                                           [(ngModel)]="plateModel.libraryQuadrant"
+                                                           (ngModelChange)="plateModel.buildSearchNames()"
+                                                           name="quadrant"
+                                                    >
+                                                </div>
+                                            </div>
+                                            <!--Quadrant-->
+
+                                            <!--Input Chromosome-->
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="chrom">Add Chromosome</label>
+                                                    <input type="text" class="form-control" id="chrom"
+                                                           required
+                                                           [(ngModel)]="plateModel.chromosome"
+                                                           (ngModelChange)="plateModel.buildSearchNames()"
+                                                           name="chrom"
+                                                    >
+                                                </div>
+                                            </div>
+                                            <!-- !Input Chromosome-->
+
+                                            <!--End: Only for primary Screen-->
+
+                                            <!--Begin Select for Conditions-->
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="conditions">Condition</label>
+                                                    <select class="form-control" id="conditions"
+                                                            required
+                                                            [(ngModel)]="plateModel.conditionCode"
+                                                            (ngModelChange)="plateModel.buildSearchNames()"
+                                                            name="condition"
+                                                    >
+                                                        <option *ngFor="let condition of plateModel.conditions"
+                                                                [ngValue]="condition.code">
+                                                            {{condition.condition}}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <!--End Select for Conditions-->
+
+                                        </div>
+                                        <!--End Library Info / Barcode Identifier Section-->
+
+                                        <!--Begin Barcode Editing Section-->
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h5>Barcode Search Patterns</h5>
+                                                <div id="all-search-terms"
+                                                     *ngFor="let searchTerm of plateModel.searchNamePatterns; let i = index; trackBy:trackByFn">
+                                                    <div class="row">
+                                                        <div class="col-sm-4 col-md-4">
+                                                            <label for="searchTerm-{{i}}">Barcode Pattern:</label>
+                                                        </div>
+                                                        <div class="col-sm-4 col-md-4">
+                                                            <input type="text" id="searchTerm-{{i}}"
+                                                                   name="searchTerm-{{i}}"
+                                                                   class="form-control"
+                                                                   [(ngModel)]="plateModel.searchNamePatterns[i]"
+                                                                   value="{{searchTerm}}">
+                                                        </div>
+                                                        <div class="col-sm-4 col-md-4">
+                                                            <button type="button" class="btn btn-danger"
+                                                                    (click)="plateModel.removeSearchTerm(i)">Remove
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--End Barcode Editing Section-->
+                                        <br>
+                                        <hr>
+
+                                        <div class="row">
+
+                                            <div class="col-md-12">
+                                                <button type="submit" class="btn btn-success"
+                                                        [disabled]="!plateSearchForm.form.valid">Submit
+                                                    Plate
+                                                    Search
+                                                </button>
+                                                <button type="button" class="btn btn-default"
+                                                        (click)="plateModel.clearForm(); plateSearchForm.reset()">
+                                                    Reset Plate Search
+                                                </button>
+                                            </div>
+
+                                        </div>
+
+                                        <br>
+
+                                    </form>
+                                </div>
+                            </div>
+                            <br>
+                            <hr>
+                            <!--End Plate Search Form-->
+
+                        </div>
                     </div>
+                    <!--End Search For Plates-->
 
-                  </div>
+                    <!--Begin Plate -> Exp Design-->
+                    <!--This is very specific to to RNAi Primary Screens-->
+                    <div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h2>Assign Plates to Design</h2>
+                            </div>
+                        </div>
+                        <!--Begin Unsorted Plate Panel-->
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="panel panel-warning">
+                                    <div class="panel-heading">
+                                        Unassigned Plates
+                                    </div>
+                                    <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
+                                         [sortableData]="plateModel.plates">
+                                        <ul class="list-group">
+                                            <li *ngFor="let plate of plateModel.plates; let i = index"
+                                                class="list-group-item" dnd-sortable
+                                                [sortableIndex]="i">
+                                                Barcode: {{plate.name}}<br>
+                                                Date: {{plate.creationdate | date:'yyyy-MM-dd' }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--End Unsorted Plate Panel-->
 
-                  <br>
+                        <!--Begin Replicate Info-->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-success">
+                                    <div class="panel-body">
+                                        Number of Replicates: {{plateModel.treat_rnai_plates.length}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--!End Replicate Info-->
 
-                </form>
-              </div>
+                        <!--Begin Sorted Plate Panels-->
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="panel panel-warning">
+                                    <div class="panel-heading">
+                                        {{expBiosampleModel.expBiosample?.biosampleName}} + RNAi
+                                    </div>
+                                    <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
+                                         [sortableData]="plateModel.treat_rnai_plates">
+                                        <ul class="list-group">
+                                            <li *ngFor="let plate of plateModel.treat_rnai_plates; let i = index"
+                                                class="list-group-item"
+                                                dnd-sortable
+                                                [sortableIndex]="i">
+                                                Barcode: {{plate.name}}<br>
+                                                Date: {{plate.creationdate | date:'yyyy-MM-dd' }}<br>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        {{expBiosampleModel.ctrlBiosample?.biosampleName}} + RNAi
+                                    </div>
+                                    <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
+                                         [sortableData]="plateModel.ctrl_rnai_plates">
+                                        <ul class="list-group">
+                                            <li *ngFor="let plate of plateModel.ctrl_rnai_plates; let i = index"
+                                                class="list-group-item"
+                                                dnd-sortable
+                                                [sortableIndex]="i">
+                                                Barcode: {{plate.name}}<br>
+                                                Date: {{plate.creationdate | date:'yyyy-MM-dd' }}<br>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        L4440 + {{expBiosampleModel.expBiosample?.biosampleName}}
+                                    </div>
+                                    <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
+                                         [sortableData]="plateModel.ctrl_strain_plates">
+                                        <ul class="list-group">
+                                            <li *ngFor="let plate of plateModel.ctrl_strain_plates; let i = index"
+                                                class="list-group-item"
+                                                dnd-sortable
+                                                [sortableIndex]="i">
+                                                Barcode: {{plate.name}}<br>
+                                                Date: {{plate.creationdate | date:'yyyy-MM-dd' }}<br>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        L4440 + {{expBiosampleModel.ctrlBiosample?.biosampleName}}
+                                    </div>
+                                    <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
+                                         [sortableData]="plateModel.ctrl_null_plates">
+                                        <ul class="list-group">
+                                            <li *ngFor="let plate of plateModel.ctrl_null_plates; let i = index"
+                                                class="list-group-item"
+                                                dnd-sortable
+                                                [sortableIndex]="i">
+                                                Barcode: {{plate.name}}<br>
+                                                Date: {{plate.creationdate | date:'yyyy-MM-dd' }}<br>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!--End Sorted Plate Panel-->
+                    </div>
+                    <!--End Plate -> Exp Design-->
+
+                    <hr>
+                    <!--Add a Plate Design-->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-primary" (click)="addNewScreenDesign()">Add Plate Set
+                            </button>
+                        </div>
+                    </div>
+                    <!--Add a Plate Design-->
+
+
+                </div>
+                <!--End Search and Assign Plates-->
             </div>
-            <br>
-            <hr>
-            <!--End Plate Search Form-->
-
-          </div>
+            <!--End Search and Assign Plates-->
         </div>
-        <!--End Search For Plates-->
+    </div>
 
-        <!--Begin Plate -> Exp Design-->
-        <!--This is very specific to to RNAi Primary Screens-->
-        <div>
-          <div class="row">
-            <div class="col-md-12">
-              <h2>Assign Plates to Design</h2>
-            </div>
-          </div>
-          <!--Begin Unsorted Plate Panel-->
-          <div class="row">
-            <div class="col-sm-12">
-              <div class="panel panel-warning">
-                <div class="panel-heading">
-                  Unassigned Plates
-                </div>
-                <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
-                     [sortableData]="plateModel.plates">
-                  <ul class="list-group">
-                    <li *ngFor="let plate of plateModel.plates; let i = index" class="list-group-item" dnd-sortable
-                        [sortableIndex]="i">
-                      Barcode: {{plate.name}}<br> Date: {{plate.creationdate | date:'yyyy-MM-dd' }}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!--End Unsorted Plate Panel-->
+    <br>
 
-          <!--Begin Replicate Info-->
-          <div class="row">
-            <div class="col-md-12">
-              <div class="panel panel-success">
-                <div class="panel-body">
-                  Number of Replicates: {{plateModel.treat_rnai_plates.length}}
-                </div>
-              </div>
-            </div>
-          </div>
-          <!--!End Replicate Info-->
-
-          <!--Begin Sorted Plate Panels-->
-          <div class="row">
-            <div class="col-sm-3">
-              <div class="panel panel-warning">
-                <div class="panel-heading">
-                  Treatment + Rnai
-                </div>
-                <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
-                     [sortableData]="plateModel.treat_rnai_plates">
-                  <ul class="list-group">
-                    <li *ngFor="let plate of plateModel.treat_rnai_plates; let i = index" class="list-group-item"
-                        dnd-sortable
-                        [sortableIndex]="i">
-                      Barcode: {{plate.name}}<br>
-                      Date: {{plate.creationdate | date:'yyyy-MM-dd' }}<br>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3">
-              <div class="panel panel-success">
-                <div class="panel-heading">
-                  N2 + Rnai
-                </div>
-                <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
-                     [sortableData]="plateModel.ctrl_rnai_plates">
-                  <ul class="list-group">
-                    <li *ngFor="let plate of plateModel.ctrl_rnai_plates; let i = index" class="list-group-item"
-                        dnd-sortable
-                        [sortableIndex]="i">
-                      Barcode: {{plate.name}}<br>
-                      Date: {{plate.creationdate | date:'yyyy-MM-dd' }}<br>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3">
-              <div class="panel panel-info">
-                <div class="panel-heading">
-                  L4440 + Rnai
-                </div>
-                <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
-                     [sortableData]="plateModel.ctrl_strain_plates">
-                  <ul class="list-group">
-                    <li *ngFor="let plate of plateModel.ctrl_strain_plates; let i = index" class="list-group-item"
-                        dnd-sortable
-                        [sortableIndex]="i">
-                      Barcode: {{plate.name}}<br>
-                      Date: {{plate.creationdate | date:'yyyy-MM-dd' }}<br>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-sm-3">
-              <div class="panel panel-info">
-                <div class="panel-heading">
-                  L4440 + Empty Vector
-                </div>
-                <div class="panel-body" dnd-sortable-container [dropZones]="['plates-zone']"
-                     [sortableData]="plateModel.ctrl_null_plates">
-                  <ul class="list-group">
-                    <li *ngFor="let plate of plateModel.ctrl_null_plates; let i = index" class="list-group-item"
-                        dnd-sortable
-                        [sortableIndex]="i">
-                      Barcode: {{plate.name}}<br>
-                      Date: {{plate.creationdate | date:'yyyy-MM-dd' }}<br>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-          </div>
-          <!--End Sorted Plate Panel-->
-        </div>
-        <!--End Plate -> Exp Design-->
-
-        <hr>
-        <!--Add a Plate Design-->
-        <div class="row">
-          <div class="col-md-12">
-            <button type="button" class="btn btn-primary" (click)="addNewScreenDesign()">Add Plate Set
+    <!--Begin Complete Data Form-->
+    <div class="row">
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary" (click)="createWorkflowData()">Complete Upload
             </button>
-          </div>
         </div>
-        <!--Add a Plate Design-->
-
-
-      </div>
-      <!--End Search and Assign Plates-->
-    </div>
-    <!--End Search and Assign Plates-->
-  </div>
-
-  <br>
-
-  <!--Begin Complete Data Form-->
-  <div class="row">
-    <div class="col-md-12">
-      <button type="submit" class="btn btn-primary" (click)="createWorkflowData()">Complete Upload
-      </button>
-    </div>
-  </div>
-  <br>
-  <!--End Complete Data Form-->
-
-  <!--Begin Error Messages-->
-  <div class="row" id="message">
-    <div class="col-md-12">
-      <div *ngIf="errorMessages.length">
-        <div *ngFor="let message of errorMessages" class="alert alert-danger">
-          {{message}}
+        <div class="col-md-12">
+            <button type="reset" class="btn btn-primary btn-warning" (click)="initializeExpWorkflowFormUpload()">Reset Form
+            </button>
         </div>
-      </div>
-      <div *ngIf="success">
-        <div class="alert alert-success">
-          Screen Data submitted successfully!
-        </div>
-      </div>
     </div>
-  </div>
-  <!--End Error Messages-->
+    <br>
+    <!--End Complete Data Form-->
 
-
-  <div id="results">
-    <h2>Results!</h2>
-    {{expScreenUploads | json}}
-  </div>
+    <!--Begin Submission Messages-->
+    <div class="row" id="message">
+        <div class="col-md-12">
+            <div *ngIf="errorMessages.length">
+                <div *ngFor="let message of errorMessages" class="alert alert-danger">
+                    {{message}}
+                </div>
+            </div>
+            <div *ngIf="success">
+                <div class="alert alert-success">
+                    Screen Data submitted successfully!
+                    <div *ngFor="let name of uploadedScreens">
+                        {{name}}<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Submissions Messages-->
 
 </div>
