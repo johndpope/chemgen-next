@@ -60,11 +60,11 @@ jobQueues.workflowQueue.on('completed', function (job, result) {
 });
 
 if(isEqual(process.env.NODE_ENV, 'PRODUCTION') || isEqual(process.env.NODE_ENV, 'production')){
-  jobQueues.workflowQueueZeroExpSets.process(1, path.resolve(__dirname, 'processExpWorkflowsZeroExpSets.js'));
-  jobQueues.workflowQueueZeroExpSets.on('completed', function(job){
-    console.log(`Job completed ${new Date(Date.now())} ${job.id}`);
-  });
-  jobQueues.workflowQueueZeroExpSets.add({}, {repeat: {every: 300000}});
+  // jobQueues.workflowQueueZeroExpSets.process(1, path.resolve(__dirname, 'processExpWorkflowsZeroExpSets.js'));
+  // jobQueues.workflowQueueZeroExpSets.on('completed', function(job){
+  //   console.log(`Job completed ${new Date(Date.now())} ${job.id}`);
+  // });
+  // jobQueues.workflowQueueZeroExpSets.add({}, {repeat: {every: 300000}});
 }
 
 app.jobQueues = jobQueues;

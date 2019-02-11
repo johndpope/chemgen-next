@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {isEqual, uniqWith, find, get, filter, shuffle, orderBy, uniqBy} from 'lodash';
+import {isArray, isEqual, uniqWith, find, get, filter, shuffle, orderBy, uniqBy} from 'lodash';
 import {
     ModelPredictedCountsResultSet,
     ExpScreenUploadWorkflowResultSet,
@@ -23,6 +23,7 @@ import {ExpSetSearchResults} from "../../../types/custom/ExpSetTypes";
     declarations: []
 })
 
+//TODO GET RID OF THIS ITS IN THE custom types now!!
 export class ExpsetModule {
 
     public expSets: ExpSetSearchResults;
@@ -30,9 +31,11 @@ export class ExpsetModule {
 
     constructor(expSets: ExpSetSearchResults) {
         this.expSets = expSets;
-        this.expSets.expWorkflows = this.expSets.expWorkflows.map((expWorkflow) => {
-            return this.findExpWorkflow(String(expWorkflow.id));
-        });
+        if (isArray(this.expSets.expWorkflows)) {
+            this.expSets.expWorkflows = this.expSets.expWorkflows.map((expWorkflow) => {
+                return this.findExpWorkflow(String(expWorkflow.id));
+            });
+        }
     }
 
     @Memoize()

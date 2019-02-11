@@ -21,8 +21,8 @@ module.exports = function (ExpSet) {
     require('../extract/scoring/ExpSetScoringExtractByManualScores')
     require('../extract/predict/ExpSetPredictPhenotype')
     require('../extract/ExpSetResults')
-    require('../extract/search/ExpSetSearchByExpWorkflow')
-    require('../extract/search/ExpSetSearchSQLHelpers')
+    require('../../../search/ExpSetSearchByExpWorkflow')
+    require('../../../search/ExpSetSearchSQLHelpers')
   })
 
   /**
@@ -213,6 +213,43 @@ module.exports = function (ExpSet) {
     })
   }
 
+  ExpSet.getExpWorkflowIdsNotScoredContactSheet = function (search) {
+    return new Promise((resolve, reject) => {
+      return ExpSet.extract.workflows.getExpWorkflowIdsNotScoredContactSheet(search)
+        .then((expWorkflowIds) => {
+          resolve(expWorkflowIds)
+        })
+        .catch((error) => {
+          reject(new Error(error))
+        })
+    })
+  }
+
+  ExpSet.getExpSetsByRNAiReagentData = function (search) {
+    return new Promise((resolve, reject) => {
+      return ExpSet.extract.getExpSetsByRNAiReagentData(search)
+        .then((expWorkflowIds) => {
+          resolve(expWorkflowIds)
+        })
+        .catch((error) => {
+          reject(new Error(error))
+        })
+    })
+  }
+
+  //searchByExpGroupIds
+  ExpSet.searchExpAssay2reagents = function(search){
+    return new Promise((resolve, reject) => {
+      return ExpSet.extract.searchExpAssay2reagents(search)
+        .then((results) => {
+          resolve(results)
+        })
+        .catch((error) => {
+          reject(new Error(error))
+        })
+    })
+  }
+
   /**
    * Add Remote Methods
    * These have a direct one-to-one mapping to their functions, above
@@ -293,6 +330,15 @@ module.exports = function (ExpSet) {
     }
   )
 
+  // ExpSet.extract.searchExpAssay2reagents = function (search: ExpSetSearch) {
+  ExpSet.remoteMethod(
+    'searchExpAssay2reagents', {
+      http: {path: '/searchExpAssay2reagents', verb: 'post'},
+      accepts: {arg: 'search', type: 'any', http: {source: 'query'}},
+      returns: {arg: 'results', type: 'any'}
+    }
+  )
+
   ExpSet.remoteMethod(
     'getAllTemperatures', {
       http: {path: '/getAllTemperatures', verb: 'post'},
@@ -301,4 +347,19 @@ module.exports = function (ExpSet) {
     }
   )
 
+  ExpSet.remoteMethod(
+    'getExpWorkflowIdsNotScoredContactSheet', {
+      http: {path: '/getExpWorkflowIdsNotScoredContactSheet', verb: 'post'},
+      accepts: {arg: 'search', type: 'any', http: {source: 'query'}},
+      returns: {arg: 'results', type: 'any'}
+    }
+  )
+
+  ExpSet.remoteMethod(
+    'getExpSetsByRNAiReagentData', {
+      http: {path: '/getExpSetsByRNAiReagentData', verb: 'post'},
+      accepts: {arg: 'search', type: 'any', http: {source: 'query'}},
+      returns: {arg: 'results', type: 'any'}
+    }
+  )
 }

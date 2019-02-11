@@ -13,8 +13,8 @@ var ExpSet = app.models.ExpSet;
  */
 ExpSet.extract.workflows.getExpSets = function (search) {
     return new Promise(function (resolve, reject) {
-        //come on compile!!!
         search = new index_1.ExpSetSearch(search);
+        app.winston.info('In getExpSets!!!');
         app.winston.info("A: Search : " + JSON.stringify(search));
         var data = new index_1.ExpSetSearchResults({});
         if (search.scoresQuery) {
@@ -29,9 +29,10 @@ ExpSet.extract.workflows.getExpSets = function (search) {
             resolve(ExpSet.extract.workflows.getUnscoredExpSet(search));
         }
         else if (lodash_1.isEqual(search.scoresExist, false)) {
+            app.winston.info('ScoresExistIsFalse!');
             resolve(ExpSet.extract.workflows.getUnscoredExpSetsByPlate(search));
         }
-        else if (lodash_1.isEqual(search.scoresExist, null) && !(lodash_1.isEmpty(search.rnaiSearch))) {
+        else if (!lodash_1.isEmpty(search.rnaiSearch)) {
             //Search the RnaiLibrary Api
             app.winston.info('Getting ExpSets by RNAi List');
             resolve(app.models.RnaiExpSet.extract.workflows.getExpSetsByGeneList(search));
@@ -39,6 +40,11 @@ ExpSet.extract.workflows.getExpSets = function (search) {
         else if (lodash_1.isEqual(search.scoresExist, null) && !(lodash_1.isEmpty(search.chemicalSearch))) {
             //Place holder - I haven't written in this one yet
             resolve();
+        }
+        else if (search.expGroupSearch.length) {
+            // ExpSet.extract.searchExpAssay2reagents = function (search: ExpSetSearch) {
+            app.winston.info('Getting ExpSets by expGroupId');
+            resolve(ExpSet.extract.searchExpAssay2reagents(search));
         }
         else {
             //Get all the expSets for a single expWorkflowId
@@ -207,7 +213,7 @@ ExpSet.extract.buildExpSetsByExpWorkflowId = function (data, search, expWorkflow
 ExpSet.extract.buildExpSets = function (data, search) {
     return new Promise(function (resolve, reject) {
         //TODO Ensure there are expAssayIds!
-        if (lodash_1.isEmpty(data.expAssay2reagents)) {
+        if (lodash_1.isEmpty(data.expAssay2reagents) || !lodash_1.isArray(data.expAssay2reagents)) {
             app.winston.error(JSON.stringify(data, null, 2));
             resolve(data);
         }
@@ -264,6 +270,7 @@ ExpSet.extract.buildExpSets = function (data, search) {
             resolve(data);
         })
             .catch(function (error) {
+            app.winston.error('Error building expSets');
             app.winston.error(error);
             reject(new Error(error));
         });
@@ -271,25 +278,30 @@ ExpSet.extract.buildExpSets = function (data, search) {
 };
 ExpSet.extract.getExpManualScoresByExpGroupId = function (data, search) {
     return new Promise(function (resolve, reject) {
-        app.models.ExpManualScores
-            .find({
-            where: {
-                treatmentGroupId: {
-                    inq: data.expAssay2reagents.map(function (expAssay2reagent) {
-                        return expAssay2reagent.expGroupId;
-                    }).filter(function (expGroupId) {
-                        return expGroupId;
-                    })
+        if (lodash_1.isArray(data.expAssay2reagents) && data.expAssay2reagents.length) {
+            app.models.ExpManualScores
+                .find({
+                where: {
+                    treatmentGroupId: {
+                        inq: data.expAssay2reagents.map(function (expAssay2reagent) {
+                            return expAssay2reagent.expGroupId;
+                        }).filter(function (expGroupId) {
+                            return expGroupId;
+                        })
+                    }
                 }
-            }
-        })
-            .then(function (expManualScores) {
-            data.expManualScores = expManualScores;
+            })
+                .then(function (expManualScores) {
+                data.expManualScores = expManualScores;
+                resolve(data);
+            })
+                .catch(function (error) {
+                reject(new Error(error));
+            });
+        }
+        else {
             resolve(data);
-        })
-            .catch(function (error) {
-            reject(new Error(error));
-        });
+        }
     });
 };
 /**
@@ -307,12 +319,14 @@ ExpSet.extract.sanityChecks = function (data, search) {
         // This gets the ctrl_null and ctrl_strain includeCounts
         var ctrlExpGroupIds = [];
         var treatExpGroupIds = [];
-        data.expSets.map(function (expSet) {
-            expSet.map(function (expDesign) {
-                ctrlExpGroupIds.push({ expGroupId: expDesign.controlGroupId });
-                treatExpGroupIds.push({ expGroupId: expDesign.treatmentGroupId });
+        if (lodash_1.isArray(data.expSets)) {
+            data.expSets.map(function (expSet) {
+                expSet.map(function (expDesign) {
+                    ctrlExpGroupIds.push({ expGroupId: expDesign.controlGroupId });
+                    treatExpGroupIds.push({ expGroupId: expDesign.treatmentGroupId });
+                });
             });
-        });
+        }
         ctrlExpGroupIds = lodash_1.uniqBy(ctrlExpGroupIds, 'expGroupId');
         // @ts-ignore
         Promise.map(ctrlExpGroupIds, function (ctrlExpGroupId) {
@@ -501,52 +515,54 @@ ExpSet.extract.getCounts = function (data, search) {
  * @param search
  */
 ExpSet.extract.genExpSetAlbums = function (data, search) {
-    data.expSets.map(function (expSet) {
-        var album = {};
-        album.expWorkflowId = expSet[0].expWorkflowId;
-        album.treatmentReagentId = expSet[0].treatmentGroupId;
-        album.treatmentGroupId = expSet[0].treatmentGroupId;
-        var expWorkflow = lodash_1.find(data.expWorkflows, { id: String(expSet[0].expWorkflowId) });
-        var site = lodash_1.get(expWorkflow, 'site') || config.get('site');
-        try {
-            album.ctrlReagentId = lodash_1.find(expSet, function (set) {
-                return lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_rnai') || lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_compound') || lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_chemical');
-            }).controlGroupId;
-        }
-        catch (error) {
-            // app.winston.error('There is no ctrl for the reagent!');
-        }
-        try {
-            album.ctrlStrainId = lodash_1.find(expSet, function (set) {
-                return lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_strain');
-            }).controlGroupId;
-        }
-        catch (error) {
-            // app.winston.error('There is no ctrl strain');
-        }
-        try {
-            album.ctrlNullId = lodash_1.find(expSet, function (set) {
-                return lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_null');
-            }).controlGroupId;
-        }
-        catch (error) {
-            // app.winston.error('There is no ctrl null');
-        }
-        ['treatmentReagent', 'ctrlReagent', 'ctrlStrain', 'ctrlNull'].map(function (expGroupType) {
-            album[expGroupType + "Images"] = data.expAssays.filter(function (expAssay) {
-                return lodash_1.isEqual(expAssay.expGroupId, album[expGroupType + "Id"]);
-            }).map(function (expAssay) {
-                return ExpSet.extract["buildImageObj" + site](expAssay);
-            });
-            album[expGroupType + "Images"] = lodash_1.uniqBy(album[expGroupType + "Images"], 'assayImagePath');
-        });
-        ['ctrlNullImages', 'ctrlStrainImages'].map(function (ctrlKey) {
-            if (lodash_1.get(album, ctrlKey)) {
-                album[ctrlKey] = lodash_1.shuffle(album[ctrlKey]).slice(0, 4);
+    if (lodash_1.isArray(data.expSets)) {
+        data.expSets.map(function (expSet) {
+            var album = {};
+            album.expWorkflowId = expSet[0].expWorkflowId;
+            album.treatmentReagentId = expSet[0].treatmentGroupId;
+            album.treatmentGroupId = expSet[0].treatmentGroupId;
+            var expWorkflow = lodash_1.find(data.expWorkflows, { id: String(expSet[0].expWorkflowId) });
+            var site = lodash_1.get(expWorkflow, 'site') || config.get('site');
+            try {
+                album.ctrlReagentId = lodash_1.find(expSet, function (set) {
+                    return lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_rnai') || lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_compound') || lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_chemical');
+                }).controlGroupId;
             }
+            catch (error) {
+                // app.winston.error('There is no ctrl for the reagent!');
+            }
+            try {
+                album.ctrlStrainId = lodash_1.find(expSet, function (set) {
+                    return lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_strain');
+                }).controlGroupId;
+            }
+            catch (error) {
+                // app.winston.error('There is no ctrl strain');
+            }
+            try {
+                album.ctrlNullId = lodash_1.find(expSet, function (set) {
+                    return lodash_1.isEqual(set.controlGroupReagentType, 'ctrl_null');
+                }).controlGroupId;
+            }
+            catch (error) {
+                // app.winston.error('There is no ctrl null');
+            }
+            ['treatmentReagent', 'ctrlReagent', 'ctrlStrain', 'ctrlNull'].map(function (expGroupType) {
+                album[expGroupType + "Images"] = data.expAssays.filter(function (expAssay) {
+                    return lodash_1.isEqual(expAssay.expGroupId, album[expGroupType + "Id"]);
+                }).map(function (expAssay) {
+                    return ExpSet.extract["buildImageObj" + site](expAssay);
+                });
+                album[expGroupType + "Images"] = lodash_1.uniqBy(album[expGroupType + "Images"], 'assayImagePath');
+            });
+            ['ctrlNullImages', 'ctrlStrainImages'].map(function (ctrlKey) {
+                if (lodash_1.get(album, ctrlKey)) {
+                    album[ctrlKey] = lodash_1.shuffle(album[ctrlKey]).slice(0, 4);
+                }
+            });
+            data.albums.push(album);
         });
-        data.albums.push(album);
-    });
+    }
     return data;
 };
 /**
@@ -577,17 +593,24 @@ ExpSet.extract.workflows.getReagentData = function (data, search) {
 };
 ExpSet.extract.workflows.getReagentDataChemicalLibraryStock = function (data, expAssay2reagents) {
     return new Promise(function (resolve, reject) {
+        var orSearch = {};
         var or = [];
-        expAssay2reagents.map(function (expAssay2reagent) {
-            if (expAssay2reagent.reagentId) {
-                //TODO There is a bug in some of these uploads that the libraryId is 1 instead of whatever it should be
-                //But the reagentId is uniqueue anyways
-                or.push({ and: [{ compoundId: expAssay2reagent.reagentId }] });
-            }
-        });
+        if (lodash_1.isArray(expAssay2reagents)) {
+            expAssay2reagents.map(function (expAssay2reagent) {
+                if (expAssay2reagent.reagentId) {
+                    //TODO There is a bug in some of these uploads that the libraryId is 1 instead of whatever it should be
+                    //But the reagentId is uniqueue anyways
+                    or.push({ and: [{ compoundId: expAssay2reagent.reagentId }] });
+                }
+            });
+            orSearch = { or: or };
+        }
+        else {
+            orSearch = {};
+        }
         app.models.ChemicalLibrary
             .find({
-            where: { or: or }
+            where: orSearch,
         })
             .then(function (results) {
             data.compoundsList = results;
@@ -600,12 +623,17 @@ ExpSet.extract.workflows.getReagentDataChemicalLibraryStock = function (data, ex
 };
 ExpSet.extract.workflows.getReagentDataRnaiLibraryStock = function (data, expAssay2reagents) {
     return new Promise(function (resolve, reject) {
-        var or = expAssay2reagents.map(function (expAssay2reagent) {
-            return { and: [{ rnaiId: expAssay2reagent.reagentId }, { libraryId: expAssay2reagent.libraryId }] };
-        });
+        var orSearch = {};
+        var or = [];
+        if (lodash_1.isArray(expAssay2reagents)) {
+            or = expAssay2reagents.map(function (expAssay2reagent) {
+                return { and: [{ rnaiId: expAssay2reagent.reagentId }, { libraryId: expAssay2reagent.libraryId }] };
+            });
+            orSearch = { or: or };
+        }
         app.models.RnaiLibrary
             .find({
-            where: { or: or }
+            where: orSearch,
         })
             .then(function (results) {
             data.rnaisList = results;

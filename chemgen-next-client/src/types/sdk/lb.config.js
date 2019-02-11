@@ -85,7 +85,7 @@ var LoopBackConfig = /** @class */ (function () {
     LoopBackConfig.getRequestOptionsCredentials = function () {
         return LoopBackConfig.withCredentials;
     };
-    LoopBackConfig.path = '//localhost:3000';
+    LoopBackConfig.path = '//localhost:3001';
     LoopBackConfig.version = 'api';
     LoopBackConfig.authPrefix = '';
     LoopBackConfig.debug = true;

@@ -3,7 +3,9 @@ import {WorkflowModel} from "../../index";
 import Promise = require('bluebird');
 import {ExpSetSearch, ExpSetSearchResults} from "../../../types/custom/ExpSetTypes";
 
+import * as client from "knex";
 import config = require('config');
+const knex = config.get('knex');
 
 //@ts-ignore
 const ExpSet = app.models.ExpSet as (typeof WorkflowModel);

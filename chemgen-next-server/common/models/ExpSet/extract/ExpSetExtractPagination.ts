@@ -26,8 +26,7 @@ const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
 
 /**
  * This only builds the most basic pagination
- * It does not do any filtering for assays that already have scores
- * Or ordering expAssays by any rank
+ * Each page is returned ot the interface as a batch, which is a single ExpScreenUploadWOrkflow
  * To do eithe of these things see ExpSet.extract.workflows.scoring
  * @param {ExpSetSearchResults} data
  * @param {ExpSetSearch} search
@@ -35,18 +34,27 @@ const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
 ExpSet.extract.buildBasicPaginationData = function (data: ExpSetSearchResults, search: ExpSetSearch) {
   return new Promise((resolve, reject) => {
     let or = app.models.ExpSet.extract.buildQuery(data, search);
-    app.paginateModel('ExpAssay2reagent', {or: or}, search.pageSize)
-      .then((pagination) => {
-        data.currentPage = search.currentPage;
-        data.skip = search.skip;
-        data.pageSize = search.pageSize;
-        data.totalPages = pagination.totalPages;
-        resolve(data);
-      })
-      .catch((error) => {
-        app.winston.error(error);
-        reject(new Error(error));
-      });
+    let orSearch :any= {};
+    if (or) {
+      orSearch.or = or;
+    }
+    data.currentPage = search.currentPage;
+    data.skip = search.skip;
+    data.pageSize = search.pageSize;
+    data.totalPages = 1;
+    resolve(data);
+    // app.paginateModel('ExpScreenUploadWorkflow', orSearch, search.pageSize)
+    //   .then((pagination) => {
+    //     data.currentPage = search.currentPage;
+    //     data.skip = search.skip;
+    //     data.pageSize = search.pageSize;
+    //     data.totalPages = pagination.totalPages;
+    //     resolve(data);
+    //   })
+    //   .catch((error) => {
+    //     app.winston.error(error);
+    //     reject(new Error(error));
+    //   });
   });
 };
 

@@ -28,9 +28,25 @@ RnaiExpSet.extract.workflows.getExpSetsByGeneList = function (search) {
             }
             else {
                 data.rnaisList = results;
-                return app.models.ExpSet.extract.buildBasicPaginationData(data, search)
-                    .then(function (data) {
-                    return app.models.ExpSet.extract.searchExpAssay2reagents(data, search);
+                return app.models.ExpAssay2reagent
+                    .find({
+                    where: {
+                        or: results.map(function (rnaiLibraryResult) {
+                            return { and: [{ reagentId: rnaiLibraryResult.rnaiId }, { libraryId: rnaiLibraryResult.libraryId }] };
+                        })
+                    },
+                    fields: {
+                        assayId: true,
+                    }
+                })
+                    .then(function (expAssays) {
+                    // expAssays = expAssays.filter((expAssay) =>{
+                    //   return isEqual(expAssay.reagentType, 'treat_rnai');
+                    // });
+                    search.assaySearch = expAssays.map(function (expAssay) {
+                        return expAssay.assayId;
+                    });
+                    return app.models.ExpSet.extract.searchExpAssay2reagents(search);
                 })
                     .then(function (results) {
                     return app.models.ExpSet.extract.workflows.getReagentData(results, search);

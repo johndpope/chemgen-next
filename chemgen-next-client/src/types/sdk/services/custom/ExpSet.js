@@ -409,11 +409,107 @@ var ExpSetApi = /** @class */ (function (_super) {
      *
      *  - `results` – `{any}` -
      */
+    ExpSetApi.prototype.searchExpAssay2reagents = function (search, customHeaders) {
+        if (search === void 0) { search = {}; }
+        var _method = "POST";
+        var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
+            "/ExpSets/searchExpAssay2reagents";
+        var _routeParams = {};
+        var _postBody = {};
+        var _urlParams = {};
+        if (typeof search !== 'undefined' && search !== null)
+            _urlParams.search = search;
+        var result = this.request(_method, _url, _routeParams, _urlParams, _postBody, null, customHeaders);
+        return result;
+    };
+    /**
+     * <em>
+           * (The remote method definition does not provide any description.)
+           * </em>
+     *
+     * @param {any} search
+     *
+     * @param {object} data Request data.
+     *
+     * This method does not accept any data. Supply an empty object.
+     *
+     * @returns {object} An empty reference that will be
+     *   populated with the actual data once the response is returned
+     *   from the server.
+     *
+     * Data properties:
+     *
+     *  - `results` – `{any}` -
+     */
     ExpSetApi.prototype.getAllTemperatures = function (search, customHeaders) {
         if (search === void 0) { search = {}; }
         var _method = "POST";
         var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
             "/ExpSets/getAllTemperatures";
+        var _routeParams = {};
+        var _postBody = {};
+        var _urlParams = {};
+        if (typeof search !== 'undefined' && search !== null)
+            _urlParams.search = search;
+        var result = this.request(_method, _url, _routeParams, _urlParams, _postBody, null, customHeaders);
+        return result;
+    };
+    /**
+     * <em>
+           * (The remote method definition does not provide any description.)
+           * </em>
+     *
+     * @param {any} search
+     *
+     * @param {object} data Request data.
+     *
+     * This method does not accept any data. Supply an empty object.
+     *
+     * @returns {object} An empty reference that will be
+     *   populated with the actual data once the response is returned
+     *   from the server.
+     *
+     * Data properties:
+     *
+     *  - `results` – `{any}` -
+     */
+    ExpSetApi.prototype.getExpWorkflowIdsNotScoredContactSheet = function (search, customHeaders) {
+        if (search === void 0) { search = {}; }
+        var _method = "POST";
+        var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
+            "/ExpSets/getExpWorkflowIdsNotScoredContactSheet";
+        var _routeParams = {};
+        var _postBody = {};
+        var _urlParams = {};
+        if (typeof search !== 'undefined' && search !== null)
+            _urlParams.search = search;
+        var result = this.request(_method, _url, _routeParams, _urlParams, _postBody, null, customHeaders);
+        return result;
+    };
+    /**
+     * <em>
+           * (The remote method definition does not provide any description.)
+           * </em>
+     *
+     * @param {any} search
+     *
+     * @param {object} data Request data.
+     *
+     * This method does not accept any data. Supply an empty object.
+     *
+     * @returns {object} An empty reference that will be
+     *   populated with the actual data once the response is returned
+     *   from the server.
+     *
+     * Data properties:
+     *
+     *  - `results` – `{any}` -
+     */
+    ExpSetApi.prototype.getExpSetsByRNAiReagentData = function (search, customHeaders) {
+        if (search === void 0) { search = {}; }
+        var _method = "POST";
+        var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
+            "/ExpSets/getExpSetsByRNAiReagentData";
         var _routeParams = {};
         var _postBody = {};
         var _urlParams = {};
