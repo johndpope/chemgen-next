@@ -17,7 +17,6 @@ import {
 import {ExpSetSearch, ExpSetSearchResults} from "../../../../types/custom/ExpSetTypes";
 
 import config = require('config');
-
 let knex = config.get('knex');
 
 import redis = require('redis');

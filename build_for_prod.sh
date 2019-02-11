@@ -9,6 +9,8 @@ set -x -e
 # For information on the IP addresses
 # Server side code (loopback API) is managed by pm2, and is set to restart on changes
 ############################################################################################################
+# I always work from the AD theme. There are only 2 separate themes so I can build the angular scripts properly
+cp -rf chemgen-next-wptheme-ad chemgen-next-wptheme-ny
 
 cd chemgen-next-client
 ng build --prod  --output-hashing none --configuration=ny  --output-path ../chemgen-next-wptheme-ny/js/ng

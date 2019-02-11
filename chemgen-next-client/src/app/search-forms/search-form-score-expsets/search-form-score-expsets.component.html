@@ -1,77 +1,15 @@
-<!--Start Search Form-->
-<div class="row">
-    <div class="col-md-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2>Score Exp Sets</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
-                    </li>
-                </ul>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-
-                <form (ngSubmit)="onSubmit()">
-                    <div class="col-xs-3">
-                        <!-- required for floating -->
-                        <!-- Nav tabs -->
-                        <ul class="nav nav-tabs tabs-left">
-                            <li class="active"><a href="#screenData" data-toggle="tab">Screen</a>
-                            </li>
-                            <li><a href="#rnaiData" data-toggle="tab">RNAi</a>
-                                <!--</li>-->
-                                <!--<li><a href="#chemicalData" data-toggle="tab">Chemical</a>-->
-                                <!--</li>-->
-                        </ul>
-                        <div class="clearfix"></div>
-                        <button type="submit" id="searchFormSubmit" class="btn btn-success">Submit</button>
-                        <div class="clearfix"></div>
-                    </div>
-
-                    <div class="col-xs-9">
-                        <!-- Tab panes -->
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="screenData">
-                                <p class="lead">Screen Data</p>
-                                <app-search-form-exp-screen
-                                        [formResults]="searchFormExpScreenResults"></app-search-form-exp-screen>
-                            </div>
-                            <div class="tab-pane" id="rnaiData">
-                                <p class="lead">RNAis List</p>
-                                <app-search-form-rnai [formResults]="searchFormRnaiFormResults"></app-search-form-rnai>
-                            </div>
-                            <!--<div class="tab-pane" id="chemicalData">Chemical</div>-->
-                        </div>
-                    </div>
-
-                    <div class="clearfix"></div>
-                </form>
-
-            </div>
-        </div>
-
-    </div>
-</div>
-<!--End Search Form-->
-
-<ngx-spinner
-        bdColor="rgba(51, 51, 51, 0.8)"
-        size="large"
-        color="#fff"
-        type="ball-atom"
-></ngx-spinner>
+<app-search-form-base [searchFormParams]="searchFormParams"
+                      [title]="'Detailed Scoring Replicate View'"></app-search-form-base>
 
 <!--Start Content-->
 <div class="row">
     <div class="col-md-12">
-        <div *ngIf="formSubmitted">
+        <div>
             <!--Begin Current Content-->
-            <div *ngIf="expSets" class="expSets">
+            <div *ngIf="searchFormParams.expSets" class="expSets">
                 <!--Begin Hotkeys Info-->
-                <div class="row" *ngIf="expSetModule && expSetModule.expSetsDeNorm?.length">
+                <div class="row"
+                     *ngIf="searchFormParams.expSetsModule && searchFormParams.expSetsModule.expSetsDeNorm?.length">
                     <div class="col-md-12">
                         <div class="x_panel">
                             <div class="x_title">
@@ -91,12 +29,13 @@
                 </div>
                 <!--End Hotkeys Info-->
                 <!--Begin expset-score component-->
-                <div class="row" *ngIf="expSetModule && expSetModule.expSetsDeNorm?.length">
+                <div class="row"
+                     *ngIf="searchFormParams.expSetsModule && searchFormParams.expSetsModule.expSetsDeNorm?.length">
                     <div class="col-md-12">
                         <app-expset-score-primary
                                 [score]="true"
-                                [expSetModule]="expSetModule"
-                                [expSet]="expSetModule.expSetsDeNorm[0]"
+                                [expSetModule]="searchFormParams.expSetsModule"
+                                [expSet]="searchFormParams.expSetsModule.expSetsDeNorm[0]"
                                 (getMoreExpSets)="getNewExpSets()"
                         ></app-expset-score-primary>
                     </div>
@@ -106,7 +45,7 @@
             <!--End Current Content-->
 
             <!--Begin Empty Result Info-->
-            <div *ngIf="expSets && ! expSets.expWorkflows?.length">
+            <div *ngIf="searchFormParams.expSets && ! searchFormParams.expSets.expWorkflows?.length">
                 <h2>Empty ResultSet</h2>
                 <p>The search you performed returned an empty result set.</p>
                 <p>Either your search is incorrect, or not in the database.</p>

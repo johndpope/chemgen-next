@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var app = require("../../../../server/server.js");
 var Promise = require("bluebird");
 var ExpSetTypes_1 = require("../../../types/custom/ExpSetTypes");
+var config = require("config");
+var knex = config.get('knex');
 //@ts-ignore
 var ExpSet = app.models.ExpSet;
 /**

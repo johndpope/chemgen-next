@@ -22,6 +22,7 @@ ExpManualScores.load.submitScores = function (scores) {
         let createObj = app.etlWorkflow.helpers.findOrCreateObj(score);
         score.timestamp = dateNow;
         score.manualscoreValue = value;
+        app.winston.log(`Score is : ${JSON.stringify(score)}`);
         return ExpManualScores
           .findOrCreate({where: createObj}, score)
           .then((results) => {
@@ -48,6 +49,7 @@ ExpManualScores.load.submitScores = function (scores) {
       let createObj = app.etlWorkflow.helpers.findOrCreateObj(scores);
       scores.timestamp = dateNow;
       scores.manualscoreValue = value;
+      app.winston.log(`Score is : ${JSON.stringify(scores)}`);
       ExpManualScores
         .findOrCreate({where: createObj}, scores)
         .then((results) => {

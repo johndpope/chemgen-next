@@ -6,8 +6,7 @@ var Promise = require("bluebird");
 var ExpSet = app.models.ExpSet;
 /**
  * This only builds the most basic pagination
- * It does not do any filtering for assays that already have scores
- * Or ordering expAssays by any rank
+ * Each page is returned ot the interface as a batch, which is a single ExpScreenUploadWOrkflow
  * To do eithe of these things see ExpSet.extract.workflows.scoring
  * @param {ExpSetSearchResults} data
  * @param {ExpSetSearch} search
@@ -15,18 +14,27 @@ var ExpSet = app.models.ExpSet;
 ExpSet.extract.buildBasicPaginationData = function (data, search) {
     return new Promise(function (resolve, reject) {
         var or = app.models.ExpSet.extract.buildQuery(data, search);
-        app.paginateModel('ExpAssay2reagent', { or: or }, search.pageSize)
-            .then(function (pagination) {
-            data.currentPage = search.currentPage;
-            data.skip = search.skip;
-            data.pageSize = search.pageSize;
-            data.totalPages = pagination.totalPages;
-            resolve(data);
-        })
-            .catch(function (error) {
-            app.winston.error(error);
-            reject(new Error(error));
-        });
+        var orSearch = {};
+        if (or) {
+            orSearch.or = or;
+        }
+        data.currentPage = search.currentPage;
+        data.skip = search.skip;
+        data.pageSize = search.pageSize;
+        data.totalPages = 1;
+        resolve(data);
+        // app.paginateModel('ExpScreenUploadWorkflow', orSearch, search.pageSize)
+        //   .then((pagination) => {
+        //     data.currentPage = search.currentPage;
+        //     data.skip = search.skip;
+        //     data.pageSize = search.pageSize;
+        //     data.totalPages = pagination.totalPages;
+        //     resolve(data);
+        //   })
+        //   .catch((error) => {
+        //     app.winston.error(error);
+        //     reject(new Error(error));
+        //   });
     });
 };
 //# sourceMappingURL=ExpSetExtractPagination.js.map

@@ -128,7 +128,7 @@ let submitImageJob = function (imagesList) {
 let plateDataList = jsonfile.readFileSync(path.resolve(__dirname, 'upload_these.json'));
 
 plateDataList = shuffle(plateDataList);
-plateDataList = plateDataList.slice(0, 10);
+// plateDataList = plateDataList.slice(0, 10);
 
 Promise.map(plateDataList, (plateData: PlateResultSet) => {
   let expPlate = new ExpPlateResultSet({

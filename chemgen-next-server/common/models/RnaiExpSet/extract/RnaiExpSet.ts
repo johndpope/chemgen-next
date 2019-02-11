@@ -40,9 +40,25 @@ RnaiExpSet.extract.workflows.getExpSetsByGeneList = function (search?: ExpSetSea
           resolve(data);
         } else {
           data.rnaisList = results;
-          return app.models.ExpSet.extract.buildBasicPaginationData(data, search)
-            .then((data: ExpSetSearchResults) => {
-              return app.models.ExpSet.extract.searchExpAssay2reagents(data, search);
+          return app.models.ExpAssay2reagent
+            .find({
+              where: {
+                or: results.map((rnaiLibraryResult) => {
+                  return {and: [{reagentId: rnaiLibraryResult.rnaiId}, {libraryId: rnaiLibraryResult.libraryId}]}
+                })
+              },
+              fields: {
+                assayId: true,
+              }
+            })
+            .then((expAssays: ExpAssay2reagentResultSet[]) => {
+              // expAssays = expAssays.filter((expAssay) =>{
+              //   return isEqual(expAssay.reagentType, 'treat_rnai');
+              // });
+              search.assaySearch = expAssays.map((expAssay) => {
+                return expAssay.assayId;
+              });
+              return app.models.ExpSet.extract.searchExpAssay2reagents(search);
             })
             .then((results: ExpSetSearchResults) => {
               return app.models.ExpSet.extract.workflows.getReagentData(results, search);

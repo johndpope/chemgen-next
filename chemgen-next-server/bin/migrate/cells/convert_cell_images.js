@@ -113,7 +113,7 @@ var submitImageJob = function (imagesList) {
 };
 var plateDataList = jsonfile.readFileSync(path.resolve(__dirname, 'upload_these.json'));
 plateDataList = lodash_1.shuffle(plateDataList);
-plateDataList = plateDataList.slice(0, 10);
+// plateDataList = plateDataList.slice(0, 10);
 Promise.map(plateDataList, function (plateData) {
     var expPlate = new models_1.ExpPlateResultSet({
         barcode: plateData.name,

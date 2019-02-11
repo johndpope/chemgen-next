@@ -5,7 +5,7 @@ import {ExpScreenUploadWorkflowResultSet} from "../common/types/sdk/models";
 import app = require('../server/server');
 import jobQueues = require('./defineQueues');
 import Promise = require('bluebird');
-import {isEqual, shuffle, find, filter} from 'lodash';
+import {isEqual, includes, shuffle, find, filter} from 'lodash';
 
 const config = require('config');
 const knex = config.get('knex');
@@ -73,16 +73,26 @@ const workflowQueueZeroExpSets = function (job) {
         const expWorkflowIds = results.map((result) => {
           return result.exp_workflow_id;
         });
+        app.winston.info(`There are ${expWorkflowIds.length} distinct expWorkflowIds in the ExpDesign Table`);
         return app.models.ExpScreenUploadWorkflow
-          .find({
-            where:
-              {
-                expWorkflowId: {nin: expWorkflowIds}
-              },
-            limit: 5
-          });
+          .count({
+            id: {nin: expWorkflowIds}
+          })
+          .then((count) => {
+            app.winston.info(`There are ${JSON.stringify(count)} workflows left`);
+            return app.models.ExpScreenUploadWorkflow
+              .find({
+                where:
+                  {
+                    id: {nin: expWorkflowIds}
+                  },
+                // limit: 5
+              });
+          })
       })
-      .then((expWorkflows: ExpScreenUploadWorkflowResultSet[]) =>{
+      .then((expWorkflows: ExpScreenUploadWorkflowResultSet[]) => {
+        app.winston.info(`Found: ${JSON.stringify(expWorkflows.length)}`);
+        expWorkflows = shuffle(expWorkflows).slice(0, 5);
         app.winston.info(`Queueing : ${expWorkflows.length}`);
         return Promise.map(expWorkflows, (expWorkflowWithZeroExpSets: ExpScreenUploadWorkflowResultSet) => {
           expWorkflowWithZeroExpSets = JSON.parse(JSON.stringify(expWorkflowWithZeroExpSets));
@@ -94,18 +104,20 @@ const workflowQueueZeroExpSets = function (job) {
             .catch((error) => {
               return;
             })
-        }, {concurrency: 1});
+        }, {concurrency: 4});
       })
-      .then(() =>{
+      .then(() => {
+        process.exit(0);
         resolve();
       })
-      .catch((error) =>{
+      .catch((error) => {
+        process.exit(1);
         reject(new Error(error));
       });
   });
 };
 
-// workflowQueueZeroExpSets({});
+workflowQueueZeroExpSets({});
 
 module.exports = workflowQueueZeroExpSets;
 

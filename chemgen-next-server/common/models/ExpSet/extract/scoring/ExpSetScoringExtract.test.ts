@@ -2,8 +2,12 @@ import {ExpSetSearch, ExpSetSearchResults} from "../../../../types/custom/ExpSet
 import assert = require('assert');
 import app = require('../../../../../server/server');
 import Promise = require('bluebird');
-import {isEqual, has, uniq} from 'lodash';
+import {isEqual, includes, isArray, has, uniq} from 'lodash';
 import {ExpScreenUploadWorkflowResultSet} from "../../../../types/sdk";
+import * as client from "knex";
+import config = require('config');
+
+const knex = config.get('knex');
 
 if (!isEqual(process.env.NODE_ENV, 'dev')) {
   process.exit(0);
@@ -79,8 +83,9 @@ describe('ExpSetScoringExtract.test.ts', function () {
 
   });
 
-  it('Should filter by Scores Advanced', function(done){
-    let search = new ExpSetSearch({scoresQuery: {
+  it('Should filter by Scores Advanced', function (done) {
+    let search = new ExpSetSearch({
+      scoresQuery: {
         "and": [
           {
             "or": [
@@ -113,18 +118,20 @@ describe('ExpSetScoringExtract.test.ts', function () {
             ]
           }
         ]
-      }});
+      }
+    });
     app.models.ExpSet.extract.workflows.filterByScores(search)
       .then((data: ExpSetSearchResults) => {
         assert.ok(data);
       })
-      .catch((error) =>{
+      .catch((error) => {
         done(new Error(error));
       });
   });
 
-  it('Should filter by Scores Advanced With Dummy Filter', function(done){
-    let search = new ExpSetSearch({scoresQuery: {
+  it('Should filter by Scores Advanced With Dummy Filter', function (done) {
+    let search = new ExpSetSearch({
+      scoresQuery: {
         "and": [
           {
             "or": [
@@ -155,14 +162,73 @@ describe('ExpSetScoringExtract.test.ts', function () {
             ]
           }
         ]
-      }});
+      }
+    });
     app.models.ExpSet.extract.workflows.filterByScores(search)
       .then((data: ExpSetSearchResults) => {
         assert.ok(data);
       })
-      .catch((error) =>{
+      .catch((error) => {
         done(new Error(error));
       });
 
-  })
+  });
+
+  it('Should return a list of expWorkflowIds that have not gone through the first pass', function (done) {
+    let search = new ExpSetSearch({});
+    app.models.ExpScreenUploadWorkflow
+      .find({fields: {id: true}})
+      .then((expWorkflows: ExpScreenUploadWorkflowResultSet[]) => {
+        //First get all the workflows from the exp_plates
+        return knex('exp_plate')
+          .distinct('exp_workflow_id')
+          .groupBy('exp_workflow_id')
+          .select()
+          .then((expPlateWorkflowIds: Array<{ exp_workflow_id }>) => {
+            // Then get all scored with first_pass
+            return knex('exp_manual_scores')
+              .distinct('exp_workflow_id')
+              .groupBy('exp_workflow_id')
+              .where({'manualscore_group': 'FIRST_PASS'})
+              .then((expManualScoreWorkflowIds: Array<{ exp_workflow_id }>) => {
+                return app.models.ExpSet.extract.workflows.getExpWorkflowIdsNotScoredContactSheet(search)
+                  .then((unScoredExpWorkflowIds: String[]) => {
+                    return {
+                      unScoredExpWorkflowIds: unScoredExpWorkflowIds,
+                      scoredExpWorkflowIds: expManualScoreWorkflowIds.map((t) => {
+                        return t.exp_workflow_id;
+                      }),
+                      allExpWorkflowIds: expPlateWorkflowIds.map((t) => {
+                        return t.exp_workflow_id;
+                      }),
+                    };
+                  })
+                  .catch((error) => {
+                    return new Error(error);
+                  })
+              })
+              .catch((error) => {
+                return new Error(error);
+              })
+          })
+          .catch((error) => {
+            return new Error(error);
+          })
+      })
+      .then((expWorkflowObjects) => {
+        assert.ok(expWorkflowObjects);
+        assert.equal(expWorkflowObjects.unScoredExpWorkflowIds.length, (expWorkflowObjects.allExpWorkflowIds.length - expWorkflowObjects.scoredExpWorkflowIds.length - 1));
+        let unscoredNotInScored = true;
+        expWorkflowObjects.unScoredExpWorkflowIds.map((id) => {
+          if (includes(expWorkflowObjects.scoredExpWorkflowIds, id)) {
+            unscoredNotInScored = true;
+          }
+        });
+        assert.ok(unscoredNotInScored);
+        done();
+      })
+      .catch((error) => {
+        done(new Error(error));
+      })
+  });
 });

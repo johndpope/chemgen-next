@@ -10,7 +10,10 @@ var models_1 = require("../../../../common/types/sdk/models");
 var path = require('path');
 var fs = require('fs');
 var hash = require('object-hash');
-var file = 'eegi-denorm-2012-all.csv';
+// let file = 'eegi-denorm-2011-all.csv';
+// let file = 'eegi-denorm-2012-all.csv';
+// let file = 'eegi-denorm-2014-all.csv';
+var file = 'eegi-denorm-2015-all.csv';
 var eegi = path.resolve(__dirname, file);
 var wormStrains = path.resolve(__dirname, 'worm_strain_table_ny.csv');
 var problemGroups = {};
@@ -49,11 +52,11 @@ parseCSVFile(eegi)
                 app.winston.info("Finished creating expScreenUploadWorkflows for " + results.length);
                 // return results;
                 //@ts-ignore
-                return Promise.map(results.slice(0, 100), function (workflow) {
+                return Promise.map(results, function (workflow) {
                     // app.winston.info('Doing work...');
-                    return app.models.ExpScreenUploadWorkflow.load.workflows.worms.doWork(workflow);
-                    // return app.models.ExpScreenUploadWorkflow.findOrCreate({where: {name: workflow.name}}, workflow)
-                }, { concurrency: 1 })
+                    // return app.models.ExpScreenUploadWorkflow.load.workflows.worms.doWork(workflow);
+                    return app.models.ExpScreenUploadWorkflow.findOrCreate({ where: { name: workflow.name } }, workflow);
+                }, { concurrency: 4 })
                     .then(function () {
                     return;
                 })
@@ -144,11 +147,13 @@ function groupByPlatePlanHash(eegiResults) {
                     // plates with an "F" suffix are Suppressor Secondary.
                     // librarystock = librarystock.plate_id
                     if (eegiResult["librarystock.plate_id"].match(/-F\d+$/)) {
+                        // app.winston.info(`Got Restrictive Library Plate: ${eegiResult["librarystock.plate_id"]}`);
                         eegiResult.screenType = 'restrictive';
                         eegiResult.screenStage = 'secondary';
                         eegiResult.screenName = "NY RNAi Ahringer Secondary " + eegiResult["wormstrain.genotype"] + " Restrictive Screen";
                     }
-                    else if (eegiResult["librarystock.plate_id"].match(/-F\d+$/)) {
+                    else if (eegiResult["librarystock.plate_id"].match(/-E\d+$/)) {
+                        // app.winston.info(`Got Permissive Library Plate: ${eegiResult["librarystock.plate_id"]}`);
                         eegiResult.screenType = 'permissive';
                         eegiResult.screenStage = 'secondary';
                         eegiResult.screenName = "NY RNAi Ahringer Secondary " + eegiResult["wormstrain.genotype"] + " Permissive Screen";
@@ -350,7 +355,7 @@ function createBiosamples(groupedResults) {
 function createExpScreenWorkflows(groupedResults, screens, biosamples, platePlans) {
     var workflows = [];
     var groupKeys = Object.keys(groupedResults);
-    groupKeys = groupKeys.slice(0, 10);
+    // groupKeys = groupKeys.slice(0, 10);
     groupKeys.map(function (platePlanHash) {
         //Top Level is the Experiment Group Key
         var N2 = null;
@@ -588,7 +593,7 @@ function createPlatePlan(plate, group) {
             var growthHormoneRecords = growthHormones.map(function (ghr) {
                 return {
                     libraryId: 1,
-                    geneName: ghr,
+                    geneName: ghr['clone.id'],
                     plate: 'G',
                     bioloc: 'G',
                     stocktitle: 'G',
@@ -596,7 +601,7 @@ function createPlatePlan(plate, group) {
                     fwdPrimer: 'GHR',
                     revPrimer: 'GHR',
                     chrom: 'GHR',
-                    rnaiType: 'GHR',
+                    rnaiType: 'cDNA',
                     stockloc: 'GHR'
                 };
             });

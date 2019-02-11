@@ -28,6 +28,7 @@ import decamelize = require('decamelize');
 
 import * as client from "knex";
 import config = require('config');
+
 const knex = config.get('knex');
 
 /**
@@ -256,6 +257,7 @@ ExpSet.extract.buildFilterByScoresQuery = function (data: ExpSetSearchResults, s
  * @param search
  */
 ExpSet.extract.workflows.getUnscoredExpSetsByFirstPass = function (search: ExpSetSearch) {
+  app.winston.info('Should be getting unscored expsets by first pass!');
   return new Promise((resolve, reject) => {
     search = new ExpSetSearch(search);
     let data = new ExpSetSearchResults({});
@@ -537,14 +539,14 @@ ExpSet.extract.buildNativeQueryExpWorkflowId = function (data: ExpSetSearchResul
       .whereExists(function () {
         this.select(1)
           .from('exp_manual_scores')
-          .whereRaw('(exp_assay2reagent.treatment_group_id = exp_manual_scores.treatment_group_id ) AND (exp_manual_scores.manualscore_group = \'FIRST_PASS\')');
+          .whereRaw('(exp_assay2reagent.assay_id = exp_manual_scores.assay_id ) AND (exp_manual_scores.manualscore_group = \'FIRST_PASS\')');
       });
   } else {
     query = query
       .whereNotExists(function () {
         this.select(1)
           .from('exp_manual_scores')
-          .whereRaw('(exp_assay2reagent.treatment_group_id = exp_manual_scores.treatment_group_id ) AND (exp_manual_scores.manualscore_group = \'FIRST_PASS\')');
+          .whereRaw('(exp_assay2reagent.assay_id = exp_manual_scores.assay_id ) AND (exp_manual_scores.manualscore_group = \'FIRST_PASS\')');
       });
 
   }
@@ -573,6 +575,8 @@ ExpSet.extract.buildNativeQuery = function (data: ExpSetSearchResults, search: E
     }
   });
 
+  // For the reagent lookups they must have the reagent_id and the library id
+  //You cannot look up here by arbitrary names
   //Add Rnai reagent Lookup
   if (!isEmpty(data.rnaisList)) {
     query = query
@@ -618,4 +622,38 @@ ExpSet.extract.buildNativeQuery = function (data: ExpSetSearchResults, search: E
   }
 
   return query;
+};
+
+/**
+ * Get a list of expWorkflowIds that have not gone through the Contact Sheet (or not)
+ * @param search
+ * @param hasManualScores
+ */
+ExpSet.extract.workflows.getExpWorkflowIdsNotScoredContactSheet = function (search: ExpSetSearch) {
+  return new Promise((resolve, reject) => {
+    ExpSet.extract.workflows.getExpWorkflowIdsContactSheet(search, false)
+      .then((expWorkflowIds: String[]) => {
+        resolve(expWorkflowIds);
+      })
+      .catch((error) => {
+        reject(new Error(error));
+      })
+  });
+};
+
+ExpSet.extract.workflows.getExpWorkflowIdsContactSheet = function (search: ExpSetSearch, hasManualScores: Boolean) {
+  return new Promise((resolve, reject) => {
+    let data = new ExpSetSearchResults({});
+    let sqlQuery = ExpSet.extract.buildNativeQuery(data, search, hasManualScores);
+    sqlQuery
+      .then((expWorkflowIds: Array<{ exp_workflow_id }>) => {
+        resolve(uniq(expWorkflowIds.map((expWorkflowId) => {
+          return expWorkflowId.exp_workflow_id;
+        })));
+      })
+      .catch((error) => {
+        app.winston.error(error);
+        reject(new Error(error));
+      });
+  });
 };

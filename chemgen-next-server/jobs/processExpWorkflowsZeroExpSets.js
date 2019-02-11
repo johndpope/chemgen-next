@@ -67,15 +67,24 @@ var workflowQueueZeroExpSets = function (job) {
             var expWorkflowIds = results.map(function (result) {
                 return result.exp_workflow_id;
             });
+            app.winston.info("There are " + expWorkflowIds.length + " distinct expWorkflowIds in the ExpDesign Table");
             return app.models.ExpScreenUploadWorkflow
-                .find({
-                where: {
-                    expWorkflowId: { nin: expWorkflowIds }
-                },
-                limit: 5
+                .count({
+                id: { nin: expWorkflowIds }
+            })
+                .then(function (count) {
+                app.winston.info("There are " + JSON.stringify(count) + " workflows left");
+                return app.models.ExpScreenUploadWorkflow
+                    .find({
+                    where: {
+                        id: { nin: expWorkflowIds }
+                    },
+                });
             });
         })
             .then(function (expWorkflows) {
+            app.winston.info("Found: " + JSON.stringify(expWorkflows.length));
+            expWorkflows = lodash_1.shuffle(expWorkflows).slice(0, 5);
             app.winston.info("Queueing : " + expWorkflows.length);
             return Promise.map(expWorkflows, function (expWorkflowWithZeroExpSets) {
                 expWorkflowWithZeroExpSets = JSON.parse(JSON.stringify(expWorkflowWithZeroExpSets));
@@ -87,16 +96,18 @@ var workflowQueueZeroExpSets = function (job) {
                     .catch(function (error) {
                     return;
                 });
-            }, { concurrency: 1 });
+            }, { concurrency: 4 });
         })
             .then(function () {
+            process.exit(0);
             resolve();
         })
             .catch(function (error) {
+            process.exit(1);
             reject(new Error(error));
         });
     });
 };
-// workflowQueueZeroExpSets({});
+workflowQueueZeroExpSets({});
 module.exports = workflowQueueZeroExpSets;
 //# sourceMappingURL=processExpWorkflowsZeroExpSets.js.map

@@ -19,6 +19,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var lodash_1 = require("lodash");
 var lodash_decorators_1 = require("lodash-decorators");
 // The API definition for getting ExpSets
+// TODO COMPLETELY REDO THIS CLASS
+// ONLY WANT TO ACCEPT expWorkflowIds and expGroupIds
 var ExpSetSearch = /** @class */ (function () {
     function ExpSetSearch(data) {
         this.expWorkflowDeepSearch = {

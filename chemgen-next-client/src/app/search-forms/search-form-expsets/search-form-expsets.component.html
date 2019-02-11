@@ -1,102 +1,17 @@
-<!--Start Search Form-->
-<div class="row">
-    <div class="col-md-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2>Search All Exp Sets</h2>
-                <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
-                    </li>
-                </ul>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
-
-                <form (ngSubmit)="onSubmit()">
-                    <div class="col-xs-3">
-                        <!-- required for floating -->
-                        <!-- Nav tabs -->
-                        <ul class="nav nav-tabs tabs-left">
-                            <li class="active"><a href="#screenData" data-toggle="tab">Screen</a>
-                            </li>
-                            <li><a href="#rnaiData" data-toggle="tab">RNAi</a>
-                            <li><a href="#filterScores" data-toggle="tab">Filter By Scores - Simple</a>
-                            <li><a href="#filterScoresAdvanced" data-toggle="tab">Filter By Scores - Advanced</a>
-                                <!--</li>-->
-                                <!--<li><a href="#chemicalData" data-toggle="tab">Chemical</a>-->
-                                <!--</li>-->
-                        </ul>
-                        <div class="clearfix"></div>
-                        <br>
-                        <button type="button" (click)="onReset()" class="btn btn-danger">Reset</button>
-                        <button type="submit" id="searchFormSubmit" class="btn btn-success">Submit</button>
-                        <div class="clearfix"></div>
-                    </div>
-
-                    <div class="col-xs-9">
-                        <!-- Tab panes -->
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="screenData">
-                                <p class="lead">Screen Data</p>
-                                <app-search-form-exp-screen
-                                        [formResults]="searchFormExpScreenResults"></app-search-form-exp-screen>
-                            </div>
-                            <div class="tab-pane" id="rnaiData">
-                                <p class="lead">RNAis List</p>
-                                <app-search-form-rnai [formResults]="searchFormRnaiFormResults"></app-search-form-rnai>
-                            </div>
-                            <div class="tab-pane" id="filterScores">
-                                <p class="lead">Filter By Scores - Simple</p>
-                                <app-search-form-filter-by-scores
-                                        [searchFormFilterByScoresResults]="searchFormFilterByScoresResults"></app-search-form-filter-by-scores>
-                            </div>
-                            <div class="tab-pane" id="filterScoresAdvanced">
-                                <p class="lead">Filter By Scores - Advanced</p>
-                                <app-search-form-filter-by-scores-advanced
-                                        [searchFormFilterByScoresAdvancedResults]="searchFormFilterByScoresAdvancedResults"
-                                ></app-search-form-filter-by-scores-advanced>
-                            </div>
-                            <!--<div class="tab-pane" id="chemicalData">Chemical</div>-->
-                        </div>
-                    </div>
-
-                    <div class="clearfix"></div>
-                </form>
-                <div class="alert alert-warning" *ngIf="message">
-                    {{message}}
-                </div>
-                <div>
-                    <pre>{{expSetSearch | json}}</pre>
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-</div>
-<!--End Search Form-->
-
-<ngx-spinner
-        bdColor="rgba(51, 51, 51, 0.8)"
-        size="large"
-        color="#fff"
-        type="ball-atom"
-></ngx-spinner>
+<app-search-form-base [searchFormParams]="searchFormParams" [title]="'Search Exp Sets Replicate View'"></app-search-form-base>
 
 <!--Start Content-->
 <div class="row">
     <div class="col-md-12">
 
 
-        <div *ngIf="formSubmitted">
+        <div *ngIf="searchFormParams.formSubmitted">
             <!--Begin Current Content-->
-            <div *ngIf="expSets" class="expSets">
-                <app-expset-sheet [expSets]="expSets" [expSetModule]="expSetsModule"
-                                  [expSetSearch]="expSetSearch"></app-expset-sheet>
+            <div *ngIf="searchFormParams.expSets" class="expSets">
+                <app-expset-sheet [expSets]="searchFormParams.expSets" [expSetModule]="searchFormParams.expSetsModule"
+                                  [expSetSearch]="searchFormParams.expSetSearch"></app-expset-sheet>
             </div>
-            <div *ngIf="expSets && ! expSets.expWorkflows?.length">
+            <div *ngIf="searchFormParams.expSets && ! searchFormParams.expSets.expWorkflows?.length">
                 <h2>Empty ResultSet</h2>
                 <p>The search you performed returned an empty result set.</p>
                 <p>Either your search is incorrect, or not in the database.</p>
@@ -106,34 +21,3 @@
     </div>
 </div>
 <!--End Content-->
-<!--Start Pagination-->
-<div class="row" *ngIf="expSets && expSets.expWorkflows?.length">
-    <div class="col-md-12">
-
-        <nav aria-label="Page navigation example">
-            <ul class="pagination pagination-lg" *ngIf="expSets.currentPage > 1">
-                <li class="page-item"><a class="page-link" (click)="getNewPage(expSets.currentPage - 1)">Previous</a>
-                </li>
-            </ul>
-            <ul class="pagination pagination-lg">
-                <li class="page-item disabled">
-                    <a class="page-link" tabindex="-1">{{expSets.currentPage}}</a>
-                </li>
-            </ul>
-            <ul class="pagination pagination-lg" *ngFor="let pageNo of lowerPageRange">
-                <li class="page-item"><a class="page-link" (click)="getNewPage(pageNo)">{{pageNo}}</a></li>
-            </ul>
-            <ul class="pagination pagination-lg">
-                <li class="page-item disabled"><a class="page-link">...</a></li>
-            </ul>
-            <ul class="pagination pagination-lg" *ngFor="let pageNo of upperPageRange">
-                <li class="page-item"><a class="page-link" (click)="getNewPage(pageNo)">{{pageNo}}</a></li>
-            </ul>
-            <ul class="pagination pagination-lg" *ngIf="expSets.currentPage < expSets.totalPages">
-                <li class="page-item"><a class="page-link" (click)="getNewPage(expSets.currentPage + 1)">Next</a></li>
-            </ul>
-        </nav>
-    </div>
-</div>
-<!--End Pagination-->
-

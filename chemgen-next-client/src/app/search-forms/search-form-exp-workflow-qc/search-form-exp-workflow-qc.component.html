@@ -1,54 +1,5 @@
-<!--Start Search Form-->
-<div class="row">
-  <div class="col-md-12">
-    <div class="x_panel">
-      <div class="x_title">
-        <h2>Run QC Per Batch</h2>
-        <ul class="nav navbar-right panel_toolbox">
-          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-          </li>
-          <li><a class="close-link"><i class="fa fa-close"></i></a>
-          </li>
-        </ul>
-        <div class="clearfix"></div>
-      </div>
-      <div class="x_content">
-
-        <form (ngSubmit)="onSubmit()">
-          <div class="col-xs-3">
-            <!-- required for floating -->
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs tabs-left">
-              <li class="active"><a href="#screenData" data-toggle="tab">Screen</a>
-              </li>
-              <!--<li><a href="#viewOptions" data-toggle="tab">View Options</a>-->
-              <!--</li>-->
-            </ul>
-            <div class="clearfix"></div>
-            <button type="submit" id="searchFormSubmit" class="btn btn-success">Submit</button>
-            <div class="clearfix"></div>
-          </div>
-
-          <div class="col-xs-9">
-            <!-- Tab panes -->
-            <div class="tab-content">
-              <div class="tab-pane active" id="screenData">
-                <p class="lead">Screen Data</p>
-                <app-search-form-exp-screen
-                        [formResults]="searchFormExpScreenResults"></app-search-form-exp-screen>
-              </div>
-            </div>
-          </div>
-
-          <div class="clearfix"></div>
-        </form>
-
-      </div>
-    </div>
-
-  </div>
-</div>
-<!--End Search Form-->
+<app-search-form-base [searchFormParams]="searchFormParams"
+                      [title]="'Batch QC Interface (AKA The Kitchen Sink)'"></app-search-form-base>
 
 <!--Start Spinner-->
 <ngx-spinner
@@ -63,16 +14,16 @@
 <div class="row">
   <div class="col-md-12">
 
-    <div *ngIf="formSubmitted">
+    <div *ngIf="searchFormParams.formSubmitted">
       <!--Begin Content-->
 
-      <div *ngIf="expSets && expSets.expWorkflows?.length" class="expSets">
-        <app-exp-workflow-qc [expSets]="expSets"
+      <div *ngIf="searchFormParams.expSets && searchFormParams.expSets.expWorkflows?.length" class="expSets">
+        <app-exp-workflow-qc [expSets]="searchFormParams.expSets"
                            (expSetsScored)="getNewExpSets($event)"
         ></app-exp-workflow-qc>
       </div>
       <!--End Content-->
-      <div *ngIf="expSets && ! expSets.expWorkflows?.length">
+      <div *ngIf="searchFormParams.expSets && ! searchFormParams.expSets.expWorkflows?.length">
         <h2>Empty ResultSet</h2>
         <p>The search you performed returned an empty result set.</p>
         <p>Either your search is incorrect, all plates are scored for this screen, or not in the database.</p>

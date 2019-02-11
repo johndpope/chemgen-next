@@ -50,6 +50,8 @@ export interface ExpSetSearchInterface {
 }
 
 // The API definition for getting ExpSets
+// TODO COMPLETELY REDO THIS CLASS
+// ONLY WANT TO ACCEPT expWorkflowIds and expGroupIds
 export class ExpSetSearch {
   rnaiSearch ?: Array<string>;
   chemicalSearch ?: Array<string>;
@@ -58,7 +60,12 @@ export class ExpSetSearch {
   screenSearch ?: Array<any>;
   expWorkflowSearch ?: Array<any>;
   expWorkflowDeepSearch?: { temperature, temperatureRange, screenStage, screenType, instrumentPlateIds, wormStrains } = {
-    temperature: null, temperatureRange: null, screenStage: null, screenType: null, instrumentPlateIds: null, wormStrains: null,
+    temperature: null,
+    temperatureRange: null,
+    screenStage: null,
+    screenType: null,
+    instrumentPlateIds: null,
+    wormStrains: null,
   };
   plateSearch ?: Array<number>;
   expGroupSearch ?: Array<number>;
@@ -235,9 +242,11 @@ export class ExpsetModule {
 
   constructor(expSets: ExpSetSearchResults) {
     this.expSets = expSets;
-    this.expSets.expWorkflows = this.expSets.expWorkflows.map((expWorkflow) => {
-      return this.findExpWorkflow(String(expWorkflow.id));
-    });
+    if (get(this, ['expSets', 'expWorkflows']) && isArray(this.expSets.expWorkflows)) {
+      this.expSets.expWorkflows = this.expSets.expWorkflows.map((expWorkflow) => {
+        return this.findExpWorkflow(String(expWorkflow.id));
+      });
+    }
   }
 
   @Memoize()
