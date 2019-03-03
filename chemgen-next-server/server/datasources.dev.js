@@ -10,15 +10,30 @@ module.exports = {
     connector: 'memory'
   },
   arrayscanDS: {
+    // name: 'arrayscanDS',
+    // // connector: 'memory',
+    // connector: 'mysql',
+    // port: 3307,
+    // host: 'localhost',
+    // // host: 'arrayscan_mysql_db',
+    // database: 'arrayscan',
+    // user: 'arrayscan',
+    // password: 'password',
+    // export ARRAYSCAN_CONNECTOR='mssql'
+    // export ARRAYSCAN_DB="store"
+    // export ARRAYSCAN_USER="mysqluser"
+    // export ARRAYSCAN_HOST="10.230.9.202"
+    // export ARRAYSCAN_PASS="password"
+    // export ARRAYSCAN_PORT=1433
     name: 'arrayscanDS',
-    // connector: 'memory',
-    connector: 'mysql',
-    port: 3307,
-    host: 'localhost',
-    // host: 'arrayscan_mysql_db',
-    database: 'arrayscan',
-    user: 'arrayscan',
-    password: 'password',
+    // connector: 'mssql',
+    connector: process.env.ARRAYSCAN_CONNECTOR || 'mssql',
+    // port: 1433,
+    port : process.env.ARRAYSCAN_PORT || 1433,
+    host: process.env.ARRAYSCAN_HOST || "10.230.9.202",
+    database: process.env.ARRAYSCAN_DB || "store",
+    user: process.env.ARRAYSCAN_USER || "mysqluser",
+    password: process.env.ARRAYSCAN_PASS || "password",
   },
   chemgenDS: {
     name: 'chemgenDS',

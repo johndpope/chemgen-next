@@ -7,12 +7,12 @@ export HOST="localhost"
 export IMAGE_URL="http://10.230.9.227/microscope"
 
 ### ArrayScan MSSQL DB
-export ARRAYSCAN_CONNECTOR="mysql"
-export ARRAYSCAN_DB="arrayscan"
-export ARRAYSCAN_USER="root"
-export ARRAYSCAN_PASS="password"
-export ARRAYSCAN_HOST="${HOST}"
-export ARRAYSCAN_PORT="3307"
+#export ARRAYSCAN_CONNECTOR="mysql"
+#export ARRAYSCAN_DB="arrayscan"
+#export ARRAYSCAN_USER="root"
+#export ARRAYSCAN_PASS="password"
+#export ARRAYSCAN_HOST="${HOST}"
+#export ARRAYSCAN_PORT="3307"
 
 ### ChemgenDB Mysql - Main Experimental DB
 export CHEMGEN_CONNECTOR="mysql"

@@ -83,9 +83,11 @@ module.exports = function (ExpSet) {
     return new Promise((resolve, reject) => {
       ExpSet.extract.workflows.getExpSets(search)
         .then((results) => {
+          console.log('resolving data');
           resolve(results)
         })
         .catch((error) => {
+          console.error(error);
           reject(new Error(error))
         })
     })

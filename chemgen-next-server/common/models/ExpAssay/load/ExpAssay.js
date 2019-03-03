@@ -7,7 +7,9 @@ var wellData_1 = require("../../../types/custom/wellData");
 var Promise = require("bluebird");
 var _ = require("lodash");
 var lodash_1 = require("lodash");
+var axios = require("axios");
 var request = require('request-promise');
+var uri = "http://" + config.get('imageConversionHost') + ":" + config.get('imageConversionPort');
 var ExpAssay = app.models['ExpAssay'];
 /**
  * Workflows for loading data into the Exp*Tables
@@ -488,6 +490,7 @@ ExpAssay.load.workflows.imageConversionPipeline.nyMicroscope = function (workflo
  */
 ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowData, plateData) {
     return new Promise(function (resolve, reject) {
+        app.winston.info('Converting arrayscan images!');
         //@ts-ignore
         Promise.map(plateData.wellDataList, function (wellData) {
             var images = ExpAssay.helpers.genImageFileNames(plateData.expPlate, wellData.stockLibraryData.well);
@@ -501,14 +504,11 @@ ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowDa
                 if (true) {
                     // if (!fs.existsSync(`${images.baseImage}-autolevel.png`) || true) {
                     //TODO Make this a parameter somewhere
-                    return request({
-                        timeout: 50,
-                        uri: "http://" + config.get('imageConversionHost') + ":" + config.get('imageConversionPort'),
-                        body: imageJob,
-                        method: 'POST',
-                        json: true,
-                    })
+                    //@ts-ignore
+                    return axios.post(uri, imageJob)
                         .then(function (response) {
+                        app.winston.info('Successfully submitted convert image command');
+                        // app.winston.info(JSON.stringify(response.data));
                         return {
                             baseImage: images.baseImage,
                             script: imageJob.title,
@@ -516,6 +516,8 @@ ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowDa
                         };
                     })
                         .catch(function (error) {
+                        app.winston.info('Error converting images');
+                        // app.winston.error(error);
                         return {
                             baseImage: images.baseImage,
                             script: imageJob.title,

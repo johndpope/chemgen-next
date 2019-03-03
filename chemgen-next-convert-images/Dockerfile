@@ -1,7 +1,7 @@
 FROM continuumio/miniconda3:4.5.11
 
 RUN apt-get update -y; apt-get upgrade -y
-RUN apt-get install -y vim-tiny vim-athena mysql-client ssh
+RUN apt-get update -y; apt-get upgrade -y; apt-get install -y vim-tiny vim-athena ssh
 
 RUN adduser --home /home/airflow airflow
 
@@ -32,6 +32,7 @@ RUN mv airflow_cors.patch /home/airflow/.conda/envs/image-conversion/lib && \
     cd /home/airflow/.conda/envs/image-conversion/lib && \
     patch python3.6/site-packages/airflow/www/app.py airflow_cors.patch
 
+## TODO Try running this as bftools docker operator
 RUN wget http://downloads.openmicroscopy.org/latest/bio-formats5.6/artifacts/bftools.zip
 RUN unzip bftools.zip
 RUN mv bftools/* /home/airflow/.conda/envs/image-conversion/bin/

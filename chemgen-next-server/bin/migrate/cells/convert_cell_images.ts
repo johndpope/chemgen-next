@@ -16,6 +16,7 @@ const fs = require('fs');
 const request = require('request-promise');
 const Promise = require('bluebird');
 
+const uri = "http://pyrite.abudhabi.nyu.edu:8080/api/experimental/dags/image_conversion/dag_runs";
 
 let genImageFileNames = function (expPlate: ExpPlateResultSet, well: string) {
   let imageArray = expPlate.instrumentPlateImagePath.split('\\');
@@ -67,56 +68,31 @@ let genImageFileNames = function (expPlate: ExpPlateResultSet, well: string) {
   });
 };
 
-let submitImageJob = function (imagesList) {
+let generateImageJob = function (imagesList, plateData: ExpPlateResultSet) {
   return new Promise((resolve, reject) => {
     Promise.map(imagesList, (images) => {
-      const uri = "http://pyrite.abudhabi.nyu.edu:8080/api/experimental/dags/image_conversion/dag_runs";
       return app.models.ExpAssay.helpers.cells.genConvertImageCommands(images)
         .then((commands: string) => {
-          app.winston.info(commands);
-          // return;
-          const imageJob = {
-            run_id: `convertImage-${images.plateId}-${images.assayName}-${now}`,
-            task_id: `convertImage-${images.plateId}-${images.assayName}-${now}`,
-            conf: JSON.stringify({image_convert_command: commands})
-          };
-          // @ts-ignore
-          return axios.post(uri, imageJob)
-            .then((response) => {
-              app.winston.info('All fine');
-              return {
-                baseImage: images.baseImage,
-                // @ts-ignore
-                script: imageJob.title,
-                convert: 1
-              };
-            })
-            .then(() => {
-              return Promise.delay(5000);
-            })
-            .catch((error) => {
-              app.winston.error('Got an error');
-              // app.winston.error(error.error);
-              return {
-                baseImage: images.baseImage,
-                // @ts-ignore
-                script: imageJob.title,
-                convert: 0
-              };
-            });
+          return commands;
         })
         .catch((error) => {
           console.log(JSON.stringify(error));
-          throw new Error(error);
+          return new Error(error);
         })
     }, {concurrency: 1})
-      .then(() => {
-        return Promise.delay(5000);
+      .then((commands: Array<string>) => {
+        let commandStr = commands.join("\n");
+        commandStr = "#!/usr/bin/env bash\nset -x -e\n\n" + commandStr;
+        const imageJob = {
+          run_id: `convertWell-${plateData.barcode}-${imagesList[0].assayName}`,
+          task_id: `convertWell-${plateData.barcode}-${imagesList[0].assayName}`,
+          conf: JSON.stringify({image_convert_command: commandStr})
+        };
+        app.winston.info(`Submitting job ${imageJob.task_id}`);
+        return submitImageJob(imageJob, plateData);
       })
-      .then((results) => {
-        console.log('resolving contactSheetResults!');
+      .then(() => {
         resolve();
-        // resolve(results);
       })
       .catch((error) => {
         console.log(JSON.stringify(error));
@@ -125,48 +101,93 @@ let submitImageJob = function (imagesList) {
   });
 };
 
-let plateDataList = jsonfile.readFileSync(path.resolve(__dirname, 'upload_these.json'));
-plateDataList = shuffle(plateDataList);
+// let plateDataList = jsonfile.readFileSync(path.resolve(__dirname, 'upload_these.json'));
+// plateDataList = shuffle(plateDataList);
 // plateDataList = plateDataList.slice(0, 10);
 
 app.models.Plate.find({
   where: {
-    platebarcode: {like: '%SK_%'}
+    or: [
+      {
+        name: {like: '%SK%Sent%'}
+      },
+      {
+        platebarcode: {like: '%SK%Sent%'}
+      }
+    ]
   }
 })
   .then((platesDataList: PlateResultSet[]) => {
-    // app.winston.info(`FIRST PLATE: ${JSON.stringify(plateDataList[0], null, 2)}`)
     app.winston.info(`Found: ${platesDataList.length} plates`);
-    platesDataList = shuffle(platesDataList);
-    return Promise.map(plateDataList, (plateData: PlateResultSet) => {
+    platesDataList.map((plateData) => {
+      app.winston.info(`Found Plate: ${plateData.name}`);
+    });
+    // platesDataList = shuffle(platesDataList);
+    return Promise.map(platesDataList, (plateData: PlateResultSet) => {
       let expPlate = new ExpPlateResultSet({
         barcode: plateData.name,
         instrumentPlateImagePath: plateData.imagepath,
         instrumentPlateId: plateData.csPlateid
       });
+      // app.winston.info(`Processing Plate: ${expPlate.barcode}`);
       let wells = app.etlWorkflow.helpers.list384Wells();
-      wells = shuffle(wells);
+      // wells = shuffle(wells);
 
       return Promise.map(wells, (well) => {
         let imageData = genImageFileNames(expPlate, well);
-        return submitImageJob(imageData);
+        return generateImageJob(imageData, expPlate);
       }, {concurrency: 1})
-        .then((results) => {
-          console.log(JSON.stringify(results));
-          return results;
+        .then(() => {
+          // let commandStr = commands.slice(0,1).join("\n");
+          // let commandStr = commands.join("\n");
+          // // commandStr = "#!/usr/bin/env bash\nset -x -e\n\n" + commandStr;
+          // // app.winston.info(`CommandStr: ${commandStr}`);
+          // const imageJob = {
+          //   run_id: `convertPlate-${expPlate.barcode}`,
+          //   task_id: `convertPlate-${expPlate.barcode}`,
+          //   conf: JSON.stringify({image_convert_command: commandStr})
+          // };
+          // app.winston.info(`Submitting job ${imageJob.task_id}`);
+          // return submitImageJob(imageJob, expPlate);
+          return;
         })
         .catch((error) => {
-          console.log(JSON.stringify(error));
-          throw new Error(error);
+          return new Error(error);
         });
     }, {concurrency: 1})
       .then((results) => {
         console.log('I think this is done!');
       })
       .catch((error) => {
-        console.log(JSON.stringify(error));
+        // app.winston.error(`Received Error: ${error}`);
       });
   })
   .catch((error) => {
-    app.winston.error(error);
+    // app.winston.error(error);
   });
+
+function submitImageJob(imageJob: { run_id, task_id, conf }, expPlate: ExpPlateResultSet) {
+  return new Promise((resolve, reject) => {
+    //@ts-ignore
+    return axios.post(uri, imageJob)
+      .then((response) => {
+        app.winston.info(`Successfully submitted ${imageJob.run_id}`);
+        return {
+          plate: expPlate.barcode,
+          convert: 1
+        };
+      })
+      .then(() => {
+        return Promise.delay(500);
+      })
+      .then(() => {
+        resolve();
+      })
+      .catch((error) => {
+        app.winston.error(`Error submitting ${imageJob.run_id}`);
+        app.winston.error(`${error}`);
+        app.winston.error(error);
+        resolve();
+      });
+  });
+}

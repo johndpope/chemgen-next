@@ -75,9 +75,11 @@ ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search: ExpSetSearch
         }
       })
       .then((data: ExpSetSearchResults) => {
+        app.winston.info('Should be getting expManualScores by ExpWorkflowId');
         return ExpSet.extract.getExpManualScoresByExpWorkflowId(data, search);
       })
       .then((data: ExpSetSearchResults) => {
+        app.winston.info('Should be getting counts');
         if (!isEqual(data.modelPredictedCounts.length, data.expAssays.length)) {
           return ExpSet.extract.getModelPredictedCountsByExpWorkflowId(data, search);
         } else {
@@ -85,10 +87,16 @@ ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search: ExpSetSearch
         }
       })
       .then((data: ExpSetSearchResults) => {
-        data = ExpSet.extract.insertCountsDataImageMeta(data);
-        data = ExpSet.extract.insertExpManualScoresImageMeta(data);
-        data = ExpSet.extract.cleanUp(data, search);
-        resolve(data);
+        try {
+          data = ExpSet.extract.insertCountsDataImageMeta(data);
+          data = ExpSet.extract.insertExpManualScoresImageMeta(data);
+          data = ExpSet.extract.cleanUp(data, search);
+          app.winston.info('Resolving data');
+          resolve(data);
+        } catch (error) {
+          app.winston.error(error);
+          resolve(data);
+        }
       })
       .catch((error) => {
         reject(new Error(error));
@@ -370,9 +378,12 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data: ExpSetSearchResults, 
       })
       .then((data: ExpSetSearchResults) => {
         data = ExpSet.extract.genExpGroupTypeAlbums(data, search);
-        return ExpSet.extract.saveToCache(data, search);
+        app.winston.info('Complete genExpGroupTypeAlbums');
+        // return ExpSet.extract.saveToCache(data, search);
+        return data;
       })
       .then((data: ExpSetSearchResults) => {
+        app.winston.info('Should be resolving data!');
         resolve(data);
       })
       .catch((error) => {

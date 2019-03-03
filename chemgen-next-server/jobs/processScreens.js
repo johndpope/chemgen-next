@@ -27,7 +27,9 @@ function processWorkflows(program) {
     }
     app.models.ExpScreenUploadWorkflow
         .find({
-        where: {},
+        where: {
+            name: /crb/
+        },
         limit: 5
     })
         .then(function (results) {

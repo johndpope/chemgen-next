@@ -61,7 +61,6 @@ export class ContactSheetReplicateViewComponent implements OnInit {
         if (userId) {
             this.userId = userId.innerText || 0;
         }
-        // this.expSetModule = new ExpsetModule(this.expSets);
     }
 
     ngOnInit() {

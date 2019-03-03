@@ -20,6 +20,7 @@ import {ExpManualScoresResultSet} from '../../../types/sdk/models';
 import {ExpsetModule} from '../expset/expset.module';
 import {ExpSetSearchResults} from "../../../types/custom/ExpSetTypes";
 import {ContactSheetFormResults, ContactSheetUIOptions} from "../contact-sheet/contact-sheet.module";
+import {HotkeysService, Hotkey} from "angular2-hotkeys";
 
 @Component({
     selector: 'app-contact-sheet-plate-view',
@@ -43,7 +44,8 @@ export class ContactSheetPlateViewComponent implements OnInit {
     constructor(private expSetApi: ExpSetApi,
                 private expManualScoresApi: ExpManualScoresApi,
                 public _lightbox: Lightbox,
-                private renderer: Renderer2) {
+                private renderer: Renderer2,
+                private hotkeysService: HotkeysService) {
         this.didScore = false;
         this.errorMessage = '';
         this.contactSheetResults = new ContactSheetFormResults();
@@ -58,9 +60,21 @@ export class ContactSheetPlateViewComponent implements OnInit {
         }
     }
 
-
     ngOnInit() {
+        this.addContactSheetPlateViewHotkeys();
         this.parseExpSetsToAlbums();
+    }
+
+    addContactSheetPlateViewHotkeys() {
+        this.hotkeysService.add(new Hotkey('shift+i', (event: KeyboardEvent): boolean => {
+            this.submitInteresting();
+            return false; // Prevent bubbling
+        }, undefined, 'Submit Interesting and clear from the view'));
+
+        this.hotkeysService.add(new Hotkey('shift+a', (event: KeyboardEvent): boolean => {
+            this.submitAll();
+            return false; // Prevent bubbling
+        }, undefined, 'Submit all and get a new batch'));
     }
 
     submitInteresting() {

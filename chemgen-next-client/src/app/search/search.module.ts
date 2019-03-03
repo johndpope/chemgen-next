@@ -472,6 +472,8 @@ export class SearchFormBaseComponentParams {
         if (this.expGroupIds.length) {
             this.paginationData = new Pagination(1);
             this.expSetSearch.expGroupSearch = this.expGroupIds;
+        } else if (get(this.searchFormExpScreenResults, ['expScreenWorkflow', 'id'])) {
+            this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
         } else if (isArray(this.expWorkflowIds) && this.expWorkflowIds.length) {
             this.paginationData = new Pagination(this.expWorkflowIds.length);
             if (this.expWorkflowIds[this.paginationData.currentPage - 1]) {

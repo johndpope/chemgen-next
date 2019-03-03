@@ -12,8 +12,10 @@ import Promise = require('bluebird');
 import * as _ from "lodash";
 import {get, isEqual, shuffle, find} from 'lodash';
 import fs = require('fs');
+import axios = require('axios');
 
 const request = require('request-promise');
+const uri = `http://${config.get('imageConversionHost')}:${config.get('imageConversionPort')}`;
 
 const ExpAssay = app.models['ExpAssay'] as (typeof WorkflowModel);
 
@@ -58,7 +60,7 @@ ExpAssay.load.workflows.processExpPlates = function (workflowData: any, expPlate
           return ExpAssay.load.prepareAnnotationData(workflowData, results);
         });
     }, {concurrency: 1})
-      // @ts-ignore
+    // @ts-ignore
       .then((results: PlateCollection) => {
         resolve(results);
       })
@@ -135,8 +137,7 @@ ExpAssay.load.createExpGroups = function (workflowData: any, expPlateData: Plate
     let expGroupData: any;
     try {
       expGroupData = ExpAssay.load.getExpGroup(workflowData, expPlateData.expPlate);
-    }
-    catch (error) {
+    } catch (error) {
       app.winston.warn(error);
       reject(new Error(error));
     }
@@ -178,8 +179,7 @@ ExpAssay.load.createExpGroups = function (workflowData: any, expPlateData: Plate
         let expGroupType: any;
         try {
           expGroupType = ExpAssay.load[workflowData.screenStage].getControlCondition(workflowData, expPlateData.expPlate, expGroupData);
-        }
-        catch (error) {
+        } catch (error) {
           app.winston.warn(error);
           reject(new Error(error));
         }
@@ -359,8 +359,7 @@ ExpAssay.load.getExpGroup = function (workflowData: any, expPlate: ExpPlateResul
     expGroupType = Object.keys(workflowData.experimentGroups).filter(function (condition: string) {
       return find(workflowData.experimentGroups[condition]['plates'], ['instrumentPlateId', String(expPlate.instrumentPlateId)]) || find(workflowData.experimentGroups[condition]['plates'], ['instrumentPlateId', expPlate.instrumentPlateId]);
     })[0];
-  }
-  catch (error) {
+  } catch (error) {
     app.winston.info(error);
     throw new Error(error);
   }
@@ -512,6 +511,7 @@ ExpAssay.load.workflows.imageConversionPipeline.nyMicroscope = function (workflo
  */
 ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowData: any, plateData: PlateCollection) {
   return new Promise((resolve, reject) => {
+    app.winston.info('Converting arrayscan images!');
     //@ts-ignore
     Promise.map(plateData.wellDataList, (wellData: WellCollection) => {
       let images: any = ExpAssay.helpers.genImageFileNames(plateData.expPlate, wellData.stockLibraryData.well);
@@ -525,14 +525,11 @@ ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowDa
           if (true) {
             // if (!fs.existsSync(`${images.baseImage}-autolevel.png`) || true) {
             //TODO Make this a parameter somewhere
-            return request({
-              timeout: 50,
-              uri: `http://${config.get('imageConversionHost')}:${config.get('imageConversionPort')}`,
-              body: imageJob,
-              method: 'POST',
-              json: true,
-            })
+            //@ts-ignore
+            return axios.post(uri, imageJob)
               .then((response) => {
+                app.winston.info('Successfully submitted convert image command');
+                // app.winston.info(JSON.stringify(response.data));
                 return {
                   baseImage: images.baseImage,
                   script: imageJob.title,
@@ -540,14 +537,15 @@ ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowDa
                 };
               })
               .catch((error) => {
+                app.winston.info('Error converting images');
+                // app.winston.error(error);
                 return {
                   baseImage: images.baseImage,
                   script: imageJob.title,
                   convert: 0
                 };
               });
-          }
-          else {
+          } else {
             // @ts-ignore
             return {
               baseImage: images.baseImage,
