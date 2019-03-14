@@ -26,6 +26,9 @@ import {ManualScoresModule} from "../scoring/manual-scores/manual-scores.module"
 export class SearchModule {
     expScreens: ExpScreenResultSet[];
     expScreenWorkflows: ExpScreenUploadWorkflowResultSet[];
+    //The typeahead module is not working the way I expected it too
+    //I am creating a tmp array, and querying/filtering from that
+    typeAheadExpScreenWorkflows: ExpScreenUploadWorkflowResultSet[] = [];
     expBiosamples: ExpBiosampleResultSet[];
     //TODO Not sure what this is used for...
     expSets: ExpSetSearchResults;
@@ -59,6 +62,7 @@ export class SearchModule {
             })
             .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
                 this.expScreenWorkflows = results;
+                this.typeAheadExpScreenWorkflows = results;
             }, (error) => {
                 console.log(error);
             });
@@ -150,7 +154,7 @@ export class SearchModule {
                 },
             })
             .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
-                this.expScreenWorkflows = orderBy(results, 'name');
+                this.typeAheadExpScreenWorkflows = orderBy(results, 'name');
                 return;
             });
     }
@@ -489,6 +493,7 @@ export class SearchFormBaseComponentParams {
     onReset() {
         this.searchFormExpScreenResults = new SearchFormExpScreenFormResults();
         this.searchFormRnaiFormResults = new SearchFormRnaiFormResults();
+        this.initializeSearches();
         // this.searchFormFilterByScoresResults = new SearchFormFilterByScoresResults();
         // this.searchFormFilterByScoresAdvancedResults = new SearchFormFilterByScoresAdvancedResults();
 
