@@ -11,12 +11,14 @@ set -x -e
 #docker tag ${DOCKER_COMPOSE_PREFIX}_airflow_sequencer_automation quay.io/nyuad_cgsb/airflow-chemgen:latest
 #docker tag ${DOCKER_COMPOSE_PREFIX}_cellprofiler quay.io/nyuad_cgsb/cellprofiler:latest
 #docker tag ${DOCKER_COMPOSE_PREFIX}_cellprofiler quay.io/nyuad_cgsb/cellprofiler:v3.1.8
+#docker tag ${DOCKER_COMPOSE_PREFIX}_cellprofiler2 quay.io/nyuad_cgsb/cellprofiler:v2.3.1
 #
 ## Docker login
 #echo ${QUAY_API_TOKEN} | docker login quay.io -u jerowe  --password-stdin
 #
 ## Push to quay
 #docker push quay.io/nyuad_cgsb/airflow-chemgen:latest
+#docker push quay.io/nyuad_cgsb/cellprofiler:v2.3.1
 #docker push quay.io/nyuad_cgsb/cellprofiler:latest
 #docker push quay.io/nyuad_cgsb/cellprofiler:v3.1.8
 #docker-compose stop
@@ -31,4 +33,4 @@ rsync -avz -e 'ssh -p 4410' chemgen-next-convert-images "jdr400@pyrite.abudhabi.
 # Ensure the docker daemon is running
 # Build and start the server
 ############################################################################################################
-#ssh -p 4410 jdr400@pyrite.abudhabi.nyu.edu "cd /home/jdr400/DEPLOY/chemgen-next-convert-images && ./run.sh"
+ssh -p 4410 jdr400@pyrite.abudhabi.nyu.edu "cd /home/jdr400/DEPLOY/chemgen-next-convert-images && ./run.sh"

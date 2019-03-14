@@ -3,8 +3,14 @@ FROM continuumio/miniconda3:4.5.11
 RUN apt-get update -y; apt-get upgrade -y
 RUN apt-get install -y vim-tiny vim-athena ssh openssh-server mysql-client default-libmysqlclient-dev openjdk-8-jdk build-essential
 
+#RUN adduser --home /home/cellprofiler cellprofiler
+
 RUN mkdir -p /home/cellprofiler/cellprofiler
 RUN mkdir -p /home/cellprofiler/.ssh
+#RUN chown -R cellprofiler:cellprofiler /home/cellprofiler/cellprofiler
+#RUN chown -R cellprofiler:cellprofiler /home/cellprofiler/.ssh
+#
+#USER cellprofiler
 WORKDIR /home/cellprofiler
 
 COPY environment.yml environment.yml
@@ -22,5 +28,6 @@ ENV PATH /opt/conda/envs/cellprofiler/bin:/opt/conda/bin:/usr/local/sbin:/usr/lo
 ENV JAVA_LD_LIBRARY_PATH /opt/conda/envs/cellprofiler/jre/lib/amd64/server
 ENV JAVA_HOME /opt/conda/envs/cellprofiler
 
-#RUN conda install -f -y javabridge numpy
+# Somehow during the pip installation this gets clobbered, so we just reinstall it
+RUN conda install -f -y javabridge numpy=1.11
 RUN pip install --force centrosome

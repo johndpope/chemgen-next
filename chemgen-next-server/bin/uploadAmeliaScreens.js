@@ -140,11 +140,23 @@ var batchConfigs = [
         quadRange: quadRange,
         dateRanges: [
             {
-                start: moment('2018-11-01', 'YYYY-MM-DD'),
+                start: moment('2018-11-20', 'YYYY-MM-DD'),
+                end: moment('2018-11-30', 'YYYY-MM-DD'),
+            }
+        ],
+        platesRange: lodash_1.range(1, 2),
+    },
+    {
+        chr: 'IV',
+        temperature: 20,
+        quadRange: quadRange,
+        dateRanges: [
+            {
+                start: moment('2018-12-01', 'YYYY-MM-DD'),
                 end: moment('2018-12-30', 'YYYY-MM-DD'),
             }
         ],
-        platesRange: lodash_1.range(1, 12),
+        platesRange: lodash_1.range(2, 12),
     },
     {
         chr: 'V',
@@ -326,8 +338,8 @@ function getChromosomePlateMappings(batchConfig) {
                 //@ts-ignore
                 .then(function (workflows) {
                 workflows = lodash_1.compact(workflows);
-                // return createWorkflows(workflows);
-                return workflows;
+                return createWorkflows(workflows);
+                // return workflows;
             })
                 .catch(function (error) {
                 app.winston.error(error);

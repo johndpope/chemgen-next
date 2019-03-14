@@ -87,7 +87,7 @@ services:
         command: >
             bash -c "/home/airflow/scripts/wait-for-it.sh -p 5432 -h airflow_postgres_db -- airflow initdb; tail -f /dev/null"
         volumes:
-            - ./mnt:/mnt:Z
+            - ./mnt:/mnt:z
 #            - ./airflow:/home/airflow/airflow
             - ./pkgs:/home/airflow/pkgs
             - ./plugins:/home/airflow/plugins
@@ -157,7 +157,7 @@ services:
         command: >
             bash -c "/home/airflow/scripts/wait-for-it.sh -p 5432 -h airflow_postgres_db -- sleep 120; airflow webserver"
         volumes:
-            - ./mnt:/mnt:Z
+            - ./mnt:/mnt:z
 #            - ./airflow:/home/airflow/airflow
             - ./pkgs:/home/airflow/pkgs
             - ./html:/home/airflow/html:rw
@@ -197,8 +197,7 @@ services:
         command: >
             bash -c "/home/airflow/scripts/wait-for-it.sh -p 5432 -h airflow_postgres_db -- sleep 120; airflow worker"
         volumes:
-            - ./mnt:/mnt:Z
-#            - ./airflow:/home/airflow/airflow
+            - ./mnt:/mnt:z
             - ./pkgs:/home/airflow/pkgs
             - ./html:/home/airflow/html:rw
             - ./plugins:/home/airflow/plugins
@@ -211,10 +210,15 @@ services:
 
     # This is actually just to ensure it gets built
     # It gets pushed to quay.io, and is used directly through airflow from the DockerOperator
-    cellprofiler:
-        build:
-            context: cellprofiler
-            dockerfile: Dockerfile
+#    cellprofiler:
+#        build:
+#            context: cellprofiler
+#            dockerfile: Dockerfile
+#
+#    cellprofiler2:
+#        build:
+#            context: cellprofiler/v2.3.1
+#            dockerfile: Dockerfile
 
 networks:
   app-tier:

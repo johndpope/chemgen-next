@@ -35,9 +35,9 @@ function processWorkflows(program) {
   app.models.ExpScreenUploadWorkflow
     .find({
       where: {
-        name: /crb/
+        name: /lgl/
       },
-      limit: 5
+      // limit: 5
     })
     .then((results: ExpScreenUploadWorkflowResultSet[]) => {
       //@ts-ignore
