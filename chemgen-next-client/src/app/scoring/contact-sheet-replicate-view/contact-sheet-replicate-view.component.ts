@@ -7,7 +7,7 @@ import {ExpSetSearchResults, ExpSetSearch} from "../../../types/custom/ExpSetTyp
 import {ExpsetModule} from "../../../types/custom/ExpSetTypes";
 import {Lightbox} from "angular2-lightbox";
 import {ContactSheetFormResults} from "../contact-sheet/contact-sheet.module";
-import {isEqual, flatten, get, find, compact, isArray, remove, isUndefined, filter} from 'lodash';
+import {trim, isEqual, flatten, get, find, compact, isArray, remove, isUndefined, filter} from 'lodash';
 import {ExpManualScoresResultSet} from "../../../types/sdk/models";
 import {HotkeysService, Hotkey} from "angular2-hotkeys";
 import {ContactSheetUIOptions} from "../contact-sheet/contact-sheet.module";
@@ -57,6 +57,7 @@ export class ContactSheetReplicateViewComponent implements OnInit {
         const userId = document.getElementById('userId');
         if (userName) {
             this.userName = userName.innerText || 'dummyUser';
+            this.userName = trim(this.userName);
         }
         if (userId) {
             this.userId = userId.innerText || 0;

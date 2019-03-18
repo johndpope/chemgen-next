@@ -94,10 +94,10 @@ app.models.Plate.find({
     where: {
         or: [
             {
-                name: { like: '%SK%PanelB%' }
+                name: { like: '%SK%PanB%' }
             },
             {
-                platebarcode: { like: '%SK%PanelB%' }
+                platebarcode: { like: '%SK%PanB%' }
             }
         ]
     }
@@ -161,7 +161,7 @@ function submitImageJob(imageJob, expPlate) {
             };
         })
             .then(function () {
-            return Promise.delay(500);
+            return Promise.delay(1000);
         })
             .then(function () {
             resolve();

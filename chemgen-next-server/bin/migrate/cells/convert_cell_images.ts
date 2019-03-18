@@ -109,10 +109,10 @@ app.models.Plate.find({
   where: {
     or: [
       {
-        name: {like: '%SK%PanelB%'}
+        name: {like: '%SK%PanB%'}
       },
       {
-        platebarcode: {like: '%SK%PanelB%'}
+        platebarcode: {like: '%SK%PanB%'}
       }
     ]
   }
@@ -178,7 +178,7 @@ function submitImageJob(imageJob: { run_id, task_id, conf }, expPlate: ExpPlateR
         };
       })
       .then(() => {
-        return Promise.delay(500);
+        return Promise.delay(1000);
       })
       .then(() => {
         resolve();

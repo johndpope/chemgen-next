@@ -581,6 +581,8 @@ ExpSet.extract.workflows.getExpWorkflowIdsContactSheet = function (search, hasMa
     return new Promise(function (resolve, reject) {
         var data = new ExpSetTypes_1.ExpSetSearchResults({});
         var sqlQuery = ExpSet.extract.buildNativeQuery(data, search, hasManualScores);
+        app.winston.info("GetExpWorkflowIDsContactSheet");
+        app.winston.info(sqlQuery.toString());
         sqlQuery
             .then(function (expWorkflowIds) {
             resolve(lodash_1.uniq(expWorkflowIds.map(function (expWorkflowId) {

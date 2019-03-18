@@ -135,7 +135,7 @@ export class SearchModule {
      * @param screenName
      */
     getExpScreenWorkflowsByExpScreen(screenName) {
-        this.expScreenWorkflows = [];
+        this.typeAheadExpScreenWorkflows = [];
         let where: any = {};
         if (screenName) {
             where = {
@@ -154,7 +154,11 @@ export class SearchModule {
                 },
             })
             .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
-                this.typeAheadExpScreenWorkflows = orderBy(results, 'name');
+                // let tExpWorkflowIds = results;
+                this.typeAheadExpScreenWorkflows = results.filter((result: ExpScreenUploadWorkflowResultSet) => {
+                    return find(this.expScreenWorkflows, {id: result.id});
+                });
+                this.typeAheadExpScreenWorkflows = orderBy(this.typeAheadExpScreenWorkflows, 'name');
                 return;
             });
     }
@@ -175,6 +179,19 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
     constructor(public expSetApi: ExpSetApi, public expScreenApi: ExpScreenApi,
                 public expBiosampleApi: ExpBiosampleApi, public expWorkflowApi: ExpScreenUploadWorkflowApi) {
         super(expSetApi, expScreenApi, expBiosampleApi, expWorkflowApi);
+    }
+
+    getExpScreens(where: LoopBackFilter) {
+        console.log('Searching for screens from the ContactSheet');
+        this.expScreenApi
+            .find(where)
+            .subscribe((results: ExpScreenResultSet[]) => {
+                this.expScreens = results;
+                return;
+            }, (error) => {
+                console.log(error);
+                return new Error(error);
+            });
     }
 
     getExpWorkflows() {
@@ -236,7 +253,7 @@ export class ScreenMetaDataSearch implements SearchInterface {
             .subscribe((results: any) => {
                 if (get(results, ['results', 'expWorkflowIds'])) {
                     this.expScreenWorkflowIds = results.results.expWorkflowIds;
-                    this.expScreenWorkflowIds = shuffle(this.expScreenWorkflowIds);
+                    // this.expScreenWorkflowIds = shuffle(this.expScreenWorkflowIds);
                 }
             }, (error) => {
                 this.error = error;
@@ -420,6 +437,7 @@ export class SearchFormBaseComponentParams {
         this.searchModule = new SearchModule(this.expSetApi, this.expScreenApi, this.expBiosampleApi, this.expScreenUploadWorkflowApi);
         this.screenMetaDataSearch = new ScreenMetaDataSearch(this.expSetApi);
         this.rnaiSearch = new RNAiSearch(this.expSetApi);
+        this.expSetSearch = new ExpSetSearch();
     }
 
     //TODO Need to expand this for layering other types of expGroup searches
@@ -494,8 +512,7 @@ export class SearchFormBaseComponentParams {
         this.searchFormExpScreenResults = new SearchFormExpScreenFormResults();
         this.searchFormRnaiFormResults = new SearchFormRnaiFormResults();
         this.initializeSearches();
-        // this.searchFormFilterByScoresResults = new SearchFormFilterByScoresResults();
-        // this.searchFormFilterByScoresAdvancedResults = new SearchFormFilterByScoresAdvancedResults();
+        //TODO Add in filter by scores options
 
         this.expWorkflowIds = null;
         this.expSetSearch = new ExpSetSearch();
@@ -611,6 +628,26 @@ export class SearchFormParamsFilterByPassedContactSheet extends SearchFormBaseCo
         this.rnaiSearch = new RNAiSearch(this.expSetApi);
     }
 
+    setExpSetSearchCriteria() {
+        if (this.expGroupIds.length) {
+            this.paginationData = new Pagination(1);
+            this.expSetSearch.expGroupSearch = this.expGroupIds;
+        } else if (get(this.searchFormExpScreenResults, ['expScreenWorkflow', 'id'])) {
+            this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
+        } else if (isArray(this.expWorkflowIds) && this.expWorkflowIds.length) {
+            this.paginationData = new Pagination(this.expWorkflowIds.length);
+            //This api only pulls up one set at a time
+            //So if the user doesn't select anything just bring up something to score
+            // if (this.expWorkflowIds[this.paginationData.currentPage - 1]) {
+            //     this.expSetSearch.expWorkflowSearch = [this.expWorkflowIds[this.paginationData.currentPage - 1]];
+            // } else {
+            //     this.message = 'There are no more results with your search parameters.';
+            // }
+        } else {
+            this.message = 'Invalid search parameters';
+        }
+    }
+
     /**
      * This is where we take all the search data, and finally search for expSets to return to the view
      */
@@ -624,6 +661,7 @@ export class SearchFormParamsFilterByPassedContactSheet extends SearchFormBaseCo
         //TODO if we want to ONLY get things that were marked as interesting, do this
         //IF we want to get anything, mark as false
         this.expSetSearch.scoresExist = true;
+        console.log(this.expSetSearch);
         this.expSetApi.getUnscoredExpSetsByFirstPass(this.expSetSearch)
             .subscribe((results) => {
                 this.processExpSetsToExpModule(results);

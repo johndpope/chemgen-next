@@ -119,7 +119,7 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: password
     volumes:
-      - ./chemgen-next-wptheme:/var/www/html/wp-content/themes/chemgen-next-wptheme:ro
+      - ./chemgen-next-wptheme-ad:/var/www/html/wp-content/themes/chemgen-next-wptheme:ro
     networks:
       - app-tier
 
