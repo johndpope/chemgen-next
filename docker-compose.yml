@@ -141,15 +141,10 @@ services:
 #    - arrayscan_mysql_db
 #    - redis
 #    - chemgen_next_mongodb
-#    links:
-#    - wordpress_db
-#    - chemgen_next_dev_mysql_db
-#    - arrayscan_mysql_db
-#    - redis
-#    - chemgen_next_mongodb
 #    environment:
 #    - NODE_ENV=dev
 #    volumes:
+#    - node_modules:/home/node/app/node_modules
 #    - ./chemgen-next-server:/home/node/app
 #    ports:
 #    - "3001:3000"

@@ -123,7 +123,7 @@ RnaiLibrary.extract.workflows.getRnaiLibraryFromUserGeneList = function (genes, 
             .then(function (results) {
             resolve(results);
         })
-            .error(function (error) {
+            .catch(function (error) {
             app.winston.error(error);
             reject(new Error(error));
         });

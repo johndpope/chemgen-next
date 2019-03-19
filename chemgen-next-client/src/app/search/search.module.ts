@@ -139,7 +139,18 @@ export class SearchModule {
         let where: any = {};
         if (screenName) {
             where = {
-                screenName: screenName
+                and: [
+                    {
+                        screenName: screenName
+                    },
+                    {
+                        id: {
+                            inq: this.expScreenWorkflows.map((expWorkflow: ExpScreenUploadWorkflowResultSet) => {
+                                return expWorkflow.id;
+                            })
+                        }
+                    }
+                ]
             };
         }
 
@@ -154,12 +165,7 @@ export class SearchModule {
                 },
             })
             .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
-                // let tExpWorkflowIds = results;
-                this.typeAheadExpScreenWorkflows = results.filter((result: ExpScreenUploadWorkflowResultSet) => {
-                    return find(this.expScreenWorkflows, {id: result.id});
-                });
-                this.typeAheadExpScreenWorkflows = orderBy(this.typeAheadExpScreenWorkflows, 'name');
-                return;
+                this.typeAheadExpScreenWorkflows = orderBy(results, 'name');
             });
     }
 
@@ -182,7 +188,6 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
     }
 
     getExpScreens(where: LoopBackFilter) {
-        console.log('Searching for screens from the ContactSheet');
         this.expScreenApi
             .find(where)
             .subscribe((results: ExpScreenResultSet[]) => {
@@ -197,10 +202,8 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
     getExpWorkflows() {
         //First get all the workflowIDs that haven't been scored in the contact sheet
         //Then get the rest
-        console.log('should be getting exp workflows from the contact sheet');
         this.expSetApi.getExpWorkflowIdsNotScoredContactSheet()
             .subscribe((results) => {
-                console.log('got some results');
                 console.log(results);
                 this.expWorkflowApi
                     .find({
@@ -214,6 +217,7 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
                     })
                     .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
                         this.expScreenWorkflows = results;
+                        this.typeAheadExpScreenWorkflows = results;
                     }, (error) => {
                         console.log(error);
                     });
@@ -284,24 +288,32 @@ export class RNAiSearch implements SearchInterface {
     public expGroups: Array<{ expGroupId, expWorkflowId }> = [];
     public results: Array<{ expGroupId, expWorkflowId, expGroups }> = [];
     public error: any;
+    public geneNotFoundMessage: string;
 
     constructor(private expSetApi: ExpSetApi) {
         this.reagentSearch = new ReagentDataCriteria();
     }
 
     search() {
+        this.geneNotFoundMessage = null;
+        this.expGroupIds = [];
+        this.expGroups = [];
         this.expSetApi.getExpSetsByRNAiReagentData(this.reagentSearch)
             .subscribe((results: any) => {
                 if (get(results, ['results', 'expGroupIds'])) {
-                    if (isArray(results.results.expGroupIds)) {
+                    if (isArray(results.results.expGroupIds) && results.results.expGroups.length) {
                         this.expGroupIds = results.results.expGroupIds;
                     }
                 }
                 if (get(results, ['results', 'expGroups'])) {
-                    if (isArray(results.results.expGroups)) {
+                    if (isArray(results.results.expGroups) && results.results.expGroups.length) {
                         this.expGroups = results.results.expGroups;
                     }
                 }
+                if(this.reagentSearch.rnaiList.length && ! this.expGroups.length){
+                    this.geneNotFoundMessage = `Corresponding genes not found for : ${this.reagentSearch.rnaiList.join(', ')}`;
+                }
+
             }, (error) => {
                 this.error = error;
             })
@@ -492,9 +504,12 @@ export class SearchFormBaseComponentParams {
     // Layer the criteria
     setExpSetSearchCriteria() {
         if (this.expGroupIds.length) {
+            //If the user searches for specific genes or chemicals
+            //They get back a list of expGroups
             this.paginationData = new Pagination(1);
             this.expSetSearch.expGroupSearch = this.expGroupIds;
         } else if (get(this.searchFormExpScreenResults, ['expScreenWorkflow', 'id'])) {
+            //The user explicitly set a batch to search for
             this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
         } else if (isArray(this.expWorkflowIds) && this.expWorkflowIds.length) {
             this.paginationData = new Pagination(this.expWorkflowIds.length);
@@ -636,13 +651,6 @@ export class SearchFormParamsFilterByPassedContactSheet extends SearchFormBaseCo
             this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
         } else if (isArray(this.expWorkflowIds) && this.expWorkflowIds.length) {
             this.paginationData = new Pagination(this.expWorkflowIds.length);
-            //This api only pulls up one set at a time
-            //So if the user doesn't select anything just bring up something to score
-            // if (this.expWorkflowIds[this.paginationData.currentPage - 1]) {
-            //     this.expSetSearch.expWorkflowSearch = [this.expWorkflowIds[this.paginationData.currentPage - 1]];
-            // } else {
-            //     this.message = 'There are no more results with your search parameters.';
-            // }
         } else {
             this.message = 'Invalid search parameters';
         }
