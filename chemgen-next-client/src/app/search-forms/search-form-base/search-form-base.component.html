@@ -15,7 +15,7 @@
             <ul class="nav nav-tabs tabs-left">
               <li class="active"><a href="#screenData" data-toggle="tab">Screen</a>
               </li>
-              <li><a href="#rnaiData" data-toggle="tab">RNAi</a>
+              <li *ngIf="showRNAiTab"><a href="#rnaiData" data-toggle="tab">RNAi</a>
                 <!--<li><a href="#filterScores" data-toggle="tab">Filter By Scores - Simple</a>-->
                 <!--<li><a href="#filterScoresAdvanced" data-toggle="tab">Filter By Scores - Advanced</a>-->
                 <!--</li>-->
