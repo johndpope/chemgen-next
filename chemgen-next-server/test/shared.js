@@ -20,15 +20,17 @@ exports.makeMemoryDb = function () {
 
 exports.sharedAfter = function () {
   after(function (done) {
-    Promise.map(Object.keys(app.models), (modelName) => {
-      return app.models[modelName].destroyAll()
-    })
-      .then(() => {
-        done()
-      })
-      .catch((error) => {
-        done(new Error(error))
-      })
+    done();
+    // Promise.map(Object.keys(app.models), (modelName) => {
+    //   // return app.models[modelName].destroyAll()
+    //   return;
+    // })
+    //   .then(() => {
+    //     done()
+    //   })
+    //   .catch((error) => {
+    //     done(new Error(error))
+    //   })
   })
 }
 

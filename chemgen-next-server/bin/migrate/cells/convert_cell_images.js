@@ -94,10 +94,10 @@ app.models.Plate.find({
     where: {
         or: [
             {
-                name: { like: '%SK%PanelB%' }
+                name: { like: '%SK%PanB%' }
             },
             {
-                platebarcode: { like: '%SK%PanelB%' }
+                platebarcode: { like: '%SK%PanB%' }
             }
         ]
     }
@@ -108,7 +108,7 @@ app.models.Plate.find({
         app.winston.info("Found Plate: " + plateData.name);
     });
     // platesDataList = shuffle(platesDataList);
-    return Promise.map(platesDataList, function (plateData) {
+    return Promise.map(lodash_1.shuffle(platesDataList), function (plateData) {
         var expPlate = new models_1.ExpPlateResultSet({
             barcode: plateData.name,
             instrumentPlateImagePath: plateData.imagepath,
@@ -161,7 +161,7 @@ function submitImageJob(imageJob, expPlate) {
             };
         })
             .then(function () {
-            return Promise.delay(500);
+            return Promise.delay(1000);
         })
             .then(function () {
             resolve();

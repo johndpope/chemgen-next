@@ -7,7 +7,6 @@ var wellData_1 = require("../../../types/custom/wellData");
 var Promise = require("bluebird");
 var _ = require("lodash");
 var lodash_1 = require("lodash");
-var axios = require("axios");
 var request = require('request-promise');
 var uri = "http://" + config.get('imageConversionHost') + ":" + config.get('imageConversionPort');
 var ExpAssay = app.models['ExpAssay'];
@@ -503,27 +502,28 @@ ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowDa
                 };
                 if (true) {
                     // if (!fs.existsSync(`${images.baseImage}-autolevel.png`) || true) {
-                    //TODO Make this a parameter somewhere
+                    //This is being refactored to a separate service using airflow. see the chemgen-next-convert-images dir for more details
+                    return;
                     //@ts-ignore
-                    return axios.post(uri, imageJob)
-                        .then(function (response) {
-                        app.winston.info('Successfully submitted convert image command');
-                        // app.winston.info(JSON.stringify(response.data));
-                        return {
-                            baseImage: images.baseImage,
-                            script: imageJob.title,
-                            convert: 1
-                        };
-                    })
-                        .catch(function (error) {
-                        app.winston.info('Error converting images');
-                        // app.winston.error(error);
-                        return {
-                            baseImage: images.baseImage,
-                            script: imageJob.title,
-                            convert: 0
-                        };
-                    });
+                    // return axios.post(uri, imageJob)
+                    //   .then((response) => {
+                    //     app.winston.info('Successfully submitted convert image command');
+                    //     // app.winston.info(JSON.stringify(response.data));
+                    //     return {
+                    //       baseImage: images.baseImage,
+                    //       script: imageJob.title,
+                    //       convert: 1
+                    //     };
+                    //   })
+                    //   .catch((error) => {
+                    //     app.winston.info('Error converting images');
+                    //     // app.winston.error(error);
+                    //     return {
+                    //       baseImage: images.baseImage,
+                    //       script: imageJob.title,
+                    //       convert: 0
+                    //     };
+                    //   });
                 }
                 else {
                     // @ts-ignore

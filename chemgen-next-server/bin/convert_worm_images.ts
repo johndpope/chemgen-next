@@ -35,14 +35,6 @@ let genImageFileNames = function (expPlate: ExpPlateResultSet, well: string) {
   let outDir = '/mnt/image/';
   let makeDir = outDir + folder + '/' + plateId;
   let exts = [''];
-  // range(0, 1).map((field) => {
-  //   range(0, 1).map((channel) => {
-  //     exts.push(`f0${field}d${channel}`);
-  //   });
-  // });
-
-  // console.log(JSON.stringify(exts));
-  // process.exit(0);
 
   return exts.map((ext) => {
     let assayName = expPlate.barcode + '_' + well + ext;
@@ -63,7 +55,7 @@ let genImageFileNames = function (expPlate: ExpPlateResultSet, well: string) {
       plateId: plateId,
       random: random,
       tmpImage: tmpImage,
-      thumbSizes: [],
+      thumbSizes: ['1000x1000', '800x800'],
     };
   });
 };
@@ -138,8 +130,8 @@ app.models.Plate.find({
           let commandStr = commands.join("\n");
           commandStr = "#!/usr/bin/env bash\n\n" + commandStr;
           const imageJob = {
-            run_id: `convertWell-${expPlate.barcode}`,
-            task_id: `convertWell-${expPlate.barcode}`,
+            run_id: `convertWell-${expPlate.barcode}-1`,
+            task_id: `convertWell-${expPlate.barcode}-1`,
             conf: JSON.stringify({image_convert_command: commandStr})
           };
           return submitImageJob(imageJob, expPlate);
@@ -171,7 +163,7 @@ function submitImageJob(imageJob: { run_id, task_id, conf }, expPlate: ExpPlateR
         };
       })
       .then(() => {
-        return Promise.delay(500);
+        return Promise.delay(1000);
       })
       .then(() => {
         resolve();

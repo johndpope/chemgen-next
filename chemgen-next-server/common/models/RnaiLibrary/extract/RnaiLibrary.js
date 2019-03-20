@@ -123,7 +123,7 @@ RnaiLibrary.extract.workflows.getRnaiLibraryFromUserGeneList = function (genes, 
             .then(function (results) {
             resolve(results);
         })
-            .error(function (error) {
+            .catch(function (error) {
             app.winston.error(error);
             reject(new Error(error));
         });
@@ -180,10 +180,12 @@ RnaiLibrary.extract.getFromGeneLibrary = function (genesList, geneXrefs, search)
                 if (search instanceof Object) {
                     obj.and.push(search);
                 }
-                else if (search instanceof Array) {
-                    search.map(function (s) {
-                        obj.and.push(s);
-                    });
+                else if (lodash_1.get(search, 'rnaiList')) {
+                    if (lodash_1.isArray(search.rnaiList)) {
+                        search.map(function (s) {
+                            obj.and.push({ geneName: s });
+                        });
+                    }
                 }
                 or.push(obj);
             });

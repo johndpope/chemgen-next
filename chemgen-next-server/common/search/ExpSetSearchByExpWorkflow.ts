@@ -450,15 +450,21 @@ ExpSet.extract.getExpSetsByRNAiReagentData = function (search: ReagentDataCriter
       app.models.RnaiLibrary.extract.workflows
         .getRnaiLibraryFromUserGeneList(search.rnaiList, search)
         .then((rnaiLibraryResults: RnaiLibraryResultSet[]) => {
-          let query = knex('exp_assay2reagent')
-            .distinct('treatment_group_id');
-          rnaiLibraryResults.map((rnaiLibraryResult: RnaiLibraryResultSet) => {
-            query
-              .orWhere({library_id: rnaiLibraryResult.libraryId, reagent_id: rnaiLibraryResult.rnaiId})
-          });
-          query.andWhere({reagent_type: 'treat_rnai'});
-          query.select('exp_workflow_id');
-          return query;
+          app.winston.info('Got RNAILibrary Results!');
+          app.winston.info(JSON.stringify(rnaiLibraryResults));
+          if (rnaiLibraryResults.length) {
+            let query = knex('exp_assay2reagent')
+              .distinct('treatment_group_id');
+            rnaiLibraryResults.map((rnaiLibraryResult: RnaiLibraryResultSet) => {
+              query
+                .orWhere({library_id: rnaiLibraryResult.libraryId, reagent_id: rnaiLibraryResult.rnaiId})
+            });
+            query.andWhere({reagent_type: 'treat_rnai'});
+            query.select('exp_workflow_id');
+            return query;
+          } else {
+            return [];
+          }
         })
         .then((expAssay2ReagentResults: Array<{ treatment_group_id, exp_workflow_id }>) => {
           let results = {expWorkflowIds: [], expGroupIds: [], expGroups: []};

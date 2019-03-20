@@ -524,27 +524,28 @@ ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowDa
           };
           if (true) {
             // if (!fs.existsSync(`${images.baseImage}-autolevel.png`) || true) {
-            //TODO Make this a parameter somewhere
+            //This is being refactored to a separate service using airflow. see the chemgen-next-convert-images dir for more details
+            return;
             //@ts-ignore
-            return axios.post(uri, imageJob)
-              .then((response) => {
-                app.winston.info('Successfully submitted convert image command');
-                // app.winston.info(JSON.stringify(response.data));
-                return {
-                  baseImage: images.baseImage,
-                  script: imageJob.title,
-                  convert: 1
-                };
-              })
-              .catch((error) => {
-                app.winston.info('Error converting images');
-                // app.winston.error(error);
-                return {
-                  baseImage: images.baseImage,
-                  script: imageJob.title,
-                  convert: 0
-                };
-              });
+            // return axios.post(uri, imageJob)
+            //   .then((response) => {
+            //     app.winston.info('Successfully submitted convert image command');
+            //     // app.winston.info(JSON.stringify(response.data));
+            //     return {
+            //       baseImage: images.baseImage,
+            //       script: imageJob.title,
+            //       convert: 1
+            //     };
+            //   })
+            //   .catch((error) => {
+            //     app.winston.info('Error converting images');
+            //     // app.winston.error(error);
+            //     return {
+            //       baseImage: images.baseImage,
+            //       script: imageJob.title,
+            //       convert: 0
+            //     };
+            //   });
           } else {
             // @ts-ignore
             return {

@@ -3,7 +3,7 @@ import {has, get, find, isArray} from 'lodash';
 import {ExpManualScoreCodeResultSet, ExpManualScoresResultSet} from "../../../types/sdk/models";
 import {ExpsetModule} from "../expset/expset.module";
 import {Lightbox} from "angular2-lightbox";
-import {isEqual, isEmpty} from 'lodash';
+import {trim, isEqual, isEmpty} from 'lodash';
 import {ExpManualScoresApi} from "../../../types/sdk/services/custom";
 import {HotkeysService, HotkeysDirective, Hotkey} from "angular2-hotkeys";
 import {ManualScoresModule} from "../manual-scores/manual-scores.module";
@@ -30,6 +30,7 @@ export class ExpsetScorePrimaryComponent implements OnInit {
         const userId = document.getElementById('userId');
         if (userName) {
             this.userName = userName.innerText || 'dummyUser';
+            this.userName = trim(this.userName);
         }
         if (userId) {
             this.userId = Number(userId.innerText) || 0;

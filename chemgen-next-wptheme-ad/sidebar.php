@@ -68,7 +68,7 @@
                                     Contact Sheet - Plate View</a>
                             </li>
                             <li>
-                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/contact-sheet-secondary">
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-form-contact-sheet-replicate">
                                     Contact Sheet - Replicate View</a>
                             </li>
                             <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/score-expsets-worms">Detailed Score - Replicates</a></li>

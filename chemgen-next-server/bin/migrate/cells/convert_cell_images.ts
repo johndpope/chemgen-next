@@ -9,6 +9,7 @@ import * as moment from 'moment';
 
 let now = moment().format();
 
+
 import config = require('config');
 
 const fs = require('fs');
@@ -109,10 +110,10 @@ app.models.Plate.find({
   where: {
     or: [
       {
-        name: {like: '%SK%PanelB%'}
+        name: {like: '%SK%PanB%'}
       },
       {
-        platebarcode: {like: '%SK%PanelB%'}
+        platebarcode: {like: '%SK%PanB%'}
       }
     ]
   }
@@ -123,7 +124,7 @@ app.models.Plate.find({
       app.winston.info(`Found Plate: ${plateData.name}`);
     });
     // platesDataList = shuffle(platesDataList);
-    return Promise.map(platesDataList, (plateData: PlateResultSet) => {
+    return Promise.map(shuffle(platesDataList), (plateData: PlateResultSet) => {
       let expPlate = new ExpPlateResultSet({
         barcode: plateData.name,
         instrumentPlateImagePath: plateData.imagepath,
@@ -178,7 +179,7 @@ function submitImageJob(imageJob: { run_id, task_id, conf }, expPlate: ExpPlateR
         };
       })
       .then(() => {
-        return Promise.delay(500);
+        return Promise.delay(1000);
       })
       .then(() => {
         resolve();

@@ -26,13 +26,6 @@ var genImageFileNames = function (expPlate, well) {
     var outDir = '/mnt/image/';
     var makeDir = outDir + folder + '/' + plateId;
     var exts = [''];
-    // range(0, 1).map((field) => {
-    //   range(0, 1).map((channel) => {
-    //     exts.push(`f0${field}d${channel}`);
-    //   });
-    // });
-    // console.log(JSON.stringify(exts));
-    // process.exit(0);
     return exts.map(function (ext) {
         var assayName = expPlate.barcode + '_' + well + ext;
         var instrumentImage = imagePath + '_' + well + 'f00d0' + '.C01';
@@ -50,7 +43,7 @@ var genImageFileNames = function (expPlate, well) {
             plateId: plateId,
             random: random,
             tmpImage: tmpImage,
-            thumbSizes: [],
+            thumbSizes: ['1000x1000', '800x800'],
         };
     });
 };
@@ -122,8 +115,8 @@ app.models.Plate.find({
             var commandStr = commands.join("\n");
             commandStr = "#!/usr/bin/env bash\n\n" + commandStr;
             var imageJob = {
-                run_id: "convertWell-" + expPlate.barcode,
-                task_id: "convertWell-" + expPlate.barcode,
+                run_id: "convertWell-" + expPlate.barcode + "-1",
+                task_id: "convertWell-" + expPlate.barcode + "-1",
                 conf: JSON.stringify({ image_convert_command: commandStr })
             };
             return submitImageJob(imageJob, expPlate);
@@ -154,7 +147,7 @@ function submitImageJob(imageJob, expPlate) {
             };
         })
             .then(function () {
-            return Promise.delay(500);
+            return Promise.delay(1000);
         })
             .then(function () {
             resolve();

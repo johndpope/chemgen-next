@@ -567,6 +567,9 @@ ExpSet.extract.buildNativeQuery = function (data, search, hasManualScores) {
  * @param hasManualScores
  */
 ExpSet.extract.workflows.getExpWorkflowIdsNotScoredContactSheet = function (search) {
+    if (!search) {
+        search = new ExpSetTypes_1.ExpSetSearch({});
+    }
     return new Promise(function (resolve, reject) {
         ExpSet.extract.workflows.getExpWorkflowIdsContactSheet(search, false)
             .then(function (expWorkflowIds) {
@@ -580,9 +583,13 @@ ExpSet.extract.workflows.getExpWorkflowIdsNotScoredContactSheet = function (sear
 ExpSet.extract.workflows.getExpWorkflowIdsContactSheet = function (search, hasManualScores) {
     return new Promise(function (resolve, reject) {
         var data = new ExpSetTypes_1.ExpSetSearchResults({});
-        var sqlQuery = ExpSet.extract.buildNativeQuery(data, search, hasManualScores);
+        var sqlQuery = ExpSet.extract.buildNativeQueryContactSheet(data, search, hasManualScores);
+        // let sqlQuery = ExpSet.extract.buildNativeQuery(data, search, hasManualScores);
+        app.winston.info("GetExpWorkflowIDsContactSheet");
+        app.winston.info(sqlQuery.toString());
         sqlQuery
             .then(function (expWorkflowIds) {
+            app.winston.info("ExpWorkflowIds: " + JSON.stringify(expWorkflowIds[0]));
             resolve(lodash_1.uniq(expWorkflowIds.map(function (expWorkflowId) {
                 return expWorkflowId.exp_workflow_id;
             })));
@@ -592,5 +599,64 @@ ExpSet.extract.workflows.getExpWorkflowIdsContactSheet = function (search, hasMa
             reject(new Error(error));
         });
     });
+};
+ExpSet.extract.buildNativeQueryContactSheet = function (data, search, hasManualScores) {
+    var query = knex('exp_assay2reagent');
+    query = query
+        .select('exp_workflow_id')
+        .where('reagent_type', 'LIKE', 'treat%')
+        .whereNot({ reagent_id: null });
+    //Add Base experiment lookup
+    ['screen', 'library', 'expWorkflow', 'plate', 'expGroup', 'assay'].map(function (searchType) {
+        if (!lodash_1.isEmpty(search[searchType + "Search"])) {
+            var sql_col = decamelize(searchType + "Id");
+            var sql_values = search[searchType + "Search"];
+            query = query.whereIn(sql_col, sql_values);
+        }
+    });
+    // For the reagent lookups they must have the reagent_id and the library id
+    //You cannot look up here by arbitrary names
+    //Add Rnai reagent Lookup
+    if (!lodash_1.isEmpty(data.rnaisList)) {
+        query = query
+            .where(function () {
+            var firstVal = data.rnaisList.shift();
+            var firstWhere = this.orWhere({ 'reagent_id': firstVal.rnaiId, library_id: firstVal.libraryId });
+            data.rnaisList.map(function (rnai) {
+                firstWhere = firstWhere.orWhere({ reagent_id: rnai.rnaiId, library_id: firstVal.libraryId });
+            });
+            data.rnaisList.push(firstVal);
+        });
+    }
+    //Add Chemical Lookup
+    if (!lodash_1.isEmpty(data.compoundsList)) {
+        query = query
+            .where(function () {
+            var firstVal = data.compoundsList.shift();
+            var firstWhere = this.orWhere({ 'reagent_id': firstVal.compoundId, library_id: firstVal.libraryId });
+            data.compoundsList.map(function (compound) {
+                firstWhere = firstWhere.orWhere({ reagent_id: compound.compoundId, library_id: firstVal.libraryId });
+            });
+            data.compoundsList.push(firstVal);
+        });
+    }
+    //Get if value exists in the manual score table
+    if (hasManualScores) {
+        query = query
+            .whereExists(function () {
+            this.select(1)
+                .from('exp_manual_scores')
+                .whereRaw('exp_assay2reagent.assay_id = exp_manual_scores.assay_id');
+        });
+    }
+    else {
+        query = query
+            .whereNotExists(function () {
+            this.select(1)
+                .from('exp_manual_scores')
+                .whereRaw('exp_assay2reagent.assay_id = exp_manual_scores.assay_id');
+        });
+    }
+    return query;
 };
 //# sourceMappingURL=ExpSetScoringExtract.js.map

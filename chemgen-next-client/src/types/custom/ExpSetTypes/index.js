@@ -24,7 +24,12 @@ var lodash_decorators_1 = require("lodash-decorators");
 var ExpSetSearch = /** @class */ (function () {
     function ExpSetSearch(data) {
         this.expWorkflowDeepSearch = {
-            temperature: null, temperatureRange: null, screenStage: null, screenType: null, instrumentPlateIds: null, wormStrains: null,
+            temperature: null,
+            temperatureRange: null,
+            screenStage: null,
+            screenType: null,
+            instrumentPlateIds: null,
+            wormStrains: null,
         };
         this.pageSize = 1;
         this.ctrlLimit = 4;
@@ -140,9 +145,11 @@ var ExpsetModule = /** @class */ (function () {
         var _this = this;
         this.expSetsDeNorm = [];
         this.expSets = expSets;
-        this.expSets.expWorkflows = this.expSets.expWorkflows.map(function (expWorkflow) {
-            return _this.findExpWorkflow(String(expWorkflow.id));
-        });
+        if (lodash_1.get(this, ['expSets', 'expWorkflows']) && lodash_1.isArray(this.expSets.expWorkflows)) {
+            this.expSets.expWorkflows = this.expSets.expWorkflows.map(function (expWorkflow) {
+                return _this.findExpWorkflow(String(expWorkflow.id));
+            });
+        }
     }
     ExpsetModule.prototype.findExpWorkflow = function (expWorkflowId) {
         var expWorkflow = lodash_1.find(this.expSets.expWorkflows, function (expWorkflow) {

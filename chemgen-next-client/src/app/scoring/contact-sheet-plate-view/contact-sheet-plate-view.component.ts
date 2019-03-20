@@ -14,6 +14,7 @@ import {
     maxBy,
     minBy,
     orderBy,
+    trim,
     remove
 } from 'lodash';
 import {ExpManualScoresResultSet} from '../../../types/sdk/models';
@@ -54,6 +55,7 @@ export class ContactSheetPlateViewComponent implements OnInit {
         const userId = document.getElementById('userId');
         if (userName) {
             this.userName = userName.innerText || 'dummyUser';
+            this.userName = trim(this.userName);
         }
         if (userId) {
             this.userId = userId.innerText || 0;
