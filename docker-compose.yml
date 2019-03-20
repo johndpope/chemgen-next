@@ -86,6 +86,8 @@ services:
     links:
       - chemgen_next_mongodb
     build: ./chemgen-next-web-docker/chemgen-next-dev-mongodb
+    volumes:
+      - ./chemgen-next-web-docker/chemgen-next-dev-mongodb:/chemgen-next-dev-mongodb
     networks:
       - app-tier
 

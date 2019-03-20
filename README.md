@@ -5,6 +5,9 @@ Server side code is written in Node.js using Loopback.
 
 Client Side code is written using Angular6, and is then ported over to a wordpress app for deployment.
 
+If you are simply developing, you do not need to deal with the wordpress. 
+As a part of the deploy process it bundles the javascript and puts it in the appropriate location.
+
 
 ## Bringing up the docker sev servers
 
@@ -15,92 +18,42 @@ There is no data persistance and this is meant for DEV USE ONLY.
 
 Running  `./run_chemgen_server.sh` will bring up the docker compose instance.
 
-#### Quick Start - Bring up the node server
+#### Quick Start - Access the node server
 
-To start the loopback server
+The loopback REST API can be accessed through localhost:3000. If you are building this for the first time, it will take a few minutes.
 
-If you get any errors ensure you have sourced the file `chemgen_docker_vars.sh`.
+Check on the status with:   `docker-compose logs --tail 10 chemgen_next_server`
 
-```
-source chemgen_docker_vars.sh
-cd chemgen-next-server
-## Note - you can either run nodemon server/server.js OR pm2 start server/server.js, not both
-## Run in the foreground
-# if Error: Cannot find module 'loopback'
-# `run npm install` in this directory
-nodemon server/server.js
-## Run in the background
-## See the one time setup to install pm2
-# pm2 start server/server.js --name chemgen-next-server --watch -i 1
-pm2 start jobs/defineQueues.js --name chemgen-next-define-queues --watch -i 1
-node jobs/processScreens.js --limit 10 --site AD --search-pattern CHEM
-#ctrl+c to kill or run with --exit
-node jobs/processScreens.js --limit 10 --site AD --search-pattern AHR 
-#ctrl+c to kill or run with --exit
-```
+If you see any stack traces having to do with mysql, it may be that your database is still populating.
 
-To start the angular dev server
+Check on the mysql instance with `docker-compose logs --tail 50 chemgen_next_dev_mysql_db`
 
 ```
-cd chemgen-next-client
-npm install
-# bind wasn't found
-# ng serve --host=0.0.0.0 instead
-ng serve --bind 0.0.0.0
+chemgen_next_dev_mysql_db_1             |
+chemgen_next_dev_mysql_db_1             | /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/chemgen-next-exp-ad-03-18-2019.sql.gz
+chemgen_next_dev_mysql_db_1             | mysql: [Warning] Using a password on the command line interface can be insecure.
 ```
 
-And open `localhost:4200` in a browser. This will show you the angular interface.
-
-### Detailed - Bring up the server side dev environment and troubleshooting job queues
-
-The dev servers do not have any experimental data, only the configurations. In order to load experimental data you will need to process 1 or more screens. take a look at the jobs/processQueues.js script to see some options for searching for workflow configurations.
-
-```
-source chemgen_docker_vars.sh
-cd chemgen-next-server
-## See the one time setup to install pm2
-pm2 start server/server.js --name chemgen-next-server --watch -i 1
-## Alternative, if you want to see the output from the server directly to the screen, run `npm install -g nodemon; nodemon server/server.js`
-pm2 start jobs/defineQueues.js --name chemgen-next-define-queues --watch -i 1
-node jobs/processScreens.js --limit 2 --site AD --search-pattern CHEM
-node jobs/processScreens.js --limit 2 --site AD --search-pattern AHR 
-#ctrl+c to escape either of these, or run with --exit
-```
-
-You should some info messages print to the screen: 
-
-```
-info: Starting workflowQueue Wed Oct 03 2018 09:28:49 GMT+0300 (+03)
-info: ExpScreenUploadWorkflow.doWork CHEM Primary 6 2014-12-04
-```
-
-If you don't see these messages your queue is probably stuck, or something went wrong with the docker startup.
-
-```
-pm2 restart chemgen-next-define-queues
-pm2 logs chemgen-next-define-queues
-```
-
-Check the server and the job queue logs with -  
-
-```
-pm2 logs chemgen-next-server
-pm2 logs chemgen-next-define-queues
-```
+You can access the angular dev server at `localhost:4200`, but the services WILL NOT load properly until the database is loaded.
 
 
 If you want to ensure you have a clean startup 
 
 ```
 docker-compose stop
-docker-compose rm -f -v
-./run_chemgen_server.sh
+docker-compose rm -f 
+docker-compose build
+docker-compose up -d
 ```
 
 If for some reason you want to empty the wordpress database and startup info:
+If you clobbered something and REALLY need to rebuild from scratch, run the same sequence as above, but remove volumes.
 
 ```
-docker volume rm chemgen-next-web-docker_wordpress_db_data
+docker-compose stop
+docker-compose rm -f -v
+docker-compose build
+docker-compose up -d
 ```
 
 ### Important Environmental Variables
@@ -153,7 +106,7 @@ http://localhost:3000/api/ExpSets/getUnScoredExpSetsByFirstPass?search={"pageSiz
 ### One time startup instructions
 
 
-I am having trouble getting these working as docker containers, so for now you have to do it the hard way. First ensure you have node.js>=9.
+You only need to do this if for some reason you don't have an IDE that can debug in a docker container.
 
 ```
 npm install -g pm2 @angular/cli nodemon karma mocha
@@ -167,11 +120,7 @@ npm install
 
 #### Wordpress
 
-If it is your first time running this you will need to visit localhost:8000 in order to do the initial wordpress install (for now).
-
-Once it is installed you will also need to create a page for the angular app to live on.
-
-In the wordpress console go to 'Create New Page', and create a page called 'App' with the permalink 'app' and from the Template 'ChemGenAngularApp' 
+This is only used for dev/bundling purposes, and so that the team can have a wiki page. For the most part it is simply the Angular App bundled into a web page, and is used for authentication.
 
 ### Analysis Modules
 
