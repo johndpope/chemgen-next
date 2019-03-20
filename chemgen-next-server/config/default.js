@@ -4,11 +4,11 @@ try {
   knex = require('knex')({
     client: 'mysql',
     connection: {
-      host: process.env.CHEMGEN_HOST || 'localhost',
+      host: process.env.CHEMGEN_HOST || 'chemgen_next_dev_mysql_db',
       user: process.env.CHEMGEN_USER || 'chemgen',
       password: process.env.CHEMGEN_PASS || 'password',
       database: process.env.CHEMGEN_DB || 'chemgen-next-dev',
-      port: process.env.CHEMGEN_PORT || 3308,
+      port: process.env.CHEMGEN_PORT || 3306,
     },
     debug: true,
   })

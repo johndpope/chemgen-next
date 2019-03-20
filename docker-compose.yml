@@ -47,6 +47,7 @@ services:
     volumes:
       #       /docker-entrypoint-initdb.d will only process 1 mysql file
       - ./chemgen-next-web-docker/chemgen-next-test-mysqldb:/docker-entrypoint-initdb.d
+      - chemgen_next_dev_mysql_db_volume:/var/lib/mysql
     networks:
       - app-tier
 
@@ -164,6 +165,7 @@ services:
       - client_node_modules:/home/node/app/node_modules
     ports:
       - "4200:4200"
+      - "49153:49153"
     networks:
       - app-tier
 
@@ -172,6 +174,7 @@ volumes:
   wordpress_db_data:
   server_node_modules:
   client_node_modules:
+  chemgen_next_dev_mysql_db_volume:
 
 networks:
   app-tier:
