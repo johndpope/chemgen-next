@@ -18,9 +18,9 @@
       <!--Begin Content-->
 
       <div *ngIf="searchFormParams.expSets && searchFormParams.expSets.expWorkflows?.length" class="expSets">
-        <app-exp-workflow-qc [expSets]="searchFormParams.expSets"
-                           (expSetsScored)="getNewExpSets($event)"
-        ></app-exp-workflow-qc>
+        <!--<app-exp-workflow-qc [expSets]="searchFormParams.expSets"-->
+                           <!--(expSetsScored)="getNewExpSets($event)"-->
+        <!--&gt;</app-exp-workflow-qc>-->
       </div>
       <!--End Content-->
       <div *ngIf="searchFormParams.expSets && ! searchFormParams.expSets.expWorkflows?.length">

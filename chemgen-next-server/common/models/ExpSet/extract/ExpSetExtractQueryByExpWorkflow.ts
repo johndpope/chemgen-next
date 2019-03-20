@@ -403,9 +403,9 @@ ExpSet.extract.fetchFromCache = function (data: ExpSetSearchResults, search: Exp
     redisClient.getAsync(key)
       .then((obj) => {
         if (obj) {
-          // data = JSON.parse(obj);
-          // data.fetchedFromCache = true;
-          data.fetchedFromCache = false;
+          data = JSON.parse(obj);
+          data.fetchedFromCache = true;
+          // data.fetchedFromCache = false;
           resolve(data);
         } else {
           data.fetchedFromCache = false;
