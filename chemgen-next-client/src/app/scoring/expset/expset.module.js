@@ -1,14 +1,4 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -16,136 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = require("@angular/core");
+var common_1 = require("@angular/common");
 var lodash_1 = require("lodash");
 var lodash_decorators_1 = require("lodash-decorators");
-// The API definition for getting ExpSets
-// TODO COMPLETELY REDO THIS CLASS
-// ONLY WANT TO ACCEPT expWorkflowIds and expGroupIds
-var ExpSetSearch = /** @class */ (function () {
-    function ExpSetSearch(data) {
-        this.expWorkflowDeepSearch = {
-            temperature: null,
-            temperatureRange: null,
-            screenStage: null,
-            screenType: null,
-            instrumentPlateIds: null,
-            wormStrains: null,
-        };
-        this.pageSize = 1;
-        this.ctrlLimit = 4;
-        //Filter for scores existing
-        //If its null just grab whatever
-        //If its false grab ExpSets that are not scored
-        //If its true grab ExpSets that are scored
-        this.scoresExist = null;
-        this.scoresQuery = null;
-        //Filters to include different contactSheetResults
-        this.compoundsXRefs = true;
-        this.expAssays = true;
-        this.expAssay2reagents = true;
-        this.modelPredictedCounts = true;
-        this.expPlates = true;
-        this.expScreens = true;
-        this.expWorkflows = true;
-        this.expManualScores = true;
-        this.expSets = true;
-        this.albums = true;
-        this.expGroupTypeAlbums = true;
-        //Allow for searching either using pagination or skip
-        if (lodash_1.isUndefined(data)) {
-            data = {};
-        }
-        if (lodash_1.isUndefined(data.skip) || lodash_1.isNull(data.skip)) {
-            data.skip = 0;
-        }
-        if (lodash_1.isUndefined(data.currentPage) || lodash_1.isNull(data.currentPage)) {
-            data.currentPage = 1;
-        }
-        else {
-            data.skip = data.pageSize * (data.currentPage - 1);
-        }
-        // If these aren't already an array, make them an array
-        ['arraySearch', 'rnaiSearch', 'chemicalSearch', 'librarySearch', 'screenSearch', 'expWorkflowSearch', 'expGroupSearch'].map(function (searchKey) {
-            if (lodash_1.isUndefined(data[searchKey]) || lodash_1.isNull(data[searchKey] || !data[searchKey])) {
-                data[searchKey] = [];
-            }
-            else if (!lodash_1.isArray(data[searchKey])) {
-                data[searchKey] = [data[searchKey]];
-            }
-        });
-        Object.assign(this, data);
-    }
-    return ExpSetSearch;
-}());
-exports.ExpSetSearch = ExpSetSearch;
-var ExpSetSearchResults = /** @class */ (function () {
-    function ExpSetSearchResults(data) {
-        this.rnaisList = [];
-        this.rnaisXrefs = [];
-        this.compoundsList = [];
-        this.expAssays = [];
-        this.expAssay2reagents = [];
-        this.modelPredictedCounts = [];
-        this.expPlates = [];
-        this.expScreens = [];
-        this.expWorkflows = [];
-        this.expManualScores = [];
-        this.albums = [];
-        this.expGroupTypeAlbums = [];
-        this.currentPage = 1;
-        this.skip = 0;
-        this.totalPages = 0;
-        this.pageSize = 20;
-        this.fetchedFromCache = false;
-        Object.assign(this, data);
-    }
-    return ExpSetSearchResults;
-}());
-exports.ExpSetSearchResults = ExpSetSearchResults;
-var ExpSetSearchByCounts = /** @class */ (function () {
-    function ExpSetSearchByCounts(data) {
-        this.pageSize = 20;
-        this.ctrlLimit = 4;
-        this.includeCounts = true;
-        this.includeAlbums = true;
-        this.includeManualScores = false;
-        this.filterManualScores = false;
-        this.order = 'DESC';
-        if (!lodash_1.isObject(data)) {
-            data = {};
-        }
-        data.includeCounts = true;
-        data.includeAlbums = true;
-        //Allow for searching either using pagination or skip
-        if (lodash_1.isUndefined(data.skip) || lodash_1.isNull(data.skip)) {
-            data.skip = 0;
-        }
-        if (lodash_1.isUndefined(data.currentPage) || lodash_1.isNull(data.currentPage)) {
-            data.currentPage = 1;
-        }
-        else {
-            data.skip = data.pageSize * (data.currentPage - 1);
-        }
-        // If these aren't already an array, make them an array
-        ['arraySearch', 'modelSearch', 'screenSearch', 'expWorkflowSearch', 'expGroupSearch'].map(function (searchKey) {
-            if (lodash_1.isUndefined(data[searchKey]) || lodash_1.isNull(data[searchKey] || !data[searchKey])) {
-                data[searchKey] = [];
-            }
-            else if (!lodash_1.isArray(data[searchKey])) {
-                data[searchKey] = [data[searchKey]];
-            }
-        });
-        Object.assign(this, data);
-    }
-    return ExpSetSearchByCounts;
-}());
-exports.ExpSetSearchByCounts = ExpSetSearchByCounts;
 var ExpsetModule = /** @class */ (function () {
     function ExpsetModule(expSets) {
         var _this = this;
         this.expSetsDeNorm = [];
         this.expSets = expSets;
-        if (lodash_1.get(this, ['expSets', 'expWorkflows']) && lodash_1.isArray(this.expSets.expWorkflows)) {
+        if (lodash_1.isArray(this.expSets.expWorkflows)) {
             this.expSets.expWorkflows = this.expSets.expWorkflows.map(function (expWorkflow) {
                 return _this.findExpWorkflow(String(expWorkflow.id));
             });
@@ -364,24 +234,16 @@ var ExpsetModule = /** @class */ (function () {
     __decorate([
         lodash_decorators_1.Memoize()
     ], ExpsetModule.prototype, "findReagents", null);
+    ExpsetModule = __decorate([
+        core_1.NgModule({
+            imports: [
+                common_1.CommonModule
+            ],
+            declarations: []
+        })
+        //TODO GET RID OF THIS ITS IN THE custom types now!!
+    ], ExpsetModule);
     return ExpsetModule;
 }());
 exports.ExpsetModule = ExpsetModule;
-var PredictPrimaryPhenotypeExpSet = /** @class */ (function () {
-    function PredictPrimaryPhenotypeExpSet(data) {
-        Object.assign(this, data);
-    }
-    return PredictPrimaryPhenotypeExpSet;
-}());
-exports.PredictPrimaryPhenotypeExpSet = PredictPrimaryPhenotypeExpSet;
-var PredictSecondaryPhenotypeExpSet = /** @class */ (function (_super) {
-    __extends(PredictSecondaryPhenotypeExpSet, _super);
-    function PredictSecondaryPhenotypeExpSet(data) {
-        var _this = _super.call(this, data) || this;
-        Object.assign(_this, data);
-        return _this;
-    }
-    return PredictSecondaryPhenotypeExpSet;
-}(PredictPrimaryPhenotypeExpSet));
-exports.PredictSecondaryPhenotypeExpSet = PredictSecondaryPhenotypeExpSet;
-//# sourceMappingURL=index.js.map
+//# sourceMappingURL=expset.module.js.map

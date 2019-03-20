@@ -8,7 +8,7 @@ import {
 } from "../../../types/sdk/models";
 import {WorkflowModel} from "../../index";
 import Promise = require('bluebird');
-import {get, isNull, isEmpty, find, isEqual} from 'lodash';
+import {get, isArray, isNull, isEmpty, find, isEqual} from 'lodash';
 // import {ExpSetSearch} from "../../RnaiExpSet/load/RnaiExpSet";
 import {ExpSetSearch} from "../../../types/custom/ExpSetTypes/index";
 
@@ -195,10 +195,12 @@ RnaiLibrary.extract.getFromGeneLibrary = function (genesList: Array<string>, gen
         };
         if (search instanceof Object) {
           obj.and.push(search);
-        } else if (search instanceof Array) {
-          search.map((s) => {
-            obj.and.push(s);
-          });
+        } else if (get(search, 'rnaiList')) {
+          if(isArray(search.rnaiList)){
+            search.map((s) => {
+              obj.and.push({geneName: s});
+            });
+          }
         }
         or.push(obj);
       });
