@@ -1,4 +1,5 @@
 ## Server Side Code
+
 Server side code is written in Node.js using Loopback.
 
 ## Client Side Code and Interfaces
@@ -16,7 +17,11 @@ If you have not already completed the one time startup instructions to install n
 Included is a set of docker compose configurations to bring up all services using docker.
 There is no data persistance and this is meant for DEV USE ONLY.
 
-Running  `./run_chemgen_server.sh` will bring up the docker compose instance.
+Running  `docker-compose up -d` will bring up the docker compose instance.
+
+If you haven't run this in awhile, you probably will need to rebuild to ensure you have the newest data.
+
+```docker-compose stop; docker-compose rm -f -v ; docker-compose build; docker-compose up -d```
 
 #### Quick Start - Access the node server
 
