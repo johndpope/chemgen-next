@@ -1,6 +1,6 @@
 FROM node:9
 
-RUN npm install -g pm2 nodemon loopback-connector-mysql
+RUN npm install -g @angular/cli@6.2.2
 ENV NODE_ENV=dev
 
 RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
@@ -8,7 +8,6 @@ RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app/no
 
 WORKDIR /home/node/app
 
-CMD sleep 120 && \
-  npm install && \
-  bash -c "nodemon server/server.js"
+CMD npm install && \
+  bash -c "ng build; ng serve  --host=0.0.0.0"
 
