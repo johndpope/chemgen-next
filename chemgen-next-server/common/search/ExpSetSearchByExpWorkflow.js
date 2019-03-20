@@ -426,15 +426,22 @@ ExpSet.extract.getExpSetsByRNAiReagentData = function (search) {
             app.models.RnaiLibrary.extract.workflows
                 .getRnaiLibraryFromUserGeneList(search.rnaiList, search)
                 .then(function (rnaiLibraryResults) {
-                var query = knex('exp_assay2reagent')
-                    .distinct('treatment_group_id');
-                rnaiLibraryResults.map(function (rnaiLibraryResult) {
-                    query
-                        .orWhere({ library_id: rnaiLibraryResult.libraryId, reagent_id: rnaiLibraryResult.rnaiId });
-                });
-                query.andWhere({ reagent_type: 'treat_rnai' });
-                query.select('exp_workflow_id');
-                return query;
+                app.winston.info('Got RNAILibrary Results!');
+                app.winston.info(JSON.stringify(rnaiLibraryResults));
+                if (rnaiLibraryResults.length) {
+                    var query_1 = knex('exp_assay2reagent')
+                        .distinct('treatment_group_id');
+                    rnaiLibraryResults.map(function (rnaiLibraryResult) {
+                        query_1
+                            .orWhere({ library_id: rnaiLibraryResult.libraryId, reagent_id: rnaiLibraryResult.rnaiId });
+                    });
+                    query_1.andWhere({ reagent_type: 'treat_rnai' });
+                    query_1.select('exp_workflow_id');
+                    return query_1;
+                }
+                else {
+                    return [];
+                }
             })
                 .then(function (expAssay2ReagentResults) {
                 var results = { expWorkflowIds: [], expGroupIds: [], expGroups: [] };

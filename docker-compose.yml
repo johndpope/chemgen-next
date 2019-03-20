@@ -108,8 +108,6 @@ services:
   wordpress:
     depends_on:
       - wordpress_db
-    links:
-      - wordpress_db:mysql
     image: wordpress:latest
     ports:
       - "8000:80"
@@ -131,50 +129,47 @@ services:
     networks:
       - app-tier
 
-#  chemgen_next_server:
-#    build: ./chemgen-next-server
-#    user: "node"
-#    working_dir: /home/node/app
-#    depends_on:
-#    - wordpress_db
-#    - chemgen_next_dev_mysql_db
-#    - arrayscan_mysql_db
-#    - redis
-#    - chemgen_next_mongodb
-#    links:
-#    - wordpress_db
-#    - chemgen_next_dev_mysql_db
-#    - arrayscan_mysql_db
-#    - redis
-#    - chemgen_next_mongodb
-#    environment:
-#    - NODE_ENV=dev
-#    volumes:
-#    - ./chemgen-next-server:/home/node/app
-#    ports:
-#    - "3001:3000"
-#    networks:
-#    - app-tier
+  chemgen_next_server:
+    build: ./chemgen-next-server
+    user: "node"
+    working_dir: /home/node/app
+    depends_on:
+    - wordpress_db
+    - chemgen_next_dev_mysql_db
+    - arrayscan_mysql_db
+    - redis
+    - chemgen_next_mongodb
+    environment:
+    - NODE_ENV=dev
+    volumes:
+    - ./chemgen-next-server:/home/node/app
+    - server_node_modules:/home/node/app/node_modules
+    ports:
+    - "3000:3000"
+    networks:
+    - app-tier
 
-#  chemgen_next_client:
-#    image: "node:9"
-#    user: "node"
-#    depends_on:
-#    - chemgen_next_server
-#    working_dir: /home/node/app
-#    environment:
-#    - NODE_ENV=dev
-#    volumes:
-#    - ./chemgen-next-client:/home/node/app
-#    ports:
-#    - "4201:4200"
-#    command: "npm install -g @angular/cli; ng serve"
-#    networks:
-#    - app-tier
+  chemgen_next_client:
+    build: ./chemgen-next-client
+    user: "node"
+    working_dir: /home/node/app
+    depends_on:
+      - chemgen_next_server
+    environment:
+      - NODE_ENV=dev
+    volumes:
+      - ./chemgen-next-client:/home/node/app
+      - client_node_modules:/home/node/app/node_modules
+    ports:
+      - "4200:4200"
+    networks:
+      - app-tier
 
 ## Using volumes will persist data
 volumes:
   wordpress_db_data:
+  server_node_modules:
+  client_node_modules:
 
 networks:
   app-tier:

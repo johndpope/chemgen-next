@@ -108,7 +108,7 @@ app.models.Plate.find({
         app.winston.info("Found Plate: " + plateData.name);
     });
     // platesDataList = shuffle(platesDataList);
-    return Promise.map(platesDataList, function (plateData) {
+    return Promise.map(lodash_1.shuffle(platesDataList), function (plateData) {
         var expPlate = new models_1.ExpPlateResultSet({
             barcode: plateData.name,
             instrumentPlateImagePath: plateData.imagepath,

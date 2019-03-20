@@ -1,17 +1,6 @@
 #!/usr/bin/env bash
 
-mongoimport  \
-    --host=chemgen_next_mongodb \
-    --username root \
-    --password password \
-    --authenticationDatabase admin \
-    --db chemgen \
-    --file /chemgen-next-dev-mongodb/ExpScreenUploadWorkflow.json || echo "could not import"
 
-mongoimport  \
-    --host=chemgen_next_mongodb \
-    --username root \
-    --password password \
-    --authenticationDatabase admin \
-    --db chemgen \
-    --file  /chemgen-next-dev-mongodb/PlatePlan96.json || echo "could not import"
+ mongorestore --authenticationDatabase admin --host chemgen_next_mongodb --db chemgen -u root -p password /chemgen-next-dev-mongodb/chemgen-03-18-2019/ExpScreenUploadWorkflow.bson
+ mongorestore --authenticationDatabase admin --host chemgen_next_mongodb --db chemgen -u root -p password /chemgen-next-dev-mongodb/chemgen-03-18-2019/PlatePlan96.bson
+

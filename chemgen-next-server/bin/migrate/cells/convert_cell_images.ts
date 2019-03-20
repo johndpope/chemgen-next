@@ -9,6 +9,7 @@ import * as moment from 'moment';
 
 let now = moment().format();
 
+
 import config = require('config');
 
 const fs = require('fs');
@@ -123,7 +124,7 @@ app.models.Plate.find({
       app.winston.info(`Found Plate: ${plateData.name}`);
     });
     // platesDataList = shuffle(platesDataList);
-    return Promise.map(platesDataList, (plateData: PlateResultSet) => {
+    return Promise.map(shuffle(platesDataList), (plateData: PlateResultSet) => {
       let expPlate = new ExpPlateResultSet({
         barcode: plateData.name,
         instrumentPlateImagePath: plateData.imagepath,
