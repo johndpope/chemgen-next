@@ -8,7 +8,5 @@ RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app/no
 
 WORKDIR /home/node/app
 
-CMD npm install && \
-    sleep 120 && \
-    nodemon server/server.js
-
+CMD sleep 120 && npm install && \
+   nodemon server/server.js
