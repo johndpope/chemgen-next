@@ -29,7 +29,6 @@ export class SearchFormContactSheetPlateViewComponent implements OnInit {
         this.searchFormParams.expSets = null;
         this.searchFormParams.formSubmitted = false;
         this.searchFormParams.onSubmit();
-        console.log('get some new exp sets');
     }
 
 }
