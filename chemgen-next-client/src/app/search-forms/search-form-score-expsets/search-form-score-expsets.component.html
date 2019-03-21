@@ -1,5 +1,11 @@
-<app-search-form-base [searchFormParams]="searchFormParams"
-                      [title]="'Detailed Scoring Replicate View'"></app-search-form-base>
+<app-search-form-base 
+    [searchFormParams]="searchFormParams"
+    [title]="'Detailed Scoring Replicate View'"
+    [formDesc]="'Wells and replicate sets marked as interesting will be
+    rendered on this page with the appropriate scoring options.
+    NOTE: This form will be blank if there are no interesting
+    well/replicate sets to score for the particular query.'">
+</app-search-form-base>
 
 <!--Start Content-->
 <div class="row">

@@ -8,6 +8,5 @@ RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app/no
 
 WORKDIR /home/node/app
 
-CMD npm install && \
-   ./wait-for-it.sh chemgen_next_dev_mysql_db:3306 -- "nodemon server/server.js"
-
+CMD sleep 120 && npm install && \
+   nodemon server/server.js

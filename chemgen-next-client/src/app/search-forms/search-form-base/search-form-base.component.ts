@@ -13,6 +13,7 @@ import {SearchFormBaseComponentParams} from "../../search/search.module";
 export class SearchFormBaseComponent {
     @Input('searchFormParams') searchFormParams: SearchFormBaseComponentParams;
     @Input('title') title: string;
+    @Input('formDesc') formDesc: string;
     @Input('showRNAiTab') showRNAiTab: boolean = true;
 
     constructor() {
