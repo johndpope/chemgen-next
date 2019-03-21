@@ -3,10 +3,11 @@ if [ ! -f {{{images.baseImage}}}-autolevel.png ]; then
     bfconvert -nogroup -overwrite "{{{images.instrumentImage}}}" "{{{images.baseImage}}}.png"
     convert -auto-level -quality 100 "{{{images.baseImage}}}.png" "{{{images.baseImage}}}-autolevel.png"
     convert  -strip -layers flatten -quality 50 "{{{images.baseImage}}}-autolevel.png" "{{{images.baseImage}}}-autolevel.jpeg"
-    {{#thumbSizes}}
-      if [ ! -f {{{images.baseImage}}}-autolevel-{{{.}}}.jpeg ]; then
-      convert -thumbnail {{{.}}} "{{{images.baseImage}}}-autolevel.jpeg" "{{{images.baseImage}}}-autolevel-{{{.}}}.jpeg"
-      fi
-    {{/thumbSizes}}
+    rm -rf {{{images.baseImage}}}.png
 fi
+{{#thumbSizes}}
+  if [ ! -f {{{images.baseImage}}}-autolevel-{{{.}}}.jpeg ]; then
+      convert -thumbnail {{{.}}} "{{{images.baseImage}}}-autolevel.jpeg" "{{{images.baseImage}}}-autolevel-{{{.}}}.jpeg"
+  fi
+{{/thumbSizes}}
 

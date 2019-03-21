@@ -22,8 +22,14 @@ export class SearchFormExpWorkflowQcComponent implements OnInit {
     }
 
     getNewExpSets() {
-        // this.onSubmit();
+        //Ensure expWorkflowIds are up to date
+        this.searchFormParams.searchModule.getExpWorkflows();
+        this.searchFormParams.expSets = null;
+        this.searchFormParams.formSubmitted = false;
+        this.searchFormParams.onSubmit();
+        console.log('get some new exp sets');
     }
+
 
     ngOnInit() {
     }

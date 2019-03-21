@@ -7,68 +7,77 @@
 ></ngx-spinner>
 <!--End Spinner-->
 
-<div class="row" *ngIf="platesAlbum">
+<div class="row">
     <div class="col-md-12">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="x_panel">
-                    <div class="x_title">
-                        <h2>{{expSets.expWorkflows[0].name}}</h2>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <div class="alert alert-info">If there is a problem with this batch, please take note of the workflow name and ID ( {{ expSets.expWorkflows[0].id }} )</div>
-
-
-                        <form (ngSubmit)="onSubmit()">
-                                <button type="submit" id="searchFormSubmit" class="btn btn-lg btn-success">Submit Batch QC</button>
-                                <div class="clearfix"></div>
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row" *ngFor="let plateAlbum of platesAlbum; let plateIndex = index">
-            <div class="col-md-12">
-                <div class="x_panel">
-                    <div class="x_title row">
-                        <div class="col-md-8">
-                            <h2>Barcode {{plateAlbum.barcode}}</h2>
-                        </div>
-                        <div class="col-md-4">
-                            <ui-switch defaultBgColor="green" color="red" [(ngModel)]="qcPlateResults[plateAlbum.plateId]" (ngModelChange)="toggleQcPlate(plateIndex)"></ui-switch>
-                        </div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
-                        <div class="row">
-                            <div *ngFor="let image of plateAlbum.albums; let albumIndex = index">
-                                <div class="col-md-2 image-border">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <strong>{{image.assayWell}}</strong>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <ui-switch defaultBgColor="green" color="red" [(ngModel)]="qcWellResults[image.assayId]"></ui-switch>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <img tabindex="0" class="img-thumbnail"
-                                                 [src]="image.src"
-                                                 (click)="open(plateIndex, albumIndex)"/>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
+        <div class="x_panel">
+            <div class="x_content">
+                <h3>Screen: {{expSets.expScreens[0].screenName}}</h3>
+                <h3>Batch: {{expSets.expWorkflows[0].name}}</h3>
+                <h3>Screen Stage: {{expSets.expWorkflows[0].screenStage}}</h3>
+                <h3>Temperature: {{expSets.expWorkflows[0].temperature}}C</h3>
+                <h3>Worm Strains: {{expSets.expWorkflows[0].biosamples.experimentBiosample.name}} +
+                    {{expSets.expWorkflows[0].biosamples.ctrlBiosample.name}} </h3>
             </div>
         </div>
     </div>
 </div>
+
+<!--Start the QC Per Plate Table -->
+<div class="row qcPerPlate-table">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h3>QC Plate Table</h3>
+            </div>
+            <div class="x_content">
+                <div class="row" *ngIf="qcPlateTable">
+                    <div class="col-md-12">
+                        <ag-grid-angular
+                                style="width: 100%; height: 100%;"
+                                (gridReady)="onPerPlateGridReady($event)"
+                                [enableColResize]="true"
+                                [enableSorting]="true"
+                                [enableFilter]="true"
+                                class="ag-theme-balham"
+                                [rowData]="qcPlateTable"
+                                [columnDefs]="qcPerPlateColumnDefs"
+                        >
+                        </ag-grid-angular>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End the QC Per Plate Table -->
+
+<!--Start the QC Per Well Table-->
+<div class="row qcPerWell-table">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h3>QC Well Table</h3>
+            </div>
+            <div class="x_content">
+                <div class="row" *ngIf="qcWellTable">
+                    <div class="col-md-12">
+                        <ag-grid-angular
+                                style="width: 100%; height: 100%;"
+                                (gridReady)="onPerWellGridReady($event)"
+                                [enableColResize]="true"
+                                [enableSorting]="true"
+                                [enableFilter]="true"
+                                class="ag-theme-balham"
+                                [rowData]="qcWellTable"
+                                [columnDefs]="qcPerWellColumnDefs"
+                        >
+                        </ag-grid-angular>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End the QC Per Well Table-->
+
 

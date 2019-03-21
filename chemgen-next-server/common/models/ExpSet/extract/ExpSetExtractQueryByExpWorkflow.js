@@ -381,9 +381,9 @@ ExpSet.extract.fetchFromCache = function (data, search, expWorkflowId) {
         redisClient.getAsync(key)
             .then(function (obj) {
             if (obj) {
-                // data = JSON.parse(obj);
-                // data.fetchedFromCache = true;
-                data.fetchedFromCache = false;
+                data = JSON.parse(obj);
+                data.fetchedFromCache = true;
+                // data.fetchedFromCache = false;
                 resolve(data);
             }
             else {
