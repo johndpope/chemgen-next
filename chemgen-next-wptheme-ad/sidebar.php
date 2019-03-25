@@ -103,6 +103,22 @@
                 </ul>
                 <!--End Upload Menu-->
 
+                <!--Begin Help Pages-->
+                <ul class="nav side-menu">
+                    <li><a><i class="fa fa-search"></i> Help and Tutorials <span
+                                    class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/">Wiki</a>
+                            </li>
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/checking-data-with-phpmyadmin/">Checking Data</a>
+                            </li>
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/using-scoring-forms/">Using Scoring Forms</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <!--End Help Pages-->
+
             </div>
         </div>
         <!-- /sidebar menu -->
