@@ -8,7 +8,7 @@ import {
     LoopBackFilter
 } from "../../types/sdk/models";
 import {ExpSetSearch, ExpSetSearchResults} from "../../types/custom/ExpSetTypes";
-import {shuffle, isObject, has, find, isEmpty, get, includes, isArray, orderBy, range, uniq} from 'lodash';
+import {shuffle, isObject, isEqual, has, find, isEmpty, get, includes, isArray, orderBy, range, uniq} from 'lodash';
 import {NgxSpinnerService} from "ngx-spinner";
 import {ExpsetModule} from "../scoring/expset/expset.module";
 import {SearchFormFilterByScoresAdvancedResults} from "../search-forms/filter-components/search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component";
@@ -58,6 +58,8 @@ export class SearchModule {
                 fields: {
                     id: true,
                     name: true,
+                    screenName: true,
+                    screenId: true,
                 }
             })
             .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
@@ -141,40 +143,12 @@ export class SearchModule {
      * @param screenName
      */
     getExpScreenWorkflowsByExpScreen(screenName) {
-        let where: any = {};
         if (screenName) {
-            where = {
-                and: [
-                    {
-                        screenName: screenName
-                    },
-                    {
-                        id: {
-                            inq: this.expScreenWorkflows.map((expWorkflow: ExpScreenUploadWorkflowResultSet) => {
-                                return expWorkflow.id;
-                            })
-                        }
-                    }
-                ]
-            };
-        }
-
-        this.expWorkflowApi
-            .find({
-                where: where,
-                fields: {
-                    id: true,
-                    name: true,
-                    screenName: true,
-                    screenId: true,
-                },
-            })
-            .subscribe((expScreenUploadWorkflowResultSets: ExpScreenUploadWorkflowResultSet[]) =>{
-                this.typeAheadExpScreenWorkflows = expScreenUploadWorkflowResultSets;
-            }, (error) =>{
-                this.typeAheadExpScreenWorkflows = [];
+            console.log('should be getting workflows by expScreen');
+            this.typeAheadExpScreenWorkflows = this.expScreenWorkflows.filter((expScreenWorkflow: ExpScreenUploadWorkflowResultSet) => {
+                return isEqual(expScreenWorkflow.screenName, screenName);
             });
-
+        }
     }
 
     getExpBiosamples(where: LoopBackFilter) {
@@ -200,13 +174,16 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
             .find(where)
             .subscribe((results: ExpScreenResultSet[]) => {
                 this.expScreens = results;
-                return;
             }, (error) => {
                 console.log(error);
                 return new Error(error);
             });
     }
 
+    /**
+     * First query the server to get all the workflow ids that haven't been scored in the contact sheet
+     * Then run an additional query on the expWorkflowApi to return JUST those ids
+     */
     getExpWorkflows() {
         //First get all the workflowIDs that haven't been scored in the contact sheet
         //Then get the rest
@@ -221,6 +198,8 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
                         fields: {
                             id: true,
                             name: true,
+                            screenName: true,
+                            screenId: true,
                         }
                     })
                     .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
