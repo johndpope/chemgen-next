@@ -3,11 +3,11 @@
 /* Jillian */
 declare var Object: any;
 export interface ReactomeEnityResultSetInterface {
-  "id"?: any;
+  "id"?: number;
 }
 
 export class ReactomeEnityResultSet implements ReactomeEnityResultSetInterface {
-  "id": any;
+  "id": number;
   constructor(data?: ReactomeEnityResultSetInterface) {
     Object.assign(this, data);
   }
@@ -43,7 +43,7 @@ export class ReactomeEnityResultSet implements ReactomeEnityResultSetInterface {
       properties: {
         "id": {
           name: 'id',
-          type: 'any'
+          type: 'number'
         },
       },
       relations: {

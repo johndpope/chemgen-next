@@ -67,6 +67,7 @@ export class ContactSheetReplicateViewComponent implements OnInit {
     ngOnInit() {
         this.addReplicateContactSheetHotkeys();
         this.expSetsDeNorm = this.expSetModule.deNormalizeExpSets();
+        this.setFocus();
     }
 
     addReplicateContactSheetHotkeys() {
@@ -124,7 +125,7 @@ export class ContactSheetReplicateViewComponent implements OnInit {
             this.setTabInactive();
             this.setTabActive('plate-data-tab');
             return false; // Prevent bubbling
-        }, undefined, 'View Reagent Data'));
+        }, undefined, 'View Exp Plate Data'));
 
         this.hotkeysService.add(new Hotkey('shift+i', (event: KeyboardEvent): boolean => {
             this.submitInteresting();
@@ -217,13 +218,19 @@ export class ContactSheetReplicateViewComponent implements OnInit {
     }
 
     //TODO Refactor from here on down into contact sheet module
+    /**
+     * Get all the expSets that were marked as interesting on the contact sheet
+     * Submit them to the DB through the expManualScoresApi
+     * And then clear the interesting expSets from the view
+     * This does not clear everything from the view (submitAll does that)
+     */
     submitInteresting() {
         // DAMN TYPE CASTING
         // gets an array of treatment group IDs, which I'm assuming are the values denoting the replicate groups
         const interestingTreatmentGroupIds: Array<any> = Object.keys(this.contactSheetResults.interesting).filter((treatmentGroupId: any) => {
             return this.contactSheetResults.interesting[treatmentGroupId];
         });
-        // loops throught the interesting treatment group ids and applies the score code to the treatment grou
+        // loops through the interesting treatment group ids and applies the score code to the treatment grou
         // 1 is just a placeholder for now
         let manualScores: ExpManualScoresResultSet[] = interestingTreatmentGroupIds.map((treatmentGroupId: any) => {
             const manualScore: any = this.createManualScore(1, treatmentGroupId);
@@ -237,6 +244,7 @@ export class ContactSheetReplicateViewComponent implements OnInit {
             this.submitScores(manualScores)
                 .then(() => {
                     this.removeInteresting();
+                    this.setFocus();
                 })
                 .catch((error) => {
                     console.log(error);
@@ -253,6 +261,7 @@ export class ContactSheetReplicateViewComponent implements OnInit {
             this.submitScores(manualScore)
                 .then(() => {
                     this.removeByTreatmentGroupId(treatmentGroupId);
+                    this.setFocus();
                 })
                 .catch((error) => {
                     console.log(error);

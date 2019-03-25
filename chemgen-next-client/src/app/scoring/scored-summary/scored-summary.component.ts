@@ -14,7 +14,7 @@ export class ScoredSummaryComponent implements OnInit {
     public columnDefs = [
         {headerName: 'Screen', field: 'screenName' },
         {headerName: 'Batch', field: 'expWorkflowName' },
-        {headerName: '# Total Exp Sets', field: 'allExpSets'},
+        {headerName: '# Total Assays', field: 'allExpSets'},
         {headerName: '# Total First Pass', field: 'allFirstPassExpSets'},
         {headerName: '# First Pass Interesting', field: 'interestingFirstPassExpSets'},
         {headerName: '# Detailed Score', field: 'detailScoresExpSets'},

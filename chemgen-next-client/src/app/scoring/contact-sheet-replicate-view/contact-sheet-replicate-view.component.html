@@ -1,47 +1,29 @@
+<div *ngIf="expSets && expSets.expWorkflows?.length" class="row batchInfo">
+    <div class="col-md-12">
+        <h3>Screen : {{expSets.expScreens[0].screenName}}</h3>
+        <h3>Batch: {{expSets.expWorkflows[0].name}}</h3>
+        <h3>Screen Stage: {{expSets.expWorkflows[0].screenStage}}</h3>
+        <h3>Temperature: {{expSets.expWorkflows[0].temperature}}</h3>
+        <h3>Worm Strains: {{expSets.expWorkflows[0].biosamples.experimentBiosample.name}} +
+            {{expSets.expWorkflows[0].biosamples.ctrlBiosample.name}} </h3>
+    </div>
+</div>
+
+<!--Begin Hot key CheatSheet-->
+<div *ngIf="expSets && expSets.expWorkflows?.length" class="row">
+    <div class="col-md-12">
+        <h2>Press ? to view the hotkeys!</h2>
+        <hotkeys-cheatsheet></hotkeys-cheatsheet>
+    </div>
+</div>
+<!--End Hot key CheatSheet-->
 <!--Start Content-->
 <div class="row">
     <div class="col-md-12">
         <!--Begin Content-->
         <div *ngIf="expSets && expSets.expWorkflows?.length" class="expSets" id="contactSheet">
-            <!--Begin Submit-->
-            <div class="row">
-                <div class="col-md-6">
-                    <button type="button" class="btn btn-primary btn-lg"
-                            (click)="submitInteresting()"
-                            tooltip="Submit everything you have selected as interesting. This will clear the view of all interesting results.">
-                        Submit Interesting
-                    </button>
-                    <br>
-                    <button type="button" class="btn btn-success btn-lg"
-                            (click)="submitAll()"
-                            tooltip="Submit everything selected as interesting and not for preselection of manual scores.">
-                        Submit All
-                    </button>
-                    <br>
-                    <button type="button" class="btn btn-warning btn-lg" (click)="reset()"
-                            tooltip="Reset the form. All wells will be marked as 'not interesting'.">Reset
-                    </button>
-                    <br>
-                </div>
-            </div>
-            <!--End Submit-->
-
             <br>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>{{ expSets.expWorkflows[0].name }}</h3>
-                </div>
-            </div>
-
-            <!--Begin Hot key CheatSheet-->
-            <div class="row">
-                <div class="col-md-12">
-                    <p>Press ? to view the hotkeys!</p>
-                    <hotkeys-cheatsheet></hotkeys-cheatsheet>
-                </div>
-            </div>
-            <!--End Hot key CheatSheet-->
             <!--Begin Exp Set Albums-->
             <div *ngFor="let expSet of expSetsDeNorm; let i = index">
 
@@ -66,11 +48,6 @@
                             </button>
                         </div>
                         <!--End Submit and clear this expGroup-->
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>Press ? to see hotkeys</h4>
-                        </div>
                     </div>
                     <br>
                     <!--Begin Tab Content-->
@@ -236,7 +213,7 @@
                                         </div>
                                         <div *ngIf="expSet.expWorkflow.screenStage == 'primary'">
                                             <div class="row">
-                                                <div *ngFor="let image of expSet.ctrlReagentImages; let i=index">
+                                                <div *ngFor="let image of expSet.albums.ctrlReagentImages; let i=index">
                                                     <div *ngIf="image">
                                                         <div class="col-md-3">
                                                             <img tabindex="0" class="img-thumbnail"
@@ -384,3 +361,34 @@
     </div>
 </div>
 <!--End Content-->
+
+<div *ngIf="expSets && expSets.expWorkflows?.length" class="row">
+    <div class="col-md-12">
+        <!--Begin Submit-->
+        <div class="row">
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary btn-lg"
+                        (click)="submitInteresting()"
+                        tooltip="Submit everything you have selected as interesting. This will clear the view of all interesting results.">
+                    Submit Interesting
+                </button>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-success btn-lg"
+                        (click)="submitAll()"
+                        tooltip="Submit everything selected as interesting and not for preselection of manual scores.">
+                    Submit All
+                </button>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-warning btn-lg" (click)="reset()"
+                        tooltip="Reset the form. All wells will be marked as 'not interesting'.">Reset
+                </button>
+            </div>
+        </div>
+        <!--End Submit-->
+
+
+    </div>
+</div>
+

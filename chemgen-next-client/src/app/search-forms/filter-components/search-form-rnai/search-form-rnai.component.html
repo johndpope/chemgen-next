@@ -1,21 +1,30 @@
 <div class="row">
-  <div class="col-md-12">
-    <div class="form-group">
-      <label for="rnais" tooltip="There is a tooltip here!">RNAi List</label>
-      <span class="glyphicon glyphicon-question-sign" aria-hidden="true"
-            tooltip="Enter 1 or more rnais (by gene name or cosmid ID) to search for. Separate by whitespace or newline">
-      </span>
-      <textarea class="form-control"
-                name="rnais" id="rnais" rows="5"
-                [(ngModel)]="rnais"
-                (ngModelChange)="updateRnaisList()"
-      >
+    <div class="col-md-12">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-4">
+                </div>
+            </div>
+            <label for="rnais">
+                Enter one or more RNAi Reagents or Gene synonyms in the query box to find corresponding experiments
+            </label>
+            <span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+                  tooltip="Enter one or more IDs separated by whitespace or newlines.">
+          </span>
+            <p>
+                Examples: ''C38D4.3' (Cosmid ID) or 'mel-28' (Gene locus name)
+            </p>
+            <textarea class="form-control"
+                      name="rnais" id="rnais" rows="5"
+                      [(ngModel)]="rnais"
+                      (ngModelChange)="updateRnaisList()"
+            >
       </textarea>
+        </div>
     </div>
-  </div>
-  <div class="col-md-12">
-    <div class="alert alert-warning" *ngIf="rnaiSearch.geneNotFoundMessage">
-      {{rnaiSearch.geneNotFoundMessage}}
+    <div class="col-md-12">
+        <div class="alert alert-warning" *ngIf="rnaiSearch.geneNotFoundMessage">
+            {{rnaiSearch.geneNotFoundMessage}}
+        </div>
     </div>
-  </div>
 </div>

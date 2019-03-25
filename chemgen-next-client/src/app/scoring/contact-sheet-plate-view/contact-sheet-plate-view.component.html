@@ -14,96 +14,104 @@
     <!--Begin Hot key CheatSheet-->
     <div class="row">
         <div class="col-md-12">
-            <p>Press ? to view the hotkeys!</p>
+            <h3>Press ? to view the hotkeys!</h3>
             <hotkeys-cheatsheet></hotkeys-cheatsheet>
         </div>
     </div>
     <!--End Hot key CheatSheet-->
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="phenotype">Select a Phenotype</label>
-                <span class="glyphicon glyphicon-question-sign" aria-hidden="true"
-                      tooltip="This only sorts the results on this page. To sort across an entire screen or the entire database, please use the form above."></span>
-                <select [(ngModel)]="contactSheetUiOptions.phenotype" (ngModelChange)="phenotypeChanged()"
-                        class="form-control" id="phenotype">
-                    <option value="none">None</option>
-                    <option value="percEmbLeth">% Embryonic Lethality</option>
-                    <option value="percSter">% Sterility</option>
-                    <option value="broodSize">Brood Size</option>
-                    <option value="wormCount">Worm Count</option>
-                    <option value="eggCount">Egg Count</option>
-                    <option value="larvaCount">Larvae Count</option>
-                    <option value="treatmentGroupId">Exp Set</option>
-                    <option value="plateId">Plate ID</option>
-                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"
-                          tooltip="Group the exp sets"></span>
-                </select>
-                <br>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="sort">Sort Order</label>
-                <select [(ngModel)]="contactSheetUiOptions.sortOrder" (ngModelChange)="phenotypeChanged()"
-                        class="form-control" id="sort">
-                    <option value="asc">Ascending</option>
-                    <option value="desc">Descending</option>
-                </select>
-                <br>
-            </div>
-        </div>
-    </div>
+    <!--<div class="row">-->
+    <!--<div class="col-md-6">-->
+    <!--<div class="form-group">-->
+    <!--<label for="phenotype">Select a Phenotype</label>-->
+    <!--<span class="glyphicon glyphicon-question-sign" aria-hidden="true"-->
+    <!--tooltip="This only sorts the results on this page. To sort across an entire screen or the entire database, please use the form above."></span>-->
+    <!--<select [(ngModel)]="contactSheetUiOptions.phenotype" (ngModelChange)="phenotypeChanged()"-->
+    <!--class="form-control" id="phenotype">-->
+    <!--<option value="none">None</option>-->
+    <!--<option value="percEmbLeth">% Embryonic Lethality</option>-->
+    <!--<option value="percSter">% Sterility</option>-->
+    <!--<option value="broodSize">Brood Size</option>-->
+    <!--<option value="wormCount">Worm Count</option>-->
+    <!--<option value="eggCount">Egg Count</option>-->
+    <!--<option value="larvaCount">Larvae Count</option>-->
+    <!--<option value="treatmentGroupId">Exp Set</option>-->
+    <!--<option value="plateId">Plate ID</option>-->
+    <!--<span class="glyphicon glyphicon-question-sign" aria-hidden="true"-->
+    <!--tooltip="Group the exp sets"></span>-->
+    <!--</select>-->
+    <!--<br>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-md-6">-->
+    <!--<div class="form-group">-->
+    <!--<label for="sort">Sort Order</label>-->
+    <!--<select [(ngModel)]="contactSheetUiOptions.sortOrder" (ngModelChange)="phenotypeChanged()"-->
+    <!--class="form-control" id="sort">-->
+    <!--<option value="asc">Ascending</option>-->
+    <!--<option value="desc">Descending</option>-->
+    <!--</select>-->
+    <!--<br>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
 
     <!--Begin PhenoType Slider-->
     <div class="row">
-        <div class="col-md-5">
-            <div *ngIf="contactSheetUiOptions.phenoTypeUiOptions.displaySlider">
-                Filter by {{contactSheetUiOptions.phenoTypeUiOptions.display}}
-                <nouislider [connect]="true"
-                            [config]="contactSheetUiOptions.sliderConfig"
-                            [min]="contactSheetUiOptions.sliderConfig.range.min"
-                            [max]="contactSheetUiOptions.sliderConfig.range.max"
-                            [(ngModel)]="contactSheetUiOptions.sliderRangeValues"
-                            (ngModelChange)="sliderChanged()"></nouislider>
-            </div>
-        </div>
-        <div class="col-md-1">
-        </div>
-        <div class="col-md-6">
-            <button type="button" class="btn btn-primary btn-lg"
-                    (click)="submitInteresting()"
-                    tooltip="Submit everything you have selected as interesting. This will clear the view of all interesting results.">
-                Submit Interesting
-            </button>
-            <br>
-            <button type="button" class="btn btn-success btn-lg"
-                    (click)="submitAll()"
-                    tooltip="Submit everything selected as interesting and not for preselection of manual scores.">
-                Submit All
-            </button>
-            <br>
-            <button type="button" class="btn btn-warning btn-lg" (click)="reset()"
-                    tooltip="Reset the form. All wells will be marked as 'not interesting'.">Reset
-            </button>
-            <br>
-        </div>
-    </div>
-    <!--End PhenoType Slider-->
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="checkbox checkbox-inline form-group">
-                <input class="form-check-input " type="checkbox"
-                       [(ngModel)]="contactSheetUiOptions.displayCounts"
-                       name="displayCounts" id="displayCounts">
-                <label class="form-check-label" for="displayCounts">
-                    <strong style="color: darkgrey">Display Counts</strong>
-                </label>
+        <!--The phenotype slider will someday live again!-->
+        <!--<div class="col-md-5">-->
+        <!--<div *ngIf="contactSheetUiOptions.phenoTypeUiOptions.displaySlider">-->
+        <!--Filter by {{contactSheetUiOptions.phenoTypeUiOptions.display}}-->
+        <!--<nouislider [connect]="true"-->
+        <!--[config]="contactSheetUiOptions.sliderConfig"-->
+        <!--[min]="contactSheetUiOptions.sliderConfig.range.min"-->
+        <!--[max]="contactSheetUiOptions.sliderConfig.range.max"-->
+        <!--[(ngModel)]="contactSheetUiOptions.sliderRangeValues"-->
+        <!--(ngModelChange)="sliderChanged()"></nouislider>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div class="col-md-1">-->
+        <!--</div>-->
+        <!--The phenotype slider will someday live again!-->
+        <div class="row">
+            <div class="col-md-4">
+                <button type="button" class="btn btn-primary btn-lg"
+                        (click)="submitInteresting()"
+                        tooltip="Submit everything you have selected as interesting. This will clear the view of all interesting results.">
+                    Submit Interesting
+                </button>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-success btn-lg"
+                        (click)="submitAll()"
+                        tooltip="Submit everything selected as interesting and not for preselection of manual scores.">
+                    Submit All
+                </button>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-warning btn-lg" (click)="reset()"
+                        tooltip="Reset the form. All wells will be marked as 'not interesting'.">Reset
+                </button>
+                <br>
             </div>
         </div>
     </div>
+
+    <!--Begin display counts-->
+    <!--<div class="row">-->
+    <!--<div class="col-md-6">-->
+    <!--<div class="checkbox checkbox-inline form-group">-->
+    <!--<input class="form-check-input " type="checkbox"-->
+    <!--[(ngModel)]="contactSheetUiOptions.displayCounts"-->
+    <!--name="displayCounts" id="displayCounts">-->
+    <!--<label class="form-check-label" for="displayCounts">-->
+    <!--<strong style="color: darkgrey">Display Counts</strong>-->
+    <!--</label>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--End display counts-->
 
     <br><br>
     <div *ngIf="errorMessage">
@@ -138,11 +146,11 @@
                                                                 data-toggle="tab" aria-expanded="false">Control Null</a>
                             </li>
                             <!--<li role="presentation" class=""><a href="#tab_content4" role="tab" id="profile-tab3"-->
-                                                                <!--data-toggle="tab" aria-expanded="false">Treatment-->
-                                <!--Interesting</a>-->
+                            <!--data-toggle="tab" aria-expanded="false">Treatment-->
+                            <!--Interesting</a>-->
                             <!--<li role="presentation" class=""><a href="#tab_content6" role="tab" id="profile-tab6"-->
-                                                                <!--data-toggle="tab" aria-expanded="false">Control Reagent-->
-                                <!--Interesting</a>-->
+                            <!--data-toggle="tab" aria-expanded="false">Control Reagent-->
+                            <!--Interesting</a>-->
                             <!--</li>-->
                         </ul>
                         <!-- !Plate Presentation Menu-->
@@ -156,11 +164,6 @@
                                     <h3>There are no Treatment Images for this query</h3>
                                     <p>This could mean that your experiment is not in the database, or that there are no
                                         counts yet.</p>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <h4>Plate Id: {{expSets.expGroupTypeAlbums.treatReagent[0].plateId}}</h4>
-                                    </div>
                                 </div>
 
                                 <app-grid-album [contactSheetResults]="contactSheetResults"
@@ -245,8 +248,8 @@
 
                             <!--Control Reagent Interesting-->
                             <!--<div role="tabpanel" class="tab-pane fade " id="tab_content6" aria-labelledby="profile-tab">-->
-                                <!--<div class="row" id="control_reagent_image_gallery">-->
-                                <!--</div>-->
+                            <!--<div class="row" id="control_reagent_image_gallery">-->
+                            <!--</div>-->
                             <!--</div>-->
                             <!--!Control Reagent Interesting-->
                         </div>
@@ -259,26 +262,25 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <button type="button" class="btn btn-primary btn-lg"
                     (click)="submitInteresting()"
                     tooltip="Submit everything you have selected as interesting. This will clear the view of all interesting results.">
                 Submit Interesting
             </button>
-            <br>
+        </div>
+        <div class="col-md-4">
             <button type="button" class="btn btn-success btn-lg"
                     (click)="submitAll()"
                     tooltip="Submit everything selected as interesting and not for preselection of manual scores.">
                 Submit All
             </button>
-            <br>
+        </div>
+        <div class="col-md-4">
             <button type="button" class="btn btn-warning btn-lg" (click)="reset()"
                     tooltip="Reset the form. All wells will be marked as 'not interesting'.">Reset
             </button>
-            <br>
         </div>
-    </div>
 
-    <br>
-</div>
+    </div>
 

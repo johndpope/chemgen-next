@@ -68,6 +68,11 @@ export class SearchModule {
             });
     }
 
+    /**
+     * Queries the exp_screen table in the database
+     * where: {screenName: {like: 'mel-28'}}
+     * @param where
+     */
     getExpScreens(where: LoopBackFilter) {
         this.expScreenApi
             .find(where)
@@ -132,10 +137,10 @@ export class SearchModule {
 
     /**
      * Get all batches related to a screen
+     * SELECT * from exp_screen where screen_id IN (1,2,3)
      * @param screenName
      */
     getExpScreenWorkflowsByExpScreen(screenName) {
-        this.typeAheadExpScreenWorkflows = [];
         let where: any = {};
         if (screenName) {
             where = {
@@ -164,9 +169,12 @@ export class SearchModule {
                     screenId: true,
                 },
             })
-            .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
-                this.typeAheadExpScreenWorkflows = orderBy(results, 'name');
+            .subscribe((expScreenUploadWorkflowResultSets: ExpScreenUploadWorkflowResultSet[]) =>{
+                this.typeAheadExpScreenWorkflows = expScreenUploadWorkflowResultSets;
+            }, (error) =>{
+                this.typeAheadExpScreenWorkflows = [];
             });
+
     }
 
     getExpBiosamples(where: LoopBackFilter) {
@@ -202,9 +210,9 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
     getExpWorkflows() {
         //First get all the workflowIDs that haven't been scored in the contact sheet
         //Then get the rest
-        this.expSetApi.getExpWorkflowIdsNotScoredContactSheet()
+        this.expSetApi
+            .getExpWorkflowIdsNotScoredContactSheet()
             .subscribe((results) => {
-                console.log(results);
                 this.expWorkflowApi
                     .find({
                         where: {
@@ -219,6 +227,8 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
                         this.expScreenWorkflows = results;
                         this.typeAheadExpScreenWorkflows = results;
                     }, (error) => {
+                        this.expScreenWorkflows = [];
+                        this.typeAheadExpScreenWorkflows = [];
                         console.log(error);
                     });
             }, (error) => {
@@ -257,7 +267,6 @@ export class ScreenMetaDataSearch implements SearchInterface {
             .subscribe((results: any) => {
                 if (get(results, ['results', 'expWorkflowIds'])) {
                     this.expScreenWorkflowIds = results.results.expWorkflowIds;
-                    // this.expScreenWorkflowIds = shuffle(this.expScreenWorkflowIds);
                 }
             }, (error) => {
                 this.error = error;
@@ -298,7 +307,8 @@ export class RNAiSearch implements SearchInterface {
         this.geneNotFoundMessage = null;
         this.expGroupIds = [];
         this.expGroups = [];
-        this.expSetApi.getExpSetsByRNAiReagentData(this.reagentSearch)
+        this.expSetApi
+            .getExpSetsByRNAiReagentData(this.reagentSearch)
             .subscribe((results: any) => {
                 if (get(results, ['results', 'expGroupIds'])) {
                     if (isArray(results.results.expGroupIds) && results.results.expGroups.length) {
@@ -310,7 +320,7 @@ export class RNAiSearch implements SearchInterface {
                         this.expGroups = results.results.expGroups;
                     }
                 }
-                if(this.reagentSearch.rnaiList.length && ! this.expGroups.length){
+                if (this.reagentSearch.rnaiList.length && !this.expGroups.length) {
                     this.geneNotFoundMessage = `Corresponding genes not found for : ${this.reagentSearch.rnaiList.join(', ')}`;
                 }
 
@@ -474,9 +484,14 @@ export class SearchFormBaseComponentParams {
 
         if (!searchExps) {
             //If the user doesn't select any criteria its just all available expWorkflowIds
-            this.expWorkflowIds = this.searchModule.expScreenWorkflows.map((expScreenWorkflow) => {
-                return expScreenWorkflow.id;
-            });
+            if (isArray(this.searchModule.expScreenWorkflows)) {
+                this.expWorkflowIds = this.searchModule.expScreenWorkflows.map((expScreenWorkflow) => {
+                    return expScreenWorkflow.id;
+                });
+            } else {
+                //Sometimes if the user immediately presses submit some of the things act funny
+                this.expWorkflowIds = [];
+            }
         } else if (isArray(this.screenMetaDataSearch.expScreenWorkflowIds) && this.screenMetaDataSearch.expScreenWorkflowIds) {
             // If the user selected any criteria (temperature, worm, etc) it will be available here
             this.expWorkflowIds = this.screenMetaDataSearch.expScreenWorkflowIds;
@@ -611,7 +626,8 @@ export class SearchFormParamsFilterByNotScoredContactSheet extends SearchFormBas
         this.resetExpSetView();
         this.setExpSetSearchCriteria();
 
-        this.expSetApi.getUnScoredExpSetsByPlate(this.expSetSearch)
+        this.expSetApi
+            .getUnScoredExpSetsByPlate(this.expSetSearch)
             .subscribe((results) => {
                 this.processExpSetsToExpModule(results);
             }, (error) => {
@@ -670,7 +686,8 @@ export class SearchFormParamsFilterByPassedContactSheet extends SearchFormBaseCo
         //IF we want to get anything, mark as false
         this.expSetSearch.scoresExist = true;
         console.log(this.expSetSearch);
-        this.expSetApi.getUnscoredExpSetsByFirstPass(this.expSetSearch)
+        this.expSetApi
+            .getUnscoredExpSetsByFirstPass(this.expSetSearch)
             .subscribe((results) => {
                 this.processExpSetsToExpModule(results);
             }, (error) => {

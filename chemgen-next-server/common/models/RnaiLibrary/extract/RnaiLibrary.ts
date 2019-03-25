@@ -1,4 +1,4 @@
-import app  = require('../../../../server/server.js');
+import app = require('../../../../server/server.js');
 import {WellCollection} from "../../../types/custom/wellData";
 import {
   ExpPlateResultSet,
@@ -159,8 +159,8 @@ RnaiLibrary.extract.getGeneXRefs = function (genes: Array<string>, search?: obje
     } else {
       let or = [];
       genes.map((gene) => {
-        or.push({wbGeneSequenceId: gene});
-        or.push({wbGeneCgcName: gene});
+        or.push({wbGeneSequenceId: {like: gene}});
+        or.push({wbGeneCgcName: {like: gene}});
       });
       app.models.RnaiWormbaseXrefs
         .find({where: {or: or}})
@@ -181,8 +181,17 @@ RnaiLibrary.extract.getGeneXRefs = function (genes: Array<string>, search?: obje
 
 RnaiLibrary.extract.getFromGeneLibrary = function (genesList: Array<string>, geneXrefs: RnaiWormbaseXrefsResultSet[], search?: any) {
   return new Promise((resolve, reject) => {
+    app.winston.info('Got some gene xrefs');
+    app.winston.info(JSON.stringify(geneXrefs));
     let or = [];
-    if (isEmpty(geneXrefs) ) {
+    if (get(search, 'rnaiList')) {
+      if (isArray(search.rnaiList)) {
+        search.rnaiList.map((s) => {
+          or.push({geneName: {like: s}});
+        });
+      }
+    }
+    if (isEmpty(geneXrefs)) {
       // If the geneXrefs is empty, just return an empty result set
       // Otherwise it will pull the entire RnaiLibrary table
       resolve([]);
@@ -193,15 +202,6 @@ RnaiLibrary.extract.getFromGeneLibrary = function (genesList: Array<string>, gen
             {geneName: geneXref.wbGeneSequenceId},
           ],
         };
-        if (search instanceof Object) {
-          obj.and.push(search);
-        } else if (get(search, 'rnaiList')) {
-          if(isArray(search.rnaiList)){
-            search.map((s) => {
-              obj.and.push({geneName: s});
-            });
-          }
-        }
         or.push(obj);
       });
 
@@ -212,9 +212,44 @@ RnaiLibrary.extract.getFromGeneLibrary = function (genesList: Array<string>, gen
             let geneXref: RnaiWormbaseXrefsResultSet = find(geneXrefs, (geneXref) => {
               return isEqual(String(geneXref.wbGeneSequenceId), String(result.geneName));
             });
-            result['wbGeneCgcName'] = geneXref.wbGeneCgcName;
+            if (geneXref) {
+              result['wbGeneCgcName'] = geneXref.wbGeneCgcName;
+              let origGene = find(genesList, (userGene) => {
+                return isEqual(userGene, result.geneName) || isEqual(userGene, geneXref.wbGeneCgcName);
+              });
+              result['UserSuppliedDef'] = origGene['Gene name'];
+            }
+          });
+          resolve(results);
+        })
+        .catch((error) => {
+          reject(new Error(error));
+        });
+    }
+  });
+};
+
+RnaiLibrary.extract.getFromUpdatedGeneMappingLibrary = function (genesList: Array<string>,  search?: any) {
+  return new Promise((resolve, reject) => {
+    let or = [];
+    if (get(search, 'rnaiList') && isArray(search.rnaiList)) {
+      search.rnaiList.map((s) => {
+        or.push({reagentName: {like: s}});
+        or.push({primaryTargetGeneId: {like: s}});
+        or.push({primaryTargetGeneSystematicName: {like: s}});
+        or.push({PrimaryTargetGeneCommonName: {like: s}});
+      });
+      app.winston.info('Search Object');
+      app.winston.info(JSON.stringify(or));
+      app.models.RnaiLibrary
+        .find({where: {or: or}})
+        .then((results: RnaiLibraryResultSet[]) => {
+          results.map((result) => {
+            //TODO This is a triage step - the interface expects to see something called wbGeneCgc Name
+            result['wbGeneCgcName'] = result.primaryTargetGeneCommonName;
             let origGene = find(genesList, (userGene) => {
-              return isEqual(userGene, result.geneName) || isEqual(userGene, geneXref.wbGeneCgcName);
+              return isEqual(userGene, result.primaryTargetGeneCommonName) || isEqual(userGene, result.primaryTargetGeneId)
+                || isEqual(userGene, result.primaryTargetGeneSystematicName) || isEqual(userGene, result.reagentName);
             });
             result['UserSuppliedDef'] = origGene['Gene name'];
           });
@@ -223,6 +258,9 @@ RnaiLibrary.extract.getFromGeneLibrary = function (genesList: Array<string>, gen
         .catch((error) => {
           reject(new Error(error));
         });
+    } else {
+      resolve([]);
     }
+
   });
 };
