@@ -237,7 +237,7 @@ RnaiLibrary.extract.getFromUpdatedGeneMappingLibrary = function (genesList: Arra
         or.push({reagentName: {like: s}});
         or.push({primaryTargetGeneId: {like: s}});
         or.push({primaryTargetGeneSystematicName: {like: s}});
-        or.push({PrimaryTargetGeneCommonName: {like: s}});
+        or.push({primaryTargetGeneCommonName: {like: s}});
       });
       app.winston.info('Search Object');
       app.winston.info(JSON.stringify(or));
