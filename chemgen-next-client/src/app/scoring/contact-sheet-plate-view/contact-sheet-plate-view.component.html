@@ -1,21 +1,30 @@
 <div *ngIf="expSets">
     <!--If View is byPlate show the Screen/ExpWorkflow Data-->
-    <div *ngIf="byPlate" class="row">
-        <div class="col-md-12">
-            <h3>Screen : {{expSets.expScreens[0].screenName}}</h3>
-            <h3>Batch: {{expSets.expWorkflows[0].name}}</h3>
-            <h3>Screen Stage: {{expSets.expWorkflows[0].screenStage}}</h3>
-            <h3>Temperature: {{expSets.expWorkflows[0].temperature}}</h3>
-            <h3>Worm Strains: {{expSets.expWorkflows[0].biosamples.experimentBiosample.name}} +
-                {{expSets.expWorkflows[0].biosamples.ctrlBiosample.name}} </h3>
+    <!--TODO This should really be a component somewhere-->
+    <div class="x_panel">
+        <div class="x_content">
+            <div *ngIf="byPlate" class="row">
+                <div class="col-md-12">
+                    <h3>Screen : {{expSets.expScreens[0].screenName}}</h3>
+                    <h3>Batch: {{expSets.expWorkflows[0].name}}</h3>
+                    <h3>Screen Stage: {{expSets.expWorkflows[0].screenStage}}</h3>
+                    <h3>Temperature: {{expSets.expWorkflows[0].temperature}}</h3>
+                    <h3>Worm Strains: {{expSets.expWorkflows[0].biosamples.experimentBiosample.name}} +
+                        {{expSets.expWorkflows[0].biosamples.ctrlBiosample.name}} </h3>
+                </div>
+            </div>
         </div>
     </div>
 
     <!--Begin Hot key CheatSheet-->
-    <div class="row">
-        <div class="col-md-12">
-            <h3>Press ? to view the hotkeys!</h3>
-            <hotkeys-cheatsheet></hotkeys-cheatsheet>
+    <div class="x_panel">
+        <div class="x_content">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Press ? to view the hotkeys!</h3>
+                    <hotkeys-cheatsheet></hotkeys-cheatsheet>
+                </div>
+            </div>
         </div>
     </div>
     <!--End Hot key CheatSheet-->
@@ -166,6 +175,8 @@
                                         counts yet.</p>
                                 </div>
 
+                                <h3>Barcode: {{plateData.treatReagentPlate.barcode}}</h3>
+                                <p>PlateId: {{plateData.treatReagentPlate.id}} (for database use only)</p>
                                 <app-grid-album [contactSheetResults]="contactSheetResults"
                                                 [album]="expSets.expGroupTypeAlbums.treatReagent"
                                                 [score]="true"
@@ -187,6 +198,8 @@
                                     <p>This could mean that your experiment is not in the database, or that there are no
                                         counts yet.</p>
                                 </div>
+                                <h3>Barcode: {{plateData.ctrlReagentPlate.barcode}}</h3>
+                                <p>PlateId: {{plateData.ctrlReagentPlate.id}} (for database use only)</p>
                                 <app-grid-album
                                         [contactSheetResults]="contactSheetResults"
                                         [album]="expSets.expGroupTypeAlbums.ctrlReagent" [score]="true"
@@ -207,6 +220,10 @@
                                     <p>This could mean that your experiment is not in the database, or that there are no
                                         counts yet.</p>
                                 </div>
+                                <!--<h3>Barcode: {{plateData.ctrlStrainPlate.barcode}}-->
+                                    <!--Id: {{plateData.ctrlStrainPlate.id}}</h3>-->
+                                <h3>Barcode: {{plateData.ctrlStrainPlate.barcode}}</h3>
+                                <p>PlateId: {{plateData.ctrlStrainPlate.id}} (for database use only)</p>
                                 <app-grid-album
                                         [contactSheetResults]="contactSheetResults"
                                         [album]="expSets.expGroupTypeAlbums.ctrlStrain"
@@ -228,6 +245,8 @@
                                     <p>This could mean that your experiment is not in the database, or that there are no
                                         counts yet.</p>
                                 </div>
+                                <h3>Barcode: {{plateData.ctrlNullPlate.barcode}}</h3>
+                                <p>PlateId: {{plateData.ctrlNullPlate.id}} (for database use only)</p>
                                 <app-grid-album
                                         [contactSheetResults]="contactSheetResults"
                                         [album]="expSets.expGroupTypeAlbums.ctrlNull"
@@ -261,26 +280,26 @@
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <button type="button" class="btn btn-primary btn-lg"
-                    (click)="submitInteresting()"
-                    tooltip="Submit everything you have selected as interesting. This will clear the view of all interesting results.">
-                Submit Interesting
-            </button>
-        </div>
-        <div class="col-md-4">
-            <button type="button" class="btn btn-success btn-lg"
-                    (click)="submitAll()"
-                    tooltip="Submit everything selected as interesting and not for preselection of manual scores.">
-                Submit All
-            </button>
-        </div>
-        <div class="col-md-4">
-            <button type="button" class="btn btn-warning btn-lg" (click)="reset()"
-                    tooltip="Reset the form. All wells will be marked as 'not interesting'.">Reset
-            </button>
-        </div>
-
-    </div>
-
+    <!--For some VERY STRANGE REASON-->
+    <!--When I have this at the bottom is REALLY slows down the submit-->
+    <!--<div class="row">-->
+    <!--<div class="col-md-4">-->
+    <!--<button type="button" class="btn btn-primary btn-lg"-->
+    <!--(click)="submitInteresting()"-->
+    <!--tooltip="Submit everything you have selected as interesting. This will clear the view of all interesting results.">-->
+    <!--Submit Interesting-->
+    <!--</button>-->
+    <!--</div>-->
+    <!--<div class="col-md-4">-->
+    <!--<button type="button" class="btn btn-success btn-lg"-->
+    <!--(click)="submitAll()"-->
+    <!--tooltip="Submit everything selected as interesting and not for preselection of manual scores.">-->
+    <!--Submit All-->
+    <!--</button>-->
+    <!--</div>-->
+    <!--<div class="col-md-4">-->
+    <!--<button type="button" class="btn btn-warning btn-lg" (click)="reset()"-->
+    <!--tooltip="Reset the form. All wells will be marked as 'not interesting'.">Reset-->
+    <!--</button>-->
+    <!--</div>-->
+    <!--</div>-->

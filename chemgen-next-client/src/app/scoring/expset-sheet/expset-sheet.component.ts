@@ -17,6 +17,7 @@ export class ExpsetSheetComponent implements OnInit {
     @Input() expSets: any;
     @Input() expSetSearch: ExpSetSearch;
     @Input() expSetModule: ExpsetModule;
+    @Input() displayToggle: boolean = true;
 
     constructor() {
     }

@@ -103,6 +103,24 @@
                 </ul>
                 <!--End Upload Menu-->
 
+                <!--Begin Help Menu-->
+                <ul class="nav side-menu">
+                    <li><a><i class="fa fa-question-circle"></i> Help  <span
+                                    class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li>
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/eegi-wiki-page/using-scoring-forms/">
+                                    Scoring Forms</a>
+                            </li>
+                            <li>
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/eegi-wiki-page/checking-data-with-phpmyadmin/">
+                                    Querying the database with phpmyadmin</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <!--Begin Score Menu-->
+
             </div>
         </div>
         <!-- /sidebar menu -->

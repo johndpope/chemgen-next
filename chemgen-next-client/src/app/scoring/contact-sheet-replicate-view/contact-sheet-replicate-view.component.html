@@ -1,22 +1,40 @@
-<div *ngIf="expSets && expSets.expWorkflows?.length" class="row batchInfo">
-    <div class="col-md-12">
-        <h3>Screen : {{expSets.expScreens[0].screenName}}</h3>
-        <h3>Batch: {{expSets.expWorkflows[0].name}}</h3>
-        <h3>Screen Stage: {{expSets.expWorkflows[0].screenStage}}</h3>
-        <h3>Temperature: {{expSets.expWorkflows[0].temperature}}</h3>
-        <h3>Worm Strains: {{expSets.expWorkflows[0].biosamples.experimentBiosample.name}} +
-            {{expSets.expWorkflows[0].biosamples.ctrlBiosample.name}} </h3>
+<div *ngIf="expSets && expSets.expWorkflows?.length" class="x_panel batchInfo">
+    <div class="x_content">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Screen : {{expSets.expScreens[0].screenName}}</h3>
+                <h3>Batch: {{expSets.expWorkflows[0].name}}</h3>
+                <h3>Screen Stage: {{expSets.expWorkflows[0].screenStage}}</h3>
+                <h3>Temperature: {{expSets.expWorkflows[0].temperature}}</h3>
+                <h3>Worm Strains: {{expSets.expWorkflows[0].biosamples.experimentBiosample.name}} +
+                    {{expSets.expWorkflows[0].biosamples.ctrlBiosample.name}} </h3>
+            </div>
+        </div>
     </div>
 </div>
 
 <!--Begin Hot key CheatSheet-->
-<div *ngIf="expSets && expSets.expWorkflows?.length" class="row">
-    <div class="col-md-12">
-        <h2>Press ? to view the hotkeys!</h2>
-        <hotkeys-cheatsheet></hotkeys-cheatsheet>
+<div class="x_panel">
+    <div class="x_content">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>HotKeys</h3>
+                <hotkeys-cheatsheet></hotkeys-cheatsheet>
+                <table class="table table-striped">
+                    <tr *ngFor="let hotkey of hotKeys">
+                        <td>
+                            <span *ngFor="let key of hotkey.formatted">{{key}}</span>
+                        </td>
+                        <td>{{ hotkey.description }}</td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 <!--End Hot key CheatSheet-->
+
 <!--Start Content-->
 <div class="row">
     <div class="col-md-12">
@@ -27,10 +45,11 @@
             <!--Begin Exp Set Albums-->
             <div *ngFor="let expSet of expSetsDeNorm; let i = index">
 
-                <div [ngClass]="getExpSetClass(i)" id="expSet-{{expSet.treatmentGroupId}}">
+                <div [ngClass]="getExpSetClass(i)" id="expSet-{{expSet.treatmentGroupId}}"
+                     (click)="currentExpSetIndex = i; setFocus()">
                     <div class="row">
                         <!--Begin Toggle interesting on/of-->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <app-expset-toggle [treatmentGroupId]="expSet.treatmentGroupId"
                                                [expScreen]="expSet.expScreen"
                                                [expWorkflow]="expSet.expWorkflow"
@@ -42,12 +61,23 @@
                         <!--End Toggle interesting on/of-->
 
                         <!--Begin Submit and clear this expGroup-->
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <button (click)="submitSingleExpGroup(expSet.treatmentGroupId)"
                                     class="btn btn-info">Submit Exp Group
                             </button>
                         </div>
                         <!--End Submit and clear this expGroup-->
+                        <div class="col-md-4 alert-info">
+                            <p>Index: {{expSet.index}}</p>
+                            <div *ngIf="expSet.rnaisList">
+                                <div *ngFor="let rnai of expSet.rnaisList">
+                                    <p>Master Plate: {{rnai.masterPlateWell}}</p>
+                                    <p>Stock Plate: {{rnai.stockPlateWell}}</p>
+                                    <p>Reagent Name: {{rnai.reagentName}}</p>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                     <br>
                     <!--Begin Tab Content-->
@@ -159,7 +189,7 @@
                                             <div class="row">
                                                 <div *ngFor="let image of expSet.albums.treatmentReagentImages; let i=index">
                                                     <div *ngIf="image">
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-6">
                                                             <img tabindex="0" class="img-thumbnail"
                                                                  [src]="image.thumb"
                                                                  (click)="open(expSet.albums.treatmentReagentImages, i)"/>
@@ -215,7 +245,7 @@
                                             <div class="row">
                                                 <div *ngFor="let image of expSet.albums.ctrlReagentImages; let i=index">
                                                     <div *ngIf="image">
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-6">
                                                             <img tabindex="0" class="img-thumbnail"
                                                                  [src]="image.thumb"
                                                                  (click)="open(expSet.albums.ctrlReagentImages, i)"/>
@@ -238,25 +268,32 @@
                                             <table class="table table-striped table-hover">
                                                 <tbody>
                                                 <tr>
-                                                    <td>Gene</td>
-                                                    <td>{{rnai.geneName}}</td>
-                                                </tr>
-                                                <tr *ngIf="rnai.xrefs?.length > 0">
-                                                    <td>Cosmid ID</td>
-                                                    <td>{{rnai.xrefs[0].wbGeneCgcName}}</td>
-                                                </tr>
-                                                <tr *ngIf="rnai.xrefs?.length > 0">
-                                                    <td>Wormbase ID</td>
-                                                    <td>
-                                                        <a href="https://www.wormbase.org/species/c_elegans/gene/{{rnai.xrefs[0].wbGeneAccession}}">
-                                                            {{rnai.xrefs[0].wbGeneAccession}} (Click this to go to
-                                                            wormbase)
-                                                        </a>
-                                                    </td>
+                                                    <td>Reagent Type</td>
+                                                    <td>{{rnai.reagentType}}</td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Chromo Plate Well</td>
-                                                    <td> {{rnai.chrom}} {{rnai.plate}} {{rnai.well}}</td>
+                                                    <td>Reagent Name</td>
+                                                    <td>{{rnai.reagentName}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Primary Target Gene Id</td>
+                                                    <td>{{rnai.primaryTargetGeneId}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Primary Target Gene Systematic Name</td>
+                                                    <td>{{rnai.primaryTargetGeneSystematicName}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Primary Target Gene Common Name</td>
+                                                    <td>{{rnai.primaryTargetGeneCommonName}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Master Plate Well</td>
+                                                    <td>{{rnai.masterPlateWell}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Stock Plate Well</td>
+                                                    <td>{{rnai.stockPlateWell}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>
@@ -269,24 +306,6 @@
                                                         Rev Primer
                                                     </td>
                                                     <td>{{rnai.revPrimer}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        Bio Loc
-                                                    </td>
-                                                    <td>{{rnai.bioloc}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        Stock Loc
-                                                    </td>
-                                                    <td>{{rnai.stockloc}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        Stock Title
-                                                    </td>
-                                                    <td>{{rnai.stocktitle}}</td>
                                                 </tr>
                                                 </tbody>
                                             </table>

@@ -64,7 +64,9 @@ export class SearchModule {
             })
             .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
                 this.expScreenWorkflows = results;
+                this.expScreenWorkflows = orderBy(this.expScreenWorkflows, 'name');
                 this.typeAheadExpScreenWorkflows = results;
+                this.typeAheadExpScreenWorkflows = orderBy(this.expScreenWorkflows, 'name');
             }, (error) => {
                 console.log(error);
             });
@@ -205,6 +207,10 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
                     .subscribe((results: ExpScreenUploadWorkflowResultSet[]) => {
                         this.expScreenWorkflows = results;
                         this.typeAheadExpScreenWorkflows = results;
+                        this.expScreenWorkflows = results;
+                        this.expScreenWorkflows = orderBy(this.expScreenWorkflows, 'name');
+                        this.typeAheadExpScreenWorkflows = results;
+                        this.typeAheadExpScreenWorkflows = orderBy(this.expScreenWorkflows, 'name');
                     }, (error) => {
                         this.expScreenWorkflows = [];
                         this.typeAheadExpScreenWorkflows = [];
@@ -270,8 +276,12 @@ export class ScreenMetaDataSearch implements SearchInterface {
 
 export class RNAiSearch implements SearchInterface {
     //INPUT
+    //This is the exact string that is typed into the textbox in the sesarch-form-rnai.component.html file
+    public rnais: string = null;
+    //this.rnais string is split by space, new lines, and commas to get a list that we then search for
     public reagentSearch: ReagentDataCriteria;
     //OUTPUT
+    //The rnaisearch gets all the expsets that correspond to the user input
     public expGroupIds: Array<number> = [];
     public expGroups: Array<{ expGroupId, expWorkflowId }> = [];
     public results: Array<{ expGroupId, expWorkflowId, expGroups }> = [];
@@ -289,6 +299,7 @@ export class RNAiSearch implements SearchInterface {
         this.expSetApi
             .getExpSetsByRNAiReagentData(this.reagentSearch)
             .subscribe((results: any) => {
+                console.log(results);
                 if (get(results, ['results', 'expGroupIds'])) {
                     if (isArray(results.results.expGroupIds) && results.results.expGroups.length) {
                         this.expGroupIds = results.results.expGroupIds;
@@ -415,7 +426,7 @@ export class SearchFormBaseComponentParams {
     public expGroups: Array<{ expGroupId, expWorkflowId }> = [];
 
     public formSubmitted = false;
-    public message: string = null;
+    public errorMessage: string = null;
     public expSetView = true;
 
     // This is the search class (To be refactored) that returns the expSets data structure, that is fed to the UI
@@ -441,9 +452,7 @@ export class SearchFormBaseComponentParams {
         this.expSetSearch = new ExpSetSearch();
     }
 
-    //TODO Need to expand this for layering other types of expGroup searches
-    //Score status, actual scores, etc
-    searchRNAi() {
+    checkForRNAiSearchResults() {
         if (isArray(this.rnaiSearch.expGroups) && isArray(this.expWorkflowIds)) {
             if (this.rnaiSearch.expGroups.length && this.expWorkflowIds.length) {
                 let expGroups = this.rnaiSearch.expGroups.filter((expGroup) => {
@@ -456,27 +465,33 @@ export class SearchFormBaseComponentParams {
         }
     }
 
+    /**
+     * Parse the form results in order to get the search data we send to get our ExpSets
+     */
     searchScreenMeta() {
         const searchExps = this.screenMetaDataSearch.checkScreenMetaCriteria();
         this.expGroups = [];
         this.expGroupIds = [];
 
-        if (!searchExps) {
-            //If the user doesn't select any criteria its just all available expWorkflowIds
-            if (isArray(this.searchModule.expScreenWorkflows)) {
-                this.expWorkflowIds = this.searchModule.expScreenWorkflows.map((expScreenWorkflow) => {
-                    return expScreenWorkflow.id;
-                });
-            } else {
-                //Sometimes if the user immediately presses submit some of the things act funny
-                this.expWorkflowIds = [];
-            }
-        } else if (isArray(this.screenMetaDataSearch.expScreenWorkflowIds) && this.screenMetaDataSearch.expScreenWorkflowIds) {
+        //If the user doesn't select any criteria its just all available expWorkflowIds
+        if (isArray(this.searchModule.expScreenWorkflows)) {
+            this.expWorkflowIds = this.searchModule.expScreenWorkflows.map((expScreenWorkflow) => {
+                return expScreenWorkflow.id;
+            });
+        } else {
+            //Sometimes if the user immediately presses submit some of the things act funny
+            this.expWorkflowIds = [];
+        }
+        if (isArray(this.screenMetaDataSearch.expScreenWorkflowIds) && this.screenMetaDataSearch.expScreenWorkflowIds) {
             // If the user selected any criteria (temperature, worm, etc) it will be available here
             this.expWorkflowIds = this.screenMetaDataSearch.expScreenWorkflowIds;
         } else if (this.searchFormExpScreenResults.expScreenWorkflows && this.searchFormExpScreenResults.expScreenWorkflows.length) {
             // If the user explicitly selected a batch it it will be available here
             this.expWorkflowIds = this.searchFormExpScreenResults.expScreenWorkflows.map((expScreenWorkflow) => {
+                return expScreenWorkflow.id;
+            });
+        } else if (this.searchFormExpScreenResults.expScreenFound) {
+            this.expWorkflowIds = this.searchModule.typeAheadExpScreenWorkflows.map((expScreenWorkflow: ExpScreenUploadWorkflowResultSet) => {
                 return expScreenWorkflow.id;
             });
         } else {
@@ -495,31 +510,50 @@ export class SearchFormBaseComponentParams {
         return;
     }
 
-    // Layer the criteria
+    /**
+     * First look to see if the user has specified a set of expSets (either by selecting 1 or more RNAi or chemicals)
+     * If they haven't see if they have selected a specific batch
+     * If they haven't see if they selected a specific screen
+     * Otherwise just choose a batch from what is left
+     */
     setExpSetSearchCriteria() {
         if (this.expGroupIds.length) {
             //If the user searches for specific genes or chemicals
             //They get back a list of expGroups
             this.paginationData = new Pagination(1);
             this.expSetSearch.expGroupSearch = this.expGroupIds;
+            console.log(`Searching for expGroupIds`);
+            console.log(this.expGroupIds);
+            console.log(this.expSetSearch);
         } else if (get(this.searchFormExpScreenResults, ['expScreenWorkflow', 'id'])) {
             //The user explicitly set a batch to search for
             this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
+        } else if (get(this.searchFormExpScreenResults, ['expScreen', 'screenId'])) {
+            console.log('searching by screen...');
+            this.expSetSearch.screenSearch = [this.searchFormExpScreenResults.expScreen.screenId];
+            console.log(`Searching by TypeAhead: ${this.searchModule.typeAheadExpScreenWorkflows[0].name}`);
+            this.expSetSearch.expWorkflowSearch = [this.searchModule.typeAheadExpScreenWorkflows[0].id]
+        } else if (isArray(this.searchModule.typeAheadExpScreenWorkflows && this.searchModule.typeAheadExpScreenWorkflows.length)) {
+            this.paginationData = new Pagination(this.expWorkflowIds.length);
+            if (this.searchModule.typeAheadExpScreenWorkflows[this.paginationData.currentPage - 1]) {
+                this.expSetSearch.expWorkflowSearch = [this.searchModule.typeAheadExpScreenWorkflows[this.paginationData.currentPage - 1].id];
+            } else {
+                this.errorMessage = 'There are no more results with your search parameters.';
+            }
         } else if (isArray(this.expWorkflowIds) && this.expWorkflowIds.length) {
             this.paginationData = new Pagination(this.expWorkflowIds.length);
             if (this.expWorkflowIds[this.paginationData.currentPage - 1]) {
                 this.expSetSearch.expWorkflowSearch = [this.expWorkflowIds[this.paginationData.currentPage - 1]];
             } else {
-                this.message = 'There are no more results with your search parameters.';
+                this.errorMessage = 'There are no more results with your search parameters.';
             }
-        } else {
-            this.message = 'Invalid search parameters';
         }
     }
 
     onReset() {
         this.searchFormExpScreenResults = new SearchFormExpScreenFormResults();
         this.searchFormRnaiFormResults = new SearchFormRnaiFormResults();
+        this.rnaiSearch = new RNAiSearch(this.expSetApi);
         this.initializeSearches();
         //TODO Add in filter by scores options
 
@@ -543,7 +577,7 @@ export class SearchFormBaseComponentParams {
         this.expWorkflowIds = null;
         this.searchFormExpScreenResults.setSearchCriteria();
         this.searchScreenMeta();
-        this.searchRNAi();
+        this.checkForRNAiSearchResults();
         this.findExpSets();
     }
 
@@ -569,10 +603,12 @@ export class SearchFormBaseComponentParams {
 
         this.expSetApi.getExpSets(this.expSetSearch)
             .subscribe((results) => {
+                console.log('Got some expSets!');
+                console.log(results);
                 this.processExpSetsToExpModule(results);
             }, (error) => {
                 this.spinner.hide();
-                this.message = error;
+                this.errorMessage = error;
                 console.log(error);
                 return new Error(error);
             });
@@ -612,7 +648,7 @@ export class SearchFormParamsFilterByNotScoredContactSheet extends SearchFormBas
             }, (error) => {
                 console.log(error);
                 this.spinner.hide();
-                this.message = error;
+                this.errorMessage = error;
                 return new Error(error);
             });
     }
@@ -647,7 +683,7 @@ export class SearchFormParamsFilterByPassedContactSheet extends SearchFormBaseCo
         } else if (isArray(this.expWorkflowIds) && this.expWorkflowIds.length) {
             this.paginationData = new Pagination(this.expWorkflowIds.length);
         } else {
-            this.message = 'Invalid search parameters';
+            this.errorMessage = 'Invalid search parameters';
         }
     }
 
@@ -672,7 +708,7 @@ export class SearchFormParamsFilterByPassedContactSheet extends SearchFormBaseCo
             }, (error) => {
                 console.log(error);
                 this.spinner.hide();
-                this.message = error;
+                this.errorMessage = error;
                 return new Error(error);
             });
     }

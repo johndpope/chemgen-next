@@ -12,6 +12,7 @@
             <!--Begin Current Content-->
             <div *ngIf="searchFormParams.expSets" class="expSets">
                 <app-expset-sheet [expSets]="searchFormParams.expSets" [expSetModule]="searchFormParams.expSetsModule"
+                                  [displayToggle]="false"
                                   [expSetSearch]="searchFormParams.expSetSearch"></app-expset-sheet>
             </div>
             <div *ngIf="searchFormParams.expSets && ! searchFormParams.expSets.expWorkflows?.length">

@@ -85,8 +85,8 @@ let generateImageJob = function (imagesList, plateData: ExpPlateResultSet) {
         let commandStr = commands.join("\n");
         commandStr = "#!/usr/bin/env bash\nset -x -e\n\n" + commandStr;
         const imageJob = {
-          run_id: `convertWell-${plateData.barcode}-${imagesList[0].assayName}`,
-          task_id: `convertWell-${plateData.barcode}-${imagesList[0].assayName}`,
+          run_id: `convertWell-${plateData.barcode}-${imagesList[0].assayName}-${now}`,
+          task_id: `convertWell-${plateData.barcode}-${imagesList[0].assayName}-${now}`,
           conf: JSON.stringify({image_convert_command: commandStr})
         };
         app.winston.info(`Submitting job ${imageJob.task_id}`);
@@ -108,14 +108,15 @@ let generateImageJob = function (imagesList, plateData: ExpPlateResultSet) {
 
 app.models.Plate.find({
   where: {
-    or: [
-      {
-        name: {like: '%SK%PanB%'}
-      },
-      {
-        platebarcode: {like: '%SK%PanB%'}
-      }
-    ]
+    csPlateid: 14320
+    // or: [
+    //   {
+    //     name: {like: '%SK%PanB%'}
+    //   },
+    //   {
+    //     name: {like: 'SK%PanA%'}
+    //   }
+    // ]
   }
 })
   .then((platesDataList: PlateResultSet[]) => {

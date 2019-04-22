@@ -23,7 +23,7 @@ import Promise = require('bluebird');
 import {ExpSetSearch, ExpSetSearchResults} from "../../../types/custom/ExpSetTypes/index";
 
 import config = require('config');
-import {ExpManualScoresResultSet} from "../../../types/sdk";
+import {ExpManualScoresResultSet} from "../../../types/sdk/models";
 
 const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
 
@@ -171,9 +171,9 @@ ExpSet.extract.buildReagentQuery = function (data: ExpSetSearchResults, or: Arra
 ExpSet.extract.buildExpAssay2reagentSearch = function (data: ExpSetSearchResults, search: ExpSetSearch) {
   let or = ExpSet.extract.buildQuery(data, search);
   return {
-    where: {or: or, reagentId: {'neq': null}},
-    limit: data.pageSize,
-    skip: data.skip,
+    where: {or: or},
+    limit: 1000,
+    // skip: data.skip,
     // skip: search.currentPage * search.pageSize,
     fields: {
       assay2reagentId: true,
@@ -184,6 +184,7 @@ ExpSet.extract.buildExpAssay2reagentSearch = function (data: ExpSetSearchResults
       reagentId: true,
       libraryId: true,
       reagentTable: true,
+      expWorkflowId: true,
     },
   };
 };
@@ -722,7 +723,7 @@ ExpSet.extract.buildImageObjDEV = function (expAssay: ExpAssayResultSet) {
     assayImagePath: expAssay.assayImagePath,
     src: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
     caption: `Image ${expAssay.assayImagePath} caption here`,
-    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
+    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel-1024x1024.jpeg`,
     assayId: expAssay.assayId,
     plateId: expAssay.plateId,
   };
@@ -733,7 +734,7 @@ ExpSet.extract.buildImageObjAD = function (expAssay: ExpAssayResultSet) {
     assayImagePath: expAssay.assayImagePath,
     src: `${config.get('sites')['AD']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
     caption: `Image ${expAssay.assayImagePath} caption here`,
-    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
+    thumb: `${config.get('sites')['AD']['imageUrl']}/${expAssay.assayImagePath}-autolevel-1024x1024.jpeg`,
     assayId: expAssay.assayId,
     plateId: expAssay.plateId,
   };

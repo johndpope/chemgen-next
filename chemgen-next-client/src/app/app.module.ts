@@ -143,6 +143,7 @@ import {SearchFormContactSheetReplicateViewComponent} from './search-forms/searc
         TooltipModule.forRoot(),
         TypeaheadModule.forRoot(),
         NgProgressModule.forRoot({}),
+        // HotkeyModule.forRoot({cheatSheetHotkey: 'shift+h'}),
         HotkeyModule.forRoot(),
         LightboxModule,
         NouisliderModule,

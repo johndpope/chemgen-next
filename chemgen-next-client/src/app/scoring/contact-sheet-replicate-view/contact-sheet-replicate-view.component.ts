@@ -7,7 +7,7 @@ import {ExpSetSearchResults, ExpSetSearch} from "../../../types/custom/ExpSetTyp
 import {ExpsetModule} from "../../../types/custom/ExpSetTypes";
 import {Lightbox} from "angular2-lightbox";
 import {ContactSheetFormResults} from "../contact-sheet/contact-sheet.module";
-import {trim, isEqual, flatten, get, find, compact, isArray, remove, isUndefined, filter} from 'lodash';
+import {trim, isEqual, flatten, get, find, compact, isArray, uniqBy, remove, isUndefined, filter} from 'lodash';
 import {ExpManualScoresResultSet} from "../../../types/sdk/models";
 import {HotkeysService, Hotkey} from "angular2-hotkeys";
 import {ContactSheetUIOptions} from "../contact-sheet/contact-sheet.module";
@@ -41,6 +41,7 @@ export class ContactSheetReplicateViewComponent implements OnInit {
     public currentExpSetIndex = 0;
 
     public expSetView = true;
+    public hotKeys = [];
 
     constructor(private expSetApi: ExpSetApi,
                 private expManualScoresApi: ExpManualScoresApi,
@@ -62,27 +63,45 @@ export class ContactSheetReplicateViewComponent implements OnInit {
         if (userId) {
             this.userId = userId.innerText || 0;
         }
+        this.addReplicateContactSheetHotkeys();
     }
 
     ngOnInit() {
-        this.addReplicateContactSheetHotkeys();
+        this.currentExpSetIndex = 0;
         this.expSetsDeNorm = this.expSetModule.deNormalizeExpSets();
+        this.expSetsDeNorm = uniqBy(this.expSetsDeNorm, 'treatmentGroupId');
+        this.expSetsDeNorm.map((expSet, index) =>{
+            expSet['index'] = index;
+        });
+        this.addReplicateContactSheetHotkeys();
         this.setFocus();
+        let hotKeys :Array<any>  = this.hotkeysService.hotkeys.filter(function (hotkey) { return hotkey.description; })
+        this.hotKeys = hotKeys.map((hotKey: {description, formatted}) =>{
+            return {description: hotKey.description, formatted: hotKey.formatted}
+        });
+        this.hotKeys.shift();
+        this.hotKeys = uniqBy(this.hotKeys, 'description');
     }
 
     addReplicateContactSheetHotkeys() {
-
-        this.hotkeysService.add(new Hotkey('n', (event: KeyboardEvent): boolean => {
-            this.currentExpSetIndex = this.currentExpSetIndex + 1;
-            if (this.currentExpSetIndex >= this.expSetsDeNorm.length) {
-                this.currentExpSetIndex = 0;
+        this.hotkeysService.reset();
+        this.hotkeysService.add(new Hotkey(['p', '7'], (event: KeyboardEvent): boolean => {
+            console.log('Moving to the previous Experiment Set');
+            if (this.currentExpSetIndex >= 1) {
+                this.currentExpSetIndex = this.currentExpSetIndex - 1;
             }
-            this.currentExpSet = this.expSetsDeNorm[this.currentExpSetIndex];
             this.setFocus();
             return false; // Prevent bubbling
-        }, undefined, 'Move to next Experiment Set'));
+        }, undefined, 'Move to the previous Experiment Set'));
+        this.hotkeysService.add(new Hotkey(['n', '8'], (event: KeyboardEvent): boolean => {
+            console.log('Moving to the next Experiment Set');
+            this.currentExpSetIndex = this.currentExpSetIndex + 1;
+            this.setFocus();
+            return false; // Prevent bubbling
+        }, undefined, 'Move to the next Experiment Set'));
 
         this.hotkeysService.add(new Hotkey('i', (event: KeyboardEvent): boolean => {
+            console.log('Toggling interesting!');
             if (get(this.contactSheetResults, ['interesting', this.currentExpSet.treatmentGroupId])) {
                 this.contactSheetResults.interesting[this.currentExpSet.treatmentGroupId] = false;
             } else {
@@ -92,24 +111,28 @@ export class ContactSheetReplicateViewComponent implements OnInit {
         }, undefined, 'Toggle Interesting Experiment Set'));
 
         this.hotkeysService.add(new Hotkey('1', (event: KeyboardEvent): boolean => {
+            console.log('moving to ts-reagent-tab');
             this.setTabInactive();
             this.setTabActive('ts-reagent-tab');
             return false; // Prevent bubbling
         }, undefined, 'View Treatment + Reagent'));
 
         this.hotkeysService.add(new Hotkey('2', (event: KeyboardEvent): boolean => {
+            console.log('moving to n2-reagent-tab');
             this.setTabInactive();
             this.setTabActive('n2-reagent-tab');
             return false; // Prevent bubbling
         }, undefined, 'View N2 + Reagent'));
 
         this.hotkeysService.add(new Hotkey('3', (event: KeyboardEvent): boolean => {
+            console.log('moving to ts-l4440-tab');
             this.setTabInactive();
             this.setTabActive('ts-l4440-tab');
             return false; // Prevent bubbling
         }, undefined, 'View Reagent + L4440'));
 
         this.hotkeysService.add(new Hotkey('4', (event: KeyboardEvent): boolean => {
+            console.log('moving to n2-l4440-tab');
             this.setTabInactive();
             this.setTabActive('n2-l4440-tab');
             return false; // Prevent bubbling
@@ -128,10 +151,11 @@ export class ContactSheetReplicateViewComponent implements OnInit {
         }, undefined, 'View Exp Plate Data'));
 
         this.hotkeysService.add(new Hotkey('shift+i', (event: KeyboardEvent): boolean => {
+            console.log('Submitting all the interesting sets');
             this.submitInteresting();
             this.currentExpSetIndex = 0;
-            // this.expSetsDeNorm = this.expSetModule.deNormalizeExpSets();
             this.currentExpSet = this.expSetsDeNorm[0];
+            this.setFocus();
             return false; // Prevent bubbling
         }, undefined, 'Submit Interesting and clear from the view'));
 
@@ -191,12 +215,20 @@ export class ContactSheetReplicateViewComponent implements OnInit {
     //This is only triggered by the hotkey 'n'
     setFocus() {
         setTimeout(() => {
-            console.log('should be setting timeout....');
+            console.log(`ExpSetsDeNorm.length: ${this.expSetsDeNorm.length}`);
+            console.log(`currentExpSetIndex: ${this.currentExpSetIndex}`);
+            if (this.currentExpSetIndex >= this.expSetsDeNorm.length) {
+                console.log('should be resetting back to 0');
+                this.currentExpSetIndex = 0;
+            }
+            this.currentExpSet = this.expSetsDeNorm[this.currentExpSetIndex];
             const expSetId = get(this.expSetsDeNorm[this.currentExpSetIndex], 'treatmentGroupId');
             if (expSetId) {
                 const elem = document.getElementById(`expSet-${expSetId}`);
                 if (elem) {
                     elem.scrollIntoView();
+                } else {
+                    console.error('Element corresponding to expSet does not exist!');
                 }
             } else {
                 console.error('ExpSetId does not exist. Cannot scroll into view!!!!');
@@ -261,6 +293,7 @@ export class ContactSheetReplicateViewComponent implements OnInit {
             this.submitScores(manualScore)
                 .then(() => {
                     this.removeByTreatmentGroupId(treatmentGroupId);
+                    // this.currentExpSetIndex = this.currentExpSetIndex + 1;
                     this.setFocus();
                 })
                 .catch((error) => {
@@ -303,21 +336,33 @@ export class ContactSheetReplicateViewComponent implements OnInit {
         // optimizes the arrays of scores
         manualScores = flatten(manualScores);
         manualScores = compact(manualScores);
-        console.log(manualScores);
-        this.submitScores(manualScores)
+        Promise.all(manualScores.map((manualScore) => {
+            return this.submitScores([manualScore]);
+        }))
             .then(() => {
                 this.didScore = true;
                 this.expSetsScored.emit(true);
-                // this.onSubmit();
+                console.log('submitted scores!');
             })
             .catch((error) => {
-                console.log(error);
                 this.errorMessage = 'There was a problem submitting all scores!';
             });
+        // this.submitScores(manualScores)
+        //     .then(() => {
+        //         this.didScore = true;
+        //         this.expSetsScored.emit(true);
+        //         // this.onSubmit();
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //         this.errorMessage = 'There was a problem submitting all scores!';
+        //     });
     }
 
     createManualScore(manualScoreValue: number, treatmentGroupId: number) {
         const expAssay: Array<any> = filter(this.expSets.expAssay2reagents, {expGroupId: Number(treatmentGroupId)});
+        // Since we are choosing the entire expSet,submit one score per assayId
+        // So that we match the contact sheet
         if (isArray(expAssay) && expAssay.length) {
             const expScreen: any = find(this.expSets.expScreens, {screenId: Number(expAssay[0].screenId)});
             return expAssay.map((imageMeta: any) => {
@@ -327,7 +372,6 @@ export class ContactSheetReplicateViewComponent implements OnInit {
                     'manualscoreValue': manualScoreValue,
                     'screenId': expScreen.screenId,
                     'screenName': expScreen.screenName,
-                    // Since we are choosing the entire expSet, there is no assayId here
                     'assayId': imageMeta.assayId,
                     'treatmentGroupId': treatmentGroupId,
                     'scoreCodeId': 66,

@@ -12,19 +12,14 @@
                   tooltip="Enter one or more IDs separated by whitespace or newlines.">
           </span>
             <p>
-                Examples: ''C38D4.3' (Cosmid ID) or 'mel-28' (Gene locus name)
+                Examples: 'sjj_T14B4.7' (sjj_reagent) or 'C38D4.3' (Cosmid ID) or 'mel-28' (Gene locus name)
             </p>
             <textarea class="form-control"
                       name="rnais" id="rnais" rows="5"
-                      [(ngModel)]="rnais"
+                      [(ngModel)]="rnaiSearch.rnais"
                       (ngModelChange)="updateRnaisList()"
             >
       </textarea>
-        </div>
-    </div>
-    <div class="col-md-12">
-        <div class="alert alert-warning" *ngIf="rnaiSearch.geneNotFoundMessage">
-            {{rnaiSearch.geneNotFoundMessage}}
         </div>
     </div>
 </div>
