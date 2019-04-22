@@ -5,7 +5,7 @@ import {isArray, isEmpty, orderBy, isObject, get} from 'lodash';
 import {WorkflowModel} from "../../index";
 import {ExpManualScoresResultSet, ExpScreenResultSet} from "../../../types/sdk/models";
 import {ExpSetSearch} from "../../../types/custom/ExpSetTypes";
-import {ExpScreenUploadWorkflowResultSet} from "../../../types/sdk";
+import {ExpScreenUploadWorkflowResultSet} from "../../../types/sdk/models";
 
 const config = require('config');
 const knex = config.get('knex');

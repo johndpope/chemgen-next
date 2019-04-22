@@ -205,7 +205,7 @@ def cell_image_analysis_generate_tasks(num_channels: int, dag: DAG):
             well)
 
 
-def generate_image_conversion_sub_dag(parent_dag_name, child_dag_name, start_date, schedule_interval):
+def generate_image_conversion_sub_dag(parent_dag_name, child_dag_name, start_date, schedule_interval) -> DAG:
     """This generates the image_conversion subdag
     A subdag basically acts like an array of tasks, at least in this case"""
 

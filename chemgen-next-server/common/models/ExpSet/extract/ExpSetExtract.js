@@ -141,9 +141,9 @@ ExpSet.extract.buildReagentQuery = function (data, or, expOr) {
 ExpSet.extract.buildExpAssay2reagentSearch = function (data, search) {
     var or = ExpSet.extract.buildQuery(data, search);
     return {
-        where: { or: or, reagentId: { 'neq': null } },
-        limit: data.pageSize,
-        skip: data.skip,
+        where: { or: or },
+        limit: 1000,
+        // skip: data.skip,
         // skip: search.currentPage * search.pageSize,
         fields: {
             assay2reagentId: true,
@@ -154,6 +154,7 @@ ExpSet.extract.buildExpAssay2reagentSearch = function (data, search) {
             reagentId: true,
             libraryId: true,
             reagentTable: true,
+            expWorkflowId: true,
         },
     };
 };
@@ -673,7 +674,7 @@ ExpSet.extract.buildImageObjDEV = function (expAssay) {
         assayImagePath: expAssay.assayImagePath,
         src: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
         caption: "Image " + expAssay.assayImagePath + " caption here",
-        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
+        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel-1024x1024.jpeg",
         assayId: expAssay.assayId,
         plateId: expAssay.plateId,
     };
@@ -683,7 +684,7 @@ ExpSet.extract.buildImageObjAD = function (expAssay) {
         assayImagePath: expAssay.assayImagePath,
         src: config.get('sites')['AD']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
         caption: "Image " + expAssay.assayImagePath + " caption here",
-        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
+        thumb: config.get('sites')['AD']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel-1024x1024.jpeg",
         assayId: expAssay.assayId,
         plateId: expAssay.plateId,
     };

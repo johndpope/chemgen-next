@@ -9,5 +9,5 @@ RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app/no
 WORKDIR /home/node/app
 
 CMD npm install && \
-  bash -c "ng build; ng serve  --host=0.0.0.0 --poll 1"
+  bash -c "ng build; ng serve --host=0.0.0.0 --port 4200"
 

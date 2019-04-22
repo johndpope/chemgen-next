@@ -1,7 +1,8 @@
 'use strict'
 
-// The dev datasource uses the docker compose instance to bootstrap the mysql and mongodb data with librarydata
-// There is NO experimental data in there unless you put it!
+// The dev datasource uses the docker compose instance to
+// bootstrap the mysql and mongodb data with librarydata
+// Experimental data is periodically pulled from the onyx server
 
 
 module.exports = {

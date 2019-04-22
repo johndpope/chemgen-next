@@ -115,7 +115,6 @@ ExpSet.extract.genExpGroupTypeAlbums = function (data, search) {
         });
     });
     var expGroupTypes = lodash_1.groupBy(data.expAssay2reagents, 'reagentType');
-    app.winston.info("ExpGroupTypes " + JSON.stringify(expGroupTypes));
     try {
         Object.keys(expGroupTypes).map(function (expGroup) {
             var mappedExpGroup = ExpSet.extract.mapExpGroupTypes(expGroup);

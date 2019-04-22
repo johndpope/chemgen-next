@@ -3,11 +3,11 @@
 /* Jillian */
 declare var Object: any;
 export interface ReactomePathwayResultSetInterface {
-  "id"?: any;
+  "id"?: number;
 }
 
 export class ReactomePathwayResultSet implements ReactomePathwayResultSetInterface {
-  "id": any;
+  "id": number;
   constructor(data?: ReactomePathwayResultSetInterface) {
     Object.assign(this, data);
   }
@@ -43,7 +43,7 @@ export class ReactomePathwayResultSet implements ReactomePathwayResultSetInterfa
       properties: {
         "id": {
           name: 'id',
-          type: 'any'
+          type: 'number'
         },
       },
       relations: {

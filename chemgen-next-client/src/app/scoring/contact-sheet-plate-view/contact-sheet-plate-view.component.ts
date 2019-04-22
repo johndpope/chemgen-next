@@ -15,13 +15,19 @@ import {
     minBy,
     orderBy,
     trim,
-    remove
+    remove,
+    chunk,
 } from 'lodash';
-import {ExpManualScoresResultSet} from '../../../types/sdk/models';
+import {ExpManualScoresResultSet, ExpPlateResultSet} from '../../../types/sdk/models';
 import {ExpsetModule} from '../expset/expset.module';
 import {ExpSetSearchResults} from "../../../types/custom/ExpSetTypes";
 import {ContactSheetFormResults, ContactSheetUIOptions} from "../contact-sheet/contact-sheet.module";
 import {HotkeysService, Hotkey} from "angular2-hotkeys";
+
+/**
+ * TODO There should be a scoring module
+ * THere is a lot of copy/paste from the other contact sheet
+ */
 
 @Component({
     selector: 'app-contact-sheet-plate-view',
@@ -41,6 +47,8 @@ export class ContactSheetPlateViewComponent implements OnInit {
     public contactSheetUiOptions: ContactSheetUIOptions;
     public userName: string;
     public userId: string | number;
+    public plateData: { treatReagentPlate, ctrlReagentPlate, ctrlNullPlate, ctrlStrainPlate };
+    public submissionErrors: Array<any> = [];
 
     constructor(private expSetApi: ExpSetApi,
                 private expManualScoresApi: ExpManualScoresApi,
@@ -91,14 +99,26 @@ export class ContactSheetPlateViewComponent implements OnInit {
         if (!isUndefined(manualScores) && isArray(manualScores)) {
             manualScores = flatten(manualScores);
             manualScores = compact(manualScores);
-            this.submitScores(manualScores)
+            Promise.all(chunk(manualScores, 20).map((manualScore) => {
+                return this.submitScores(manualScore);
+            }))
                 .then(() => {
                     this.removeInteresting();
+                    console.log('submitted scores!');
                 })
                 .catch((error) => {
                     console.log(error);
-                    this.errorMessage = 'There was an error submitting interesting scores!';
+                    this.submissionErrors.push(error);
+                    // this.errorMessage = 'There was a problem submitting all scores!';
                 });
+            // this.submitScores(manualScores)
+            //     .then(() => {
+            //         console.log('submitted the interesting scores!');
+            //         this.removeInteresting();
+            //     })
+            //     .catch((error) => {
+            //         this.submissionErrors.push(error);
+            //     });
         }
     }
 
@@ -114,16 +134,28 @@ export class ContactSheetPlateViewComponent implements OnInit {
         });
         manualScores = flatten(manualScores);
         manualScores = compact(manualScores);
-        this.submitScores(manualScores)
+        Promise.all(chunk(manualScores, 20).map((manualScore) => {
+            return this.submitScores(manualScore);
+        }))
             .then(() => {
                 this.didScore = true;
-                console.log('OK SUBMITTED');
                 this.expSetsScored.emit(true);
+                console.log('submitted scores!');
             })
             .catch((error) => {
-                console.log(error);
-                this.errorMessage = 'There was a problem submitting all scores!';
+                // this.errorMessage = 'There was a problem submitting all scores!';
+                console.error(error);
+                this.submissionErrors.push(error);
             });
+        // this.submitScores(manualScores)
+        //     .then(() => {
+        //         console.log('Submitted all the scores!');
+        //         this.didScore = true;
+        //         this.expSetsScored.emit(true);
+        //     })
+        //     .catch((error) => {
+        //         this.submissionErrors.push(error);
+        //     });
     }
 
     createManualScore(manualScoreValue: number, treatmentGroupId: number) {
@@ -152,11 +184,13 @@ export class ContactSheetPlateViewComponent implements OnInit {
 
     //TODO Refactor scoring into a module
     submitScores(manualScores) {
+        console.log('In submitScores');
         return new Promise((resolve, reject) => {
             this.expManualScoresApi
                 .submitScores(manualScores)
                 .toPromise()
-                .then((results) => {
+                .then(() => {
+                    console.log('Submitted scores!');
                     resolve();
                 })
                 .catch((error) => {
@@ -265,6 +299,29 @@ export class ContactSheetPlateViewComponent implements OnInit {
             }
         });
         this.phenotypeChanged();
+        this.addBarcodeToExpGroupTypeAlbums();
+    }
+
+    /**
+     * For the sake of super duper nice confirmation messages, add the about the exact plate we are scoring
+     */
+    addBarcodeToExpGroupTypeAlbums() {
+        this.plateData = {
+            treatReagentPlate: null,
+            ctrlReagentPlate: null,
+            ctrlNullPlate: null,
+            ctrlStrainPlate: null
+        };
+        ['treatReagent', 'ctrlReagent', 'ctrlNull', 'ctrlStrain'].map((expGroupType: string) => {
+            let plateId = this.expSets.expGroupTypeAlbums[expGroupType][0].plateId;
+            if (plateId) {
+                //@ts-ignore
+                let expPlate: ExpPlateResultSet = find(this.expSets.expPlates, {plateId: plateId});
+                this.plateData[`${expGroupType}Plate`] = {id: plateId, barcode: expPlate.barcode};
+                this.expSets.expGroupTypeAlbums[expGroupType][0].barcode = expPlate.barcode;
+            }
+        });
+
     }
 
     reset() {

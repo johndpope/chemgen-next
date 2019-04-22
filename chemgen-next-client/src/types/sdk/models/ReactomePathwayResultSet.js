@@ -37,7 +37,7 @@ var ReactomePathwayResultSet = /** @class */ (function () {
             properties: {
                 "id": {
                     name: 'id',
-                    type: 'any'
+                    type: 'number'
                 },
             },
             relations: {}

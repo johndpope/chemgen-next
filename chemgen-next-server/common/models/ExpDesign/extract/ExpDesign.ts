@@ -154,7 +154,7 @@ ExpDesign.extract.workflows.getExpSets = function (expGroups: ExpGroupResultSet[
       obj = {controlGroupId: expGroup.expGroupId};
       or.push(obj);
     });
-    // First find some eperimentGroups,
+    // First find some experimentGroups,
     app.models.ExpDesign
       .find({where: {or: or}})
       .then((results: ExpDesignResultSet[]) => {

@@ -73,3 +73,7 @@ wordpress_plugins
 
 ## Testing database
 chemgen-next-web-docker/chemgen-next-test-mysqldb/chemgen-next-exp-ad-03-18-2019.sql.gz
+
+
+##NY Theme (its the same as the AD theme, just the api is at a different url)
+chemgen-next-wptheme-ny

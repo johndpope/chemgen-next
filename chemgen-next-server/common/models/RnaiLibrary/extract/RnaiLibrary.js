@@ -143,8 +143,8 @@ RnaiLibrary.extract.getGeneXRefs = function (genes, search) {
         else {
             var or_1 = [];
             genes.map(function (gene) {
-                or_1.push({ wbGeneSequenceId: gene });
-                or_1.push({ wbGeneCgcName: gene });
+                or_1.push({ wbGeneSequenceId: { like: gene } });
+                or_1.push({ wbGeneCgcName: { like: gene } });
             });
             app.models.RnaiWormbaseXrefs
                 .find({ where: { or: or_1 } })
@@ -164,7 +164,16 @@ RnaiLibrary.extract.getGeneXRefs = function (genes, search) {
 };
 RnaiLibrary.extract.getFromGeneLibrary = function (genesList, geneXrefs, search) {
     return new Promise(function (resolve, reject) {
+        app.winston.info('Got some gene xrefs');
+        app.winston.info(JSON.stringify(geneXrefs));
         var or = [];
+        if (lodash_1.get(search, 'rnaiList')) {
+            if (lodash_1.isArray(search.rnaiList)) {
+                search.rnaiList.map(function (s) {
+                    or.push({ geneName: { like: s } });
+                });
+            }
+        }
         if (lodash_1.isEmpty(geneXrefs)) {
             // If the geneXrefs is empty, just return an empty result set
             // Otherwise it will pull the entire RnaiLibrary table
@@ -177,16 +186,6 @@ RnaiLibrary.extract.getFromGeneLibrary = function (genesList, geneXrefs, search)
                         { geneName: geneXref.wbGeneSequenceId },
                     ],
                 };
-                if (search instanceof Object) {
-                    obj.and.push(search);
-                }
-                else if (lodash_1.get(search, 'rnaiList')) {
-                    if (lodash_1.isArray(search.rnaiList)) {
-                        search.map(function (s) {
-                            obj.and.push({ geneName: s });
-                        });
-                    }
-                }
                 or.push(obj);
             });
             app.models.RnaiLibrary
@@ -196,9 +195,43 @@ RnaiLibrary.extract.getFromGeneLibrary = function (genesList, geneXrefs, search)
                     var geneXref = lodash_1.find(geneXrefs, function (geneXref) {
                         return lodash_1.isEqual(String(geneXref.wbGeneSequenceId), String(result.geneName));
                     });
-                    result['wbGeneCgcName'] = geneXref.wbGeneCgcName;
+                    if (geneXref) {
+                        result['wbGeneCgcName'] = geneXref.wbGeneCgcName;
+                        var origGene = lodash_1.find(genesList, function (userGene) {
+                            return lodash_1.isEqual(userGene, result.geneName) || lodash_1.isEqual(userGene, geneXref.wbGeneCgcName);
+                        });
+                        result['UserSuppliedDef'] = origGene['Gene name'];
+                    }
+                });
+                resolve(results);
+            })
+                .catch(function (error) {
+                reject(new Error(error));
+            });
+        }
+    });
+};
+RnaiLibrary.extract.getFromUpdatedGeneMappingLibrary = function (genesList, search) {
+    return new Promise(function (resolve, reject) {
+        var or = [];
+        if (lodash_1.get(search, 'rnaiList') && lodash_1.isArray(search.rnaiList)) {
+            search.rnaiList.map(function (s) {
+                or.push({ reagentName: { like: s } });
+                or.push({ primaryTargetGeneId: { like: s } });
+                or.push({ primaryTargetGeneSystematicName: { like: s } });
+                or.push({ primaryTargetGeneCommonName: { like: s } });
+            });
+            app.winston.info('Search Object');
+            app.winston.info(JSON.stringify(or));
+            app.models.RnaiLibrary
+                .find({ where: { or: or } })
+                .then(function (results) {
+                results.map(function (result) {
+                    //TODO This is a triage step - the interface expects to see something called wbGeneCgc Name
+                    result['wbGeneCgcName'] = result.primaryTargetGeneCommonName;
                     var origGene = lodash_1.find(genesList, function (userGene) {
-                        return lodash_1.isEqual(userGene, result.geneName) || lodash_1.isEqual(userGene, geneXref.wbGeneCgcName);
+                        return lodash_1.isEqual(userGene, result.primaryTargetGeneCommonName) || lodash_1.isEqual(userGene, result.primaryTargetGeneId)
+                            || lodash_1.isEqual(userGene, result.primaryTargetGeneSystematicName) || lodash_1.isEqual(userGene, result.reagentName);
                     });
                     result['UserSuppliedDef'] = origGene['Gene name'];
                 });
@@ -207,6 +240,9 @@ RnaiLibrary.extract.getFromGeneLibrary = function (genesList, geneXrefs, search)
                 .catch(function (error) {
                 reject(new Error(error));
             });
+        }
+        else {
+            resolve([]);
         }
     });
 };

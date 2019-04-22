@@ -133,7 +133,6 @@ ExpSet.extract.genExpGroupTypeAlbums = function (data: ExpSetSearchResults, sear
   });
 
   let expGroupTypes: any = groupBy(data.expAssay2reagents, 'reagentType');
-  app.winston.info(`ExpGroupTypes ${JSON.stringify(expGroupTypes)}`);
 
   try {
     Object.keys(expGroupTypes).map((expGroup: string) => {

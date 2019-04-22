@@ -447,8 +447,8 @@ ExpSet.extract.getExpSetsByRNAiReagentData = function (search: ReagentDataCriter
     search.rnaiList = compact(search.rnaiList);
     console.log(`Search is : ${JSON.stringify(search)}`);
     if (search.rnaiList.length) {
-      app.models.RnaiLibrary.extract.workflows
-        .getRnaiLibraryFromUserGeneList(search.rnaiList, search)
+      app.models.RnaiLibrary
+        .extract.getFromUpdatedGeneMappingLibrary(search.rnaiList, search)
         .then((rnaiLibraryResults: RnaiLibraryResultSet[]) => {
           app.winston.info('Got RNAILibrary Results!');
           app.winston.info(JSON.stringify(rnaiLibraryResults));

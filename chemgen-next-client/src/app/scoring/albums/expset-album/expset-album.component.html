@@ -208,24 +208,32 @@
                             <table class="table table-striped table-hover">
                                 <tbody>
                                 <tr>
-                                    <td>Gene</td>
-                                    <td>{{rnai.geneName}}</td>
-                                </tr>
-                                <tr *ngIf="rnai.xrefs?.length > 0">
-                                    <td>Cosmid ID</td>
-                                    <td>{{rnai.xrefs[0].wbGeneCgcName}}</td>
-                                </tr>
-                                <tr *ngIf="rnai.xrefs?.length > 0">
-                                    <td>Wormbase ID</td>
-                                    <td>
-                                        <a href="https://www.wormbase.org/species/c_elegans/gene/{{rnai.xrefs[0].wbGeneAccession}}">
-                                            {{rnai.xrefs[0].wbGeneAccession}} (Click this to go to wormbase)
-                                        </a>
-                                    </td>
+                                    <td>Reagent Type</td>
+                                    <td>{{rnai.reagentType}}</td>
                                 </tr>
                                 <tr>
-                                    <td>Chromo Plate Well</td>
-                                    <td> {{rnai.chrom}} {{rnai.plate}} {{rnai.well}}</td>
+                                    <td>Reagent Name</td>
+                                    <td>{{rnai.reagentName}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Primary Target Gene Id</td>
+                                    <td>{{rnai.primaryTargetGeneId}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Primary Target Gene Systematic Name</td>
+                                    <td>{{rnai.primaryTargetGeneSystematicName}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Primary Target Gene Common Name</td>
+                                    <td>{{rnai.primaryTargetGeneCommonName}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Master Plate Well</td>
+                                    <td>{{rnai.masterPlateWell}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Stock Plate Well</td>
+                                    <td>{{rnai.stockPlateWell}}</td>
                                 </tr>
                                 <tr>
                                     <td>
@@ -238,24 +246,6 @@
                                         Rev Primer
                                     </td>
                                     <td>{{rnai.revPrimer}}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Bio Loc
-                                    </td>
-                                    <td>{{rnai.bioloc}}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Stock Loc
-                                    </td>
-                                    <td>{{rnai.stockloc}}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Stock Title
-                                    </td>
-                                    <td>{{rnai.stocktitle}}</td>
                                 </tr>
                                 </tbody>
                             </table>

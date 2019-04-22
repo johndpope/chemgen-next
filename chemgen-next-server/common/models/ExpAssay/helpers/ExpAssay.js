@@ -40,13 +40,10 @@ ExpAssay.helpers.genImageFileNames = function (expPlate, well) {
         random: random,
         tmpImage: tmpImage,
         thumbSizes: [
-        // '1024x1024',
-        // '1080x1080',
-        // '768x768',
-        // '600x600',
-        // '400x400',
-        // '300x300',
-        // '150x150',
+            '1024x1024',
+            '1080x1080',
+            '768x768',
+            '600x600',
         ],
     };
 };

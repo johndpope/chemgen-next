@@ -10,17 +10,17 @@ export class SearchFormRnaiComponent implements OnInit {
 
     @Input('formResults') formResults: any;
     @Input('rnaiSearch') rnaiSearch: RNAiSearch;
-    rnais = '';
 
     constructor() {
     }
 
     ngOnInit() {
+        this.rnaiSearch.reagentSearch.rnaiList = [];
     }
 
     updateRnaisList() {
         this.rnaiSearch.reagentSearch.rnaiList = [];
-        this.rnais.split('\n').map((split1) => {
+        this.rnaiSearch.rnais.split('\n').map((split1) => {
             split1.split(/\s+/).map((split2) => {
                 if (split2) {
                     this.rnaiSearch.reagentSearch.rnaiList.push(split2.trim())

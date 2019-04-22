@@ -83,6 +83,50 @@ var RnaiLibraryResultSet = /** @class */ (function () {
                     name: 'stockloc',
                     type: 'string'
                 },
+                "reagentType": {
+                    name: 'reagentType',
+                    type: 'string'
+                },
+                "reagentName": {
+                    name: 'reagentName',
+                    type: 'string'
+                },
+                "masterPlateWell": {
+                    name: 'masterPlateWell',
+                    type: 'string'
+                },
+                "masterPlate": {
+                    name: 'masterPlate',
+                    type: 'string'
+                },
+                "masterWell": {
+                    name: 'masterWell',
+                    type: 'string'
+                },
+                "stockPlateWell": {
+                    name: 'stockPlateWell',
+                    type: 'string'
+                },
+                "stockPlate": {
+                    name: 'stockPlate',
+                    type: 'string'
+                },
+                "stockWell": {
+                    name: 'stockWell',
+                    type: 'string'
+                },
+                "primaryTargetGeneId": {
+                    name: 'primaryTargetGeneId',
+                    type: 'string'
+                },
+                "primaryTargetGeneSystematicName": {
+                    name: 'primaryTargetGeneSystematicName',
+                    type: 'string'
+                },
+                "primaryTargetGeneCommonName": {
+                    name: 'primaryTargetGeneCommonName',
+                    type: 'string'
+                },
             },
             relations: {}
         };

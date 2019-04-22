@@ -43,7 +43,12 @@ var genImageFileNames = function (expPlate, well) {
             plateId: plateId,
             random: random,
             tmpImage: tmpImage,
-            thumbSizes: ['1000x1000', '800x800'],
+            thumbSizes: [
+                '1024x1024',
+                '1080x1080',
+                '768x768',
+                '600x600',
+            ]
         };
     });
 };
@@ -115,8 +120,8 @@ app.models.Plate.find({
             var commandStr = commands.join("\n");
             commandStr = "#!/usr/bin/env bash\n\n" + commandStr;
             var imageJob = {
-                run_id: "convertWell-" + expPlate.barcode + "-1",
-                task_id: "convertWell-" + expPlate.barcode + "-1",
+                run_id: "convertWell-" + expPlate.barcode + "-2",
+                task_id: "convertWell-" + expPlate.barcode + "-2",
                 conf: JSON.stringify({ image_convert_command: commandStr })
             };
             return submitImageJob(imageJob, expPlate);
