@@ -1,0 +1,54 @@
+<!--Start Spinner-->
+<ngx-spinner
+        bdColor="rgba(51, 51, 51, 0.8)"
+        size="large"
+        color="#fff"
+        type="ball-atom"
+></ngx-spinner>
+<!--End Spinner-->
+
+
+<!--Begin Replicate Contact Sheet-->
+<div class="row" *ngIf="expSets && expSets.expWorkflows?.length">
+    <div class="col-md-12">
+        <app-contact-sheet-replicate-view [expSets]="expSets"
+                                          [expSetModule]="expSetsModule"
+                                          [byPlate]="false"
+                                          (expSetsScored)="getNewExpSets($event)"
+        ></app-contact-sheet-replicate-view>
+    </div>
+</div>
+<!--End Replicate Contact Sheet-->
+
+<!--Begin Empty Message-->
+<div *ngIf="expSets && ! expSets.expWorkflows?.length">
+    <div class="x_panel">
+        <div class="x_content">
+            <h3>Empty ResultSet</h3>
+            <p>The search you performed returned an empty result set.</p>
+            <p>Either your search is incorrect, all plates are scored for this screen, or not in the
+                database.</p>
+        </div>
+    </div>
+</div>
+<!--Begin Empty Message-->
+
+<!--Success message on scoring-->
+<div class="row" *ngIf="expSets && expSets.expWorkflows?.length && scored">
+    <div class="col-md-12">
+        <div class="alert alert-success">
+            Submitted successfully!
+        </div>
+    </div>
+</div>
+<!--Success message on scoring-->
+
+<!--Check if the exp set has been scored already-->
+<div class="row" *ngIf="expSets && expSets.expWorkflows?.length && previouslyScored">
+    <div class="col-md-12">
+        <div class="alert alert-info">
+            This ExpSet has already been scored in the contact sheet.
+        </div>
+    </div>
+</div>
+<!--Check if the exp set has been scored already-->

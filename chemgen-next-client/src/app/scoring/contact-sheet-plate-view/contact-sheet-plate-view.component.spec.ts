@@ -1,33 +1,34 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, Input, Output, EventEmitter} from "@angular/core";
-import {ContactSheetPrimaryComponent} from './contact-sheet.component';
+// import {ContactSheetPlateViewComponent} from './contact-sheet.component';
+import {ContactSheetPlateViewComponent} from "./contact-sheet-plate-view.component";
 import {FormsModule} from '@angular/forms';
 import {NouisliderModule} from 'ng2-nouislider';
 import {ModalModule} from 'ngx-bootstrap';
-import {ExpManualScoresApi, ExpSetApi} from '../../../types/sdk/services/custom';
 import {Lightbox} from 'angular2-lightbox';
 import {ComponentLoaderFactory} from "ngx-bootstrap";
 import {expSetMockData} from "../../../../test/ExpSet.mock";
 import {DebugElement} from "@angular/core";
 import {MockGridAlbumComponent} from "../../../../test/MockComponents";
+import {ExpSetApi, ExpManualScoresApi} from "../../../types/sdk/services/custom";
 
 describe('ContactSheetPlateViewComponent', () => {
-    let component: ContactSheetPrimaryComponent;
-    let fixture: ComponentFixture<ContactSheetPrimaryComponent>;
+    let component: ContactSheetPlateViewComponent;
+    let fixture: ComponentFixture<ContactSheetPlateViewComponent>;
     let expSetsEl: DebugElement;
 
     // Need to not only declare import, but also all the child imports
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule, NouisliderModule, ModalModule.forRoot()],
-            declarations: [ContactSheetPrimaryComponent, MockGridAlbumComponent],
+            declarations: [ContactSheetPlateViewComponent, MockGridAlbumComponent],
             providers: [{provide: ExpSetApi}, {provide: ExpManualScoresApi}, {provide: Lightbox}, {provide: ComponentLoaderFactory}]
         })
             .compileComponents();
     }));
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ContactSheetPrimaryComponent);
+        fixture = TestBed.createComponent(ContactSheetPlateViewComponent);
         component = fixture.componentInstance;
         component.expSets = expSetMockData;
         fixture.detectChanges();

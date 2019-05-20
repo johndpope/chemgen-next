@@ -1,9 +1,8 @@
 import {Renderer2} from '@angular/core';
 import {ExpManualScoresApi, ExpSetApi} from "../../../types/sdk/services/custom";
-import {ExpsetModule} from '../expset/expset.module';
-import {ExpSetSearchResults} from "../../../types/custom/ExpSetTypes";
+import {ExpsetModule} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
+import {ExpSetSearchResults} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 import {ExpManualScoresResultSet} from "../../../types/sdk/models";
-import {EventEmitter} from "@angular/core";
 import {
     compact,
     filter,

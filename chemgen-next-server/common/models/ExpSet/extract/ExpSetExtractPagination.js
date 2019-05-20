@@ -23,11 +23,11 @@ ExpSet.extract.buildBasicPaginationData = function (data, search) {
         data.pageSize = search.pageSize;
         data.totalPages = 1;
         resolve(data);
-        // app.paginateModel('ExpScreenUploadWorkflow', orSearch, search.pageSize)
+        // app.paginateModel('ExpScreenUploadWorkflow', orSearch, expSetSearch.pageSize)
         //   .then((pagination) => {
-        //     data.currentPage = search.currentPage;
-        //     data.skip = search.skip;
-        //     data.pageSize = search.pageSize;
+        //     data.currentPage = expSetSearch.currentPage;
+        //     data.skip = expSetSearch.skip;
+        //     data.pageSize = expSetSearch.pageSize;
         //     data.totalPages = pagination.totalPages;
         //     resolve(data);
         //   })

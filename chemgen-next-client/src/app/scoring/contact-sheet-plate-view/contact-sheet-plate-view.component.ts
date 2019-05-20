@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output, Renderer2} from '@angular/core';
-import {ExpManualScoresApi, ExpSetApi} from '../../../types/sdk/services/custom';
+import {ExpManualScoresApi, ExpSetApi} from "../../../types/sdk/services/custom";
 import {Lightbox} from 'angular2-lightbox';
 import {
     compact,
@@ -18,9 +18,8 @@ import {
     remove,
     chunk,
 } from 'lodash';
-import {ExpManualScoresResultSet, ExpPlateResultSet} from '../../../types/sdk/models';
-import {ExpsetModule} from '../expset/expset.module';
-import {ExpSetSearchResults} from "../../../types/custom/ExpSetTypes";
+import {ExpManualScoresResultSet, ExpPlateResultSet} from "../../../types/sdk/models";
+import {ExpSetSearchResults, ExpsetModule} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 import {ContactSheetFormResults, ContactSheetUIOptions} from "../contact-sheet/contact-sheet.module";
 import {HotkeysService, Hotkey} from "angular2-hotkeys";
 

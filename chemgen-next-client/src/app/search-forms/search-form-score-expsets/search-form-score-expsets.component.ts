@@ -1,11 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {
-    SearchFormParamsFilterByNotScoredContactSheet, SearchFormParamsFilterByPassedContactSheet
+    SearchFormParamsFilterByPassedContactSheet
 } from "../../search/search.module";
-import {ExpSetApi} from "../../../types/sdk/services/custom";
 import {NgxSpinnerService} from "ngx-spinner";
 import {ExpScreenApi, ExpBiosampleApi, ExpScreenUploadWorkflowApi} from "../../../types/sdk/services/custom";
-import {SearchFormBaseComponentParams} from "../../search/search.module";
+import {ExpSetApi} from "../../../types/sdk/services/custom";
+
+// import {SearchFormBaseComponentParams} from "../../search/search.module";
 
 @Component({
     selector: 'app-search-form-score-expsets',

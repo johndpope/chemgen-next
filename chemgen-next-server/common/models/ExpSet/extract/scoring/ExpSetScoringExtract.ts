@@ -74,6 +74,12 @@ ExpSet.extract.workflows.filterByScores = function (search: ExpSetSearch) {
   });
 };
 
+/**
+ * WIP - Working on an API that can query based on complex searches
+ * @param data
+ * @param search
+ * @param treatmentGroupIds
+ */
 ExpSet.extract.getScoresByFilter = function (data: ExpSetSearchResults, search: ExpSetSearch, treatmentGroupIds?: Array<number>) {
   return new Promise((resolve, reject) => {
     let query = ExpSet.extract.buildFilterByScoresQuery(data, search, treatmentGroupIds);
@@ -266,7 +272,7 @@ ExpSet.extract.workflows.getUnscoredExpSetsByFirstPass = function (search: ExpSe
     } else {
       search.scoresExist = true;
     }
-    // search.scoresExist = true;
+    // expSetSearch.scoresExist = true;
     let sqlQuery = ExpSet.extract.buildNativeQueryByFirstPass(data, search, search.scoresExist);
     // sqlQuery = sqlQuery.count('assay_id');
     ExpSet.extract.workflows.getExpAssay2reagentsByFirstPassScores(data, search, search.scoresExist)
@@ -503,6 +509,9 @@ ExpSet.extract.buildNativeQueryExpWorkflowId = function (data: ExpSetSearchResul
     }
   });
 
+  //TODO These are no longer valid
+  //Need to query by treatment_group_id
+  //or exp_group_id
   //Add Rnai reagent Lookup
   if (!isEmpty(data.rnaisList)) {
     query = query
@@ -648,7 +657,7 @@ ExpSet.extract.workflows.getExpWorkflowIdsContactSheet = function (search: ExpSe
   return new Promise((resolve, reject) => {
     let data = new ExpSetSearchResults({});
     let sqlQuery = ExpSet.extract.buildNativeQueryContactSheet(data, search, hasManualScores);
-    // let sqlQuery = ExpSet.extract.buildNativeQuery(data, search, hasManualScores);
+    // let sqlQuery = ExpSet.extract.buildNativeQuery(data, expSetSearch, hasManualScores);
     app.winston.info(`GetExpWorkflowIDsContactSheet`);
     app.winston.info(sqlQuery.toString());
     sqlQuery

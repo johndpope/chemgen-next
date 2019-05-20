@@ -10,11 +10,20 @@ module.exports = {
     // connector: 'mssql',
     connector: process.env.ARRAYSCAN_CONNECTOR || 'mssql',
     // port: 1433,
-    port : process.env.ARRAYSCAN_PORT || 1433,
+    port: process.env.ARRAYSCAN_PORT || 1433,
     host: process.env.ARRAYSCAN_HOST,
     database: process.env.ARRAYSCAN_DB,
     user: process.env.ARRAYSCAN_USER,
     password: process.env.ARRAYSCAN_PASS,
+  },
+  arrayscanMySQLDS: {
+    name: 'arrayscanMySQLDS',
+    connector: process.env.ARRAYSCAN_MYSQL_CONNECTOR || process.env.ARRAYSCAN_CONNECTOR,
+    port: process.env.ARRAYSCAN_MYSQL_PORT || process.env.ARRAYSCAN_PORT_,
+    host: process.env.ARRAYSCAN_MYSQL_HOST || process.env.ARRAYSCAN_HOST,
+    database: process.env.ARRAYSCAN_MYSQL_DB || process.env.ARRAYSCAN_DB,
+    user: process.env.ARRAYSCAN_MYSQL_USER || process.env.ARRAYSCAN_USER,
+    password: process.env.ARRAYSCAN_MYSQL_PASS || process.env.ARRAYSCAN_PASS,
   },
   chemgenDS: {
     name: 'chemgenDS',
@@ -44,8 +53,8 @@ module.exports = {
     // password: process.env.MONGO_PASS,
     // user: process.env.MONGO_USER
   },
-  "reactomeDS": {
-    name: "reactomeDS",
+  'reactomeDS': {
+    name: 'reactomeDS',
     port: 27017,
     url: `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}:27017/reactome?authSource=admin`,
   }

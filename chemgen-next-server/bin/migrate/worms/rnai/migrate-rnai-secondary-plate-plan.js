@@ -155,8 +155,8 @@ var buildRnaiLibraryWhere = function (lookUp) {
     return where;
 };
 var parseWell = function (workflowData, wellData) {
-    // let lookUpIndex = workflowData.search.library.rnai.ahringer.lookUpIndex;
-    // let commentIndex = workflowData.search.library.rnai.ahringer.commentIndex;
+    // let lookUpIndex = workflowData.expSetSearch.library.rnai.ahringer.lookUpIndex;
+    // let commentIndex = workflowData.expSetSearch.library.rnai.ahringer.commentIndex;
     var lookUpIndex = 0;
     var commentIndex = 1;
     if (lodash_1.isEqual(wellData.splitLookUp.length, 1)) {

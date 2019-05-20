@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ScreenDesign} from '../../helpers';
-import {PlateResultSet, ExpScreenUploadWorkflowResultSet} from '../../../../../types/sdk/models';
+import {PlateResultSet, ExpScreenUploadWorkflowResultSet} from "../../../../../types/sdk/models";
 import {isEmpty, isNull} from 'lodash';
 
 @NgModule({

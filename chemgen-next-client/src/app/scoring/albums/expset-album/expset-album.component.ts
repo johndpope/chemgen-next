@@ -1,10 +1,10 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Input} from '@angular/core';
-import {ExpManualScoresResultSet, ModelPredictedCountsResultSet} from '../../../../types/sdk/models';
+import {ExpManualScoresResultSet, ModelPredictedCountsResultSet} from "../../../../types/sdk/models";
 import {Lightbox} from 'angular2-lightbox';
 
 import {get, find, isEqual, isEmpty} from 'lodash';
-import {ExpsetModule} from "../../expset/expset.module";
+import {ExpsetModule} from "../../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 
 @Component({
     selector: 'app-expset-album',
@@ -27,6 +27,9 @@ export class ExpsetAlbumComponent implements OnInit {
     }
 
     ngOnInit() {
+        if (!this.expSetModule) {
+            this.expSetModule = new ExpsetModule(this.expSet);
+        }
     }
 
     junkClass(album, index: number) {
@@ -49,6 +52,31 @@ export class ExpsetAlbumComponent implements OnInit {
             }
             return '';
         }
+    }
+
+    /**
+     * If the expSet is interesting, give it an interesting class
+     * Interesting is defined by the first pass
+     */
+    isExpSetInteresting(treatmentGroupId) {
+        let interesting = find(this.expSet.expManualScores, (manualScore: ExpManualScoresResultSet) => {
+            return isEqual(manualScore.treatmentGroupId, treatmentGroupId) &&
+                isEqual(manualScore.manualscoreGroup, 'FIRST_PASS') &&
+                isEqual(manualScore.manualscoreValue, 1)
+        });
+        let notInteresting = find(this.expSet.expManualScores, (manualScore: ExpManualScoresResultSet) => {
+            return isEqual(manualScore.treatmentGroupId, treatmentGroupId) &&
+                isEqual(manualScore.manualscoreGroup, 'FIRST_PASS') &&
+                isEqual(manualScore.manualscoreValue, 0)
+        });
+        if (interesting) {
+            return 'scored_box interesting';
+        } else if (notInteresting) {
+            return 'scored_box not_interesting';
+        } else {
+            return 'scored_box not_scored';
+        }
+
     }
 
     open(album, index: number): void {

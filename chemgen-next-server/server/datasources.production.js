@@ -16,6 +16,15 @@ module.exports = {
     user: process.env.ARRAYSCAN_USER,
     password: process.env.ARRAYSCAN_PASS,
   },
+  arrayscanMySQLDS: {
+    name: 'arrayscanMySQLDS',
+    connector: process.env.ARRAYSCAN_MYSQL_CONNECTOR || process.env.ARRAYSCAN_CONNECTOR,
+    port: process.env.ARRAYSCAN_MYSQL_PORT || process.env.ARRAYSCAN_PORT_,
+    host: process.env.ARRAYSCAN_MYSQL_HOST || process.env.ARRAYSCAN_HOST,
+    database: process.env.ARRAYSCAN_MYSQL_DB || process.env.ARRAYSCAN_DB,
+    user: process.env.ARRAYSCAN_MYSQL_USER || process.env.ARRAYSCAN_USER,
+    password: process.env.ARRAYSCAN_MYSQL_PASS || process.env.ARRAYSCAN_PASS,
+  },
   chemgenDS: {
     name: 'chemgenDS',
     connector: 'mysql',

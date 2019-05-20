@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {NgxSpinnerService} from "ngx-spinner";
 import {ExpManualScoresApi, ExpSetApi} from "../../../types/sdk/services/custom";
-import {ExpSetSearchResults} from "../../../types/custom/ExpSetTypes";
+import {ExpSetSearchResults} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 import {get, uniq, trim, isEqual, orderBy, find} from 'lodash';
 import {ExpAssay2reagentResultSet, ExpManualScoresResultSet, ExpPlateResultSet} from "../../../types/sdk/models";
 import {Lightbox} from "angular2-lightbox";

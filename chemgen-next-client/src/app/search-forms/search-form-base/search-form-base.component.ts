@@ -2,7 +2,7 @@ import {Component, Input} from '@angular/core';
 import {SearchFormBaseComponentParams} from "../../search/search.module";
 
 /**
- * This is the base search form, from which all (ok most) of the other search forms inherit
+ * This is the base expSetSearch form, from which all (ok most) of the other expSetSearch forms inherit
  */
 
 @Component({

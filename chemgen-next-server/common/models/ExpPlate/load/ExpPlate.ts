@@ -102,7 +102,7 @@ ExpPlate.load.transformInstrumentPlate = function (workflowData: ExpScreenUpload
 
   /*
   For some reason if I searched on the whole plate object it was always returning not found
-  So I just search for a subset of the plate object
+  So I just expSetSearch for a subset of the plate object
    */
   let lookUpPlateObj: ExpPlateResultSet = new ExpPlateResultSet({
     //Screen Info

@@ -381,7 +381,7 @@
 </div>
 <!--End Content-->
 
-<div *ngIf="expSets && expSets.expWorkflows?.length" class="row">
+<div *ngIf="expSets && expSets.expWorkflows?.length && expSetsDeNorm.length > 1" class="row">
     <div class="col-md-12">
         <!--Begin Submit-->
         <div class="row">
@@ -406,7 +406,6 @@
             </div>
         </div>
         <!--End Submit-->
-
 
     </div>
 </div>

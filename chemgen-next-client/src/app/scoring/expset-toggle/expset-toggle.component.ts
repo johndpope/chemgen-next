@@ -1,10 +1,6 @@
 import {Component, OnInit, Input, Renderer2, Output, OnChanges} from '@angular/core';
 import {ExpManualScoresApi} from "../../../types/sdk/services/custom";
-import {
-    ExpManualScoresResultSet,
-    ExpScreenResultSet,
-    ExpScreenUploadWorkflowResultSet
-} from "../../../types/sdk/models";
+import {ExpManualScoreCodeResultSet, ExpScreenUploadWorkflowResultSet, ExpScreenResultSet, ExpManualScoresResultSet} from "../../../types/sdk/models";
 import {get, has, find, isEqual} from 'lodash';
 
 @Component({
@@ -21,6 +17,7 @@ export class ExpsetToggleComponent implements OnInit, OnChanges {
     @Input() expManualScores: ExpManualScoresResultSet[] = [];
     //For the contact sheet we want to submit all as one batch as opposed to in real time
     @Input() submit: boolean = true;
+    @Input() displayToggle: boolean = true;
     public error: any;
     public userName: string;
     public userId: string | number;
@@ -39,11 +36,12 @@ export class ExpsetToggleComponent implements OnInit, OnChanges {
         this.returnedResults = {};
     }
 
-    ngOnChanges(){
+    ngOnChanges() {
         setTimeout(() => {
             this.getManualScores();
         });
     }
+
     ngOnInit() {
         //Witnout the setTimeoutet function, this gets some weird error
         setTimeout(() => {

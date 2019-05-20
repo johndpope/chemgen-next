@@ -1,16 +1,17 @@
 import {Component, OnInit, Input, Output, EventEmitter, Renderer2, NgModule, ElementRef} from '@angular/core';
-import {SearchFormExpScreenFormResults} from "../../search/search.module";
-import {SearchFormRnaiFormResults} from "../../search/search.module";
-import {ExpManualScoresApi, ExpSetApi} from "../../../types/sdk/services/custom";
 import {NgxSpinnerService} from "ngx-spinner";
-import {ExpSetSearchResults, ExpSetSearch} from "../../../types/custom/ExpSetTypes";
-import {ExpsetModule} from "../../../types/custom/ExpSetTypes";
 import {Lightbox} from "angular2-lightbox";
 import {ContactSheetFormResults} from "../contact-sheet/contact-sheet.module";
-import {trim, isEqual, flatten, get, find, compact, isArray, uniqBy, remove, isUndefined, filter} from 'lodash';
-import {ExpManualScoresResultSet} from "../../../types/sdk/models";
 import {HotkeysService, Hotkey} from "angular2-hotkeys";
 import {ContactSheetUIOptions} from "../contact-sheet/contact-sheet.module";
+import {ExpManualScoresApi, ExpSetApi} from "../../../types/sdk/services/custom";
+import {
+    ExpSetSearchResults,
+    ExpSetSearch,
+    ExpsetModule
+} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
+import {ExpManualScoresResultSet} from "../../../types/sdk/models";
+import {trim, isEqual, flatten, get, find, compact, isArray, uniqBy, remove, isUndefined, filter} from 'lodash';
 
 // /Users/alan/projects/gunsiano/dockers/chemgen-next/chemgen-next-server/common/types/custom/ExpSetTypes/index.ts
 
@@ -70,13 +71,15 @@ export class ContactSheetReplicateViewComponent implements OnInit {
         this.currentExpSetIndex = 0;
         this.expSetsDeNorm = this.expSetModule.deNormalizeExpSets();
         this.expSetsDeNorm = uniqBy(this.expSetsDeNorm, 'treatmentGroupId');
-        this.expSetsDeNorm.map((expSet, index) =>{
+        this.expSetsDeNorm.map((expSet, index) => {
             expSet['index'] = index;
         });
         this.addReplicateContactSheetHotkeys();
         this.setFocus();
-        let hotKeys :Array<any>  = this.hotkeysService.hotkeys.filter(function (hotkey) { return hotkey.description; })
-        this.hotKeys = hotKeys.map((hotKey: {description, formatted}) =>{
+        let hotKeys: Array<any> = this.hotkeysService.hotkeys.filter(function (hotkey) {
+            return hotkey.description;
+        })
+        this.hotKeys = hotKeys.map((hotKey: { description, formatted }) => {
             return {description: hotKey.description, formatted: hotKey.formatted}
         });
         this.hotKeys.shift();
@@ -221,17 +224,23 @@ export class ContactSheetReplicateViewComponent implements OnInit {
                 console.log('should be resetting back to 0');
                 this.currentExpSetIndex = 0;
             }
-            this.currentExpSet = this.expSetsDeNorm[this.currentExpSetIndex];
-            const expSetId = get(this.expSetsDeNorm[this.currentExpSetIndex], 'treatmentGroupId');
-            if (expSetId) {
-                const elem = document.getElementById(`expSet-${expSetId}`);
-                if (elem) {
-                    elem.scrollIntoView();
-                } else {
-                    console.error('Element corresponding to expSet does not exist!');
-                }
+            if (!this.expSetsDeNorm.length) {
+                this.didScore = true;
+                this.expSetsScored.emit(true);
+                console.log('submitted scores!');
             } else {
-                console.error('ExpSetId does not exist. Cannot scroll into view!!!!');
+                this.currentExpSet = this.expSetsDeNorm[this.currentExpSetIndex];
+                const expSetId = get(this.expSetsDeNorm[this.currentExpSetIndex], 'treatmentGroupId');
+                if (expSetId) {
+                    const elem = document.getElementById(`expSet-${expSetId}`);
+                    if (elem) {
+                        elem.scrollIntoView();
+                    } else {
+                        console.error('Element corresponding to expSet does not exist!');
+                    }
+                } else {
+                    console.error('ExpSetId does not exist. Cannot scroll into view!!!!');
+                }
             }
         }, 100);
     }
@@ -361,6 +370,8 @@ export class ContactSheetReplicateViewComponent implements OnInit {
 
     createManualScore(manualScoreValue: number, treatmentGroupId: number) {
         const expAssay: Array<any> = filter(this.expSets.expAssay2reagents, {expGroupId: Number(treatmentGroupId)});
+        console.log(this.expSets);
+        console.log(expAssay);
         // Since we are choosing the entire expSet,submit one score per assayId
         // So that we match the contact sheet
         if (isArray(expAssay) && expAssay.length) {

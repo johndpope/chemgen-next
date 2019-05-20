@@ -39,7 +39,7 @@ ChemicalLibrary.load.workflows.processExpPlate = function (workflowData, expPlat
 ChemicalLibrary.load.createWorkflowSearchObj = function (workflowData) {
     return ChemicalLibrary.load[workflowData.screenStage].createWorkflowSearchObj(workflowData);
 };
-//TODO These are the same for all screens - only search terms are different
+//TODO These are the same for all screens - only expSetSearch terms are different
 ChemicalLibrary.load.primary.createWorkflowSearchObj = function (workflowData) {
     return {
         and: [

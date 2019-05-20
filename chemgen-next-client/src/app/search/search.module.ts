@@ -1,23 +1,16 @@
-import {ReagentDataCriteria, ScreenMetaDataCriteria} from "../../types/custom/search";
-import {ExpBiosampleApi, ExpScreenApi, ExpScreenUploadWorkflowApi, ExpSetApi} from "../../types/sdk/services/custom";
-import {
-    ExpBiosampleResultSet,
-    ExpManualScoreCodeResultSet,
-    ExpScreenResultSet,
-    ExpScreenUploadWorkflowResultSet,
-    LoopBackFilter
-} from "../../types/sdk/models";
-import {ExpSetSearch, ExpSetSearchResults} from "../../types/custom/ExpSetTypes";
+import {ReagentDataCriteria, ScreenMetaDataCriteria} from "../../../../chemgen-next-server/common/types/custom/search";
+import {ExpBiosampleApi, ExpScreenUploadWorkflowApi, ExpSetApi, ExpScreenApi} from "../../types/sdk/services/custom";
+import {ExpSetSearch, ExpSetSearchResults} from "../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
+import {ExpScreenResultSet, ExpScreenUploadWorkflowResultSet, ExpBiosampleResultSet, ExpManualScoresResultSet, ExpManualScoreCodeResultSet} from "../../types/sdk/models";
 import {shuffle, isObject, isEqual, has, find, isEmpty, get, includes, isArray, orderBy, range, uniq} from 'lodash';
 import {NgxSpinnerService} from "ngx-spinner";
-import {ExpsetModule} from "../scoring/expset/expset.module";
 import {SearchFormFilterByScoresAdvancedResults} from "../search-forms/filter-components/search-form-filter-by-scores-advanced/search-form-filter-by-scores-advanced.component";
 import {ManualScoresModule} from "../scoring/manual-scores/manual-scores.module";
-
-// import { SearchWormsComponent } from './search-worms/search-worms.component';
+import {LoopBackFilter} from "../../types/sdk/models";
+import {ExpsetModule} from "../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 
 /**
- * This module is just a collection of search functions
+ * This module is just a collection of expSetSearch functions
  */
 
 /**
@@ -49,7 +42,7 @@ export class SearchModule {
      * Examples: Worm strains, temperatures, screen names, plate IDs
      */
     /**
-     * More complex search functionality is separated out into the classes below
+     * More complex expSetSearch functionality is separated out into the classes below
      */
 
     getExpWorkflows() {
@@ -169,6 +162,7 @@ export class SearchModuleFilterByContactSheet extends SearchModule {
     constructor(public expSetApi: ExpSetApi, public expScreenApi: ExpScreenApi,
                 public expBiosampleApi: ExpBiosampleApi, public expWorkflowApi: ExpScreenUploadWorkflowApi) {
         super(expSetApi, expScreenApi, expBiosampleApi, expWorkflowApi);
+        // this.initializeSearches();
     }
 
     getExpScreens(where: LoopBackFilter) {
@@ -230,7 +224,7 @@ export interface SearchInterface {
 
 /**
  * Search by the screen metadata - temperature, temperature range, wormstrain, etc
- * IN - Bunch of search criteria relating to the experiment
+ * IN - Bunch of expSetSearch criteria relating to the experiment
  * OUT - IDs of relevant batches
  */
 export class ScreenMetaDataSearch implements SearchInterface {
@@ -261,7 +255,7 @@ export class ScreenMetaDataSearch implements SearchInterface {
     /**
      * if the user doesn't select any criteria (temperature, worm strain, etc),
      * this function returns false.
-     * In that case just search for everything
+     * In that case just expSetSearch for everything
      */
     checkScreenMetaCriteria(): Boolean {
         let thingsFound = false;
@@ -278,7 +272,7 @@ export class RNAiSearch implements SearchInterface {
     //INPUT
     //This is the exact string that is typed into the textbox in the sesarch-form-rnai.component.html file
     public rnais: string = null;
-    //this.rnais string is split by space, new lines, and commas to get a list that we then search for
+    //this.rnais string is split by space, new lines, and commas to get a list that we then expSetSearch for
     public reagentSearch: ReagentDataCriteria;
     //OUTPUT
     //The rnaisearch gets all the expsets that correspond to the user input
@@ -380,7 +374,7 @@ export class SearchFormExpScreenFormResults {
             this.expScreenWorkflows = [this.expScreenWorkflow];
             return false;
         } else {
-            //If a batch name ISN'T given, this.search by the rest of the metadata
+            //If a batch name ISN'T given, this.expSetSearch by the rest of the metadata
             if (get(this, 'wormStrain')) {
                 this.searchMetaDataCriteria.wormStrainId = this.wormStrain.biosampleId;
             }
@@ -429,7 +423,7 @@ export class SearchFormBaseComponentParams {
     public errorMessage: string = null;
     public expSetView = true;
 
-    // This is the search class (To be refactored) that returns the expSets data structure, that is fed to the UI
+    // This is the expSetSearch class (To be refactored) that returns the expSets data structure, that is fed to the UI
     public expSetSearch: ExpSetSearch = new ExpSetSearch();
 
     // expSets is the data structure that is returned by the loopback api, and populates the UI
@@ -466,7 +460,7 @@ export class SearchFormBaseComponentParams {
     }
 
     /**
-     * Parse the form results in order to get the search data we send to get our ExpSets
+     * Parse the form results in order to get the expSetSearch data we send to get our ExpSets
      */
     searchScreenMeta() {
         const searchExps = this.screenMetaDataSearch.checkScreenMetaCriteria();
@@ -526,7 +520,7 @@ export class SearchFormBaseComponentParams {
             console.log(this.expGroupIds);
             console.log(this.expSetSearch);
         } else if (get(this.searchFormExpScreenResults, ['expScreenWorkflow', 'id'])) {
-            //The user explicitly set a batch to search for
+            //The user explicitly set a batch to expSetSearch for
             this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
         } else if (get(this.searchFormExpScreenResults, ['expScreen', 'screenId'])) {
             console.log('searching by screen...');
@@ -538,14 +532,14 @@ export class SearchFormBaseComponentParams {
             if (this.searchModule.typeAheadExpScreenWorkflows[this.paginationData.currentPage - 1]) {
                 this.expSetSearch.expWorkflowSearch = [this.searchModule.typeAheadExpScreenWorkflows[this.paginationData.currentPage - 1].id];
             } else {
-                this.errorMessage = 'There are no more results with your search parameters.';
+                this.errorMessage = 'There are no more results with your expSetSearch parameters.';
             }
         } else if (isArray(this.expWorkflowIds) && this.expWorkflowIds.length) {
             this.paginationData = new Pagination(this.expWorkflowIds.length);
             if (this.expWorkflowIds[this.paginationData.currentPage - 1]) {
                 this.expSetSearch.expWorkflowSearch = [this.expWorkflowIds[this.paginationData.currentPage - 1]];
             } else {
-                this.errorMessage = 'There are no more results with your search parameters.';
+                this.errorMessage = 'There are no more results with your expSetSearch parameters.';
             }
         }
     }
@@ -554,6 +548,7 @@ export class SearchFormBaseComponentParams {
         this.searchFormExpScreenResults = new SearchFormExpScreenFormResults();
         this.searchFormRnaiFormResults = new SearchFormRnaiFormResults();
         this.rnaiSearch = new RNAiSearch(this.expSetApi);
+        this.errorMessage = null;
         this.initializeSearches();
         //TODO Add in filter by scores options
 
@@ -589,8 +584,8 @@ export class SearchFormBaseComponentParams {
     }
 
     /**
-     * This is where we take all the search data, and finally search for expSets to return to the view
-     * This is the function that is overriden in order to search by different criteria
+     * This is where we take all the expSetSearch data, and finally expSetSearch for expSets to return to the view
+     * This is the function that is overriden in order to expSetSearch by different criteria
      * ie - Search for things that have gone through the contact sheet, not gone through the contact sheet
      * ie - Things that are queued up for detailed scoring (they have that toggle checked as green)
      */
@@ -623,6 +618,7 @@ export class SearchFormParamsFilterByNotScoredContactSheet extends SearchFormBas
                 public expBiosampleApi: ExpBiosampleApi, public expScreenUploadWorkflowApi: ExpScreenUploadWorkflowApi,
                 public spinner: NgxSpinnerService,) {
         super(expSetApi, expScreenApi, expBiosampleApi, expScreenUploadWorkflowApi, spinner);
+        this.initializeSearches();
     }
 
     initializeSearches() {
@@ -632,7 +628,7 @@ export class SearchFormParamsFilterByNotScoredContactSheet extends SearchFormBas
     }
 
     /**
-     * This is where we take all the search data, and finally search for expSets to return to the view
+     * This is where we take all the expSetSearch data, and finally expSetSearch for expSets to return to the view
      */
     findExpSets() {
         this.spinner.show();
@@ -659,58 +655,120 @@ export class SearchFormParamsFilterByPassedContactSheet extends SearchFormBaseCo
     //This filters by all expWorkflows that have NOT been through the contact sheet
     //We actually want to be able to score anything that is queued up as interesting (any ExpSets with the green toggle)
     //With an option to score ANYTHING, green toggle or not
-    // public searchModule: SearchModuleFilterByContactSheet;
     public searchModule: SearchModule;
+    public mustSetSearchCriteriaError: boolean = false;
 
     constructor(public expSetApi: ExpSetApi, public expScreenApi: ExpScreenApi,
                 public expBiosampleApi: ExpBiosampleApi, public expScreenUploadWorkflowApi: ExpScreenUploadWorkflowApi,
                 public spinner: NgxSpinnerService,) {
         super(expSetApi, expScreenApi, expBiosampleApi, expScreenUploadWorkflowApi, spinner);
+        this.initializeSearches();
     }
 
-    initializeSearches() {
-        this.searchModule = new SearchModule(this.expSetApi, this.expScreenApi, this.expBiosampleApi, this.expScreenUploadWorkflowApi);
-        this.screenMetaDataSearch = new ScreenMetaDataSearch(this.expSetApi);
-        this.rnaiSearch = new RNAiSearch(this.expSetApi);
-    }
 
-    setExpSetSearchCriteria() {
-        if (this.expGroupIds.length) {
-            this.paginationData = new Pagination(1);
-            this.expSetSearch.expGroupSearch = this.expGroupIds;
-        } else if (get(this.searchFormExpScreenResults, ['expScreenWorkflow', 'id'])) {
+    /**
+     * Normally we search for a single batch at a time, and just paginate results
+     * Here we don't do that (and maybe we should!) because we want for everything to come up in the table
+     */
+    cleanUpExpSetSearch() {
+        if (get(this.searchFormExpScreenResults, ['expScreenWorkflow', 'id'])) {
+            //The user explicitly set a batch to expSetSearch for
+            console.log('the user explicitly set a batch!');
             this.expSetSearch.expWorkflowSearch = [this.searchFormExpScreenResults.expScreenWorkflow.id];
-        } else if (isArray(this.expWorkflowIds) && this.expWorkflowIds.length) {
-            this.paginationData = new Pagination(this.expWorkflowIds.length);
         } else {
-            this.errorMessage = 'Invalid search parameters';
+            console.log('the user did not submit a batch');
+            this.expSetSearch.expWorkflowSearch = [];
         }
     }
 
     /**
-     * This is where we take all the search data, and finally search for expSets to return to the view
+     * If the user does not search for a screen, set of expGroups (reagents)
+     * or batch, we want to give an error saying nooooooo
+     */
+    checkForSearchCriteria() {
+        this.mustSetSearchCriteriaError = false;
+
+        if (!this.expSetSearch.expGroupSearch.length && !this.expSetSearch.screenSearch.length && !this.expSetSearch.expWorkflowSearch.length) {
+            this.mustSetSearchCriteriaError = true;
+            this.errorMessage = `${this.errorMessage} Invalid search. You must search for either a screen, a batch, or a set of reagents!`;
+        }
+    }
+
+    /**
+     * This is where we take all the expSetSearch data, and finally expSetSearch for expSets to return to the view
      */
     findExpSets() {
-        this.spinner.show();
         this.formSubmitted = true;
 
         this.resetExpSetView();
         this.setExpSetSearchCriteria();
+        this.cleanUpExpSetSearch();
+        this.checkForSearchCriteria();
 
         //TODO if we want to ONLY get things that were marked as interesting, do this
         //IF we want to get anything, mark as false
+        // .getUnscoredExpSetsByFirstPass(this.expSetSearch)
         this.expSetSearch.scoresExist = true;
         console.log(this.expSetSearch);
-        this.expSetApi
-            .getUnscoredExpSetsByFirstPass(this.expSetSearch)
-            .subscribe((results) => {
-                this.processExpSetsToExpModule(results);
-            }, (error) => {
-                console.log(error);
-                this.spinner.hide();
-                this.errorMessage = error;
-                return new Error(error);
-            });
+        if (!this.mustSetSearchCriteriaError) {
+            this.spinner.show();
+            this.expSetApi
+                .getInterestingExpSets(this.expSetSearch)
+                .subscribe((results) => {
+                    this.processExpSetsToExpModule(results);
+                }, (error) => {
+                    console.log(error);
+                    this.spinner.hide();
+                    this.errorMessage = error;
+                    return new Error(error);
+                });
+        }
+    }
+}
+
+
+export class SearchFormParamsFilterByHasDetailedScore extends SearchFormParamsFilterByPassedContactSheet {
+    /**
+     * Get expSets that have a detailed score
+     */
+    public searchModule: SearchModule;
+    public mustSetSearchCriteriaError: boolean = false;
+
+    constructor(public expSetApi: ExpSetApi, public expScreenApi: ExpScreenApi,
+                public expBiosampleApi: ExpBiosampleApi, public expScreenUploadWorkflowApi: ExpScreenUploadWorkflowApi,
+                public spinner: NgxSpinnerService,) {
+        super(expSetApi, expScreenApi, expBiosampleApi, expScreenUploadWorkflowApi, spinner);
+        this.initializeSearches();
+    }
+    /**
+     * This is where we take all the expSetSearch data, and finally expSetSearch for expSets to return to the view
+     */
+    findExpSets() {
+        this.formSubmitted = true;
+
+        this.resetExpSetView();
+        this.setExpSetSearchCriteria();
+        this.cleanUpExpSetSearch();
+        this.checkForSearchCriteria();
+
+        //TODO if we want to ONLY get things that were marked as interesting, do this
+        //IF we want to get anything, mark as false
+        // .getUnscoredExpSetsByFirstPass(this.expSetSearch)
+        this.expSetSearch.scoresExist = true;
+        console.log(this.expSetSearch);
+        if (!this.mustSetSearchCriteriaError) {
+            this.spinner.show();
+            this.expSetApi
+                .getScoredExpSets(this.expSetSearch)
+                .subscribe((results) => {
+                    this.processExpSetsToExpModule(results);
+                }, (error) => {
+                    console.log(error);
+                    this.spinner.hide();
+                    this.errorMessage = error;
+                    return new Error(error);
+                });
+        }
     }
 }
 
@@ -741,6 +799,7 @@ export class SearchFormFilterByScoresResults {
             if (!has(this.scores, key)) {
                 throw new Error(`Score key ${key} does not exist in manual scores table!!!`);
             }
+            //@ts-ignore
             const value = find(this.manualScores, {formCode: key});
             if (!value) {
                 throw new Error('Could not find score with code!');
@@ -762,4 +821,3 @@ export class SearchFormFilterByScoresResults {
     }
 
 }
-

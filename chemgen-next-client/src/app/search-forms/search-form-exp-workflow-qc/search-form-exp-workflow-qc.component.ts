@@ -4,7 +4,7 @@ import {SearchFormBaseComponentParams} from "../../search/search.module";
 import {ExpScreenApi, ExpBiosampleApi, ExpScreenUploadWorkflowApi, ExpSetApi} from "../../../types/sdk/services/custom";
 
 /**
- * TODO All these search forms need to be factored to a module
+ * TODO All these expSetSearch forms need to be factored to a module
  */
 
 @Component({

@@ -14,11 +14,12 @@ import {
     templateUrl: './search-form-expsets.component.html',
     styleUrls: ['./search-form-expsets.component.css']
 })
-export class SearchFormExpsetsComponent  implements OnInit {
+export class SearchFormExpsetsComponent implements OnInit {
     public searchFormParams: SearchFormBaseComponentParams;
-    constructor( expSetApi: ExpSetApi,  expScreenApi: ExpScreenApi,
-                 expBiosampleApi: ExpBiosampleApi,  expScreenUploadWorkflowApi: ExpScreenUploadWorkflowApi,
-                 spinner: NgxSpinnerService,) {
+
+    constructor(expSetApi: ExpSetApi, expScreenApi: ExpScreenApi,
+                expBiosampleApi: ExpBiosampleApi, expScreenUploadWorkflowApi: ExpScreenUploadWorkflowApi,
+                spinner: NgxSpinnerService,) {
         this.searchFormParams = new SearchFormBaseComponentParams(expSetApi, expScreenApi, expBiosampleApi, expScreenUploadWorkflowApi, spinner,)
     }
 

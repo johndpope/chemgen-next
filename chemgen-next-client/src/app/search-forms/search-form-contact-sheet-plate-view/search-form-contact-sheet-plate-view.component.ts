@@ -1,12 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {ExpBiosampleApi, ExpScreenApi, ExpScreenUploadWorkflowApi, ExpSetApi} from '../../../types/sdk/services/custom';
 import {NgxSpinnerService} from "ngx-spinner";
 import {SearchFormParamsFilterByNotScoredContactSheet} from "../../search/search.module";
-import {ExpScreenUploadWorkflowResultSet} from "../../../types/sdk/models";
+import {ExpScreenUploadWorkflowApi, ExpBiosampleApi, ExpScreenApi, ExpSetApi} from "../../../types/sdk/services/custom";
 import {get} from 'lodash';
 
 /**
- * This is the search form to get the screens by Plate
+ * This is the expSetSearch form to get the screens by Plate
  */
 @Component({
     selector: 'app-search-form-contact-sheet-plate-view',

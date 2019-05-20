@@ -30,3 +30,8 @@
     border: 2px solid #a94442; /* red */
     border-radius: 4px;
 }
+
+.link {
+    color: darkcyan;
+    text-decoration: underline;
+}

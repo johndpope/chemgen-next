@@ -359,7 +359,7 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
             .then(function (data) {
             data = ExpSet.extract.genExpGroupTypeAlbums(data, search);
             app.winston.info('Complete genExpGroupTypeAlbums');
-            // return ExpSet.extract.saveToCache(data, search);
+            // return ExpSet.extract.saveToCache(data, expSetSearch);
             return data;
         })
             .then(function (data) {

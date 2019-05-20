@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {ExpSetApi} from '../../../types/sdk/services/custom';
 import {NgxSpinnerService} from "ngx-spinner";
+import {ExpSetApi} from "../../../types/sdk/services/custom";
 import {ExpScreenApi, ExpBiosampleApi, ExpScreenUploadWorkflowApi} from "../../../types/sdk/services/custom";
 import {SearchFormParamsFilterByNotScoredContactSheet} from "../../search/search.module";
-import {ExpSetSearch} from "../../../types/custom/ExpSetTypes";
+import {ExpSetSearch} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 import {get, includes, find} from 'lodash';
 import {ExpScreenUploadWorkflowResultSet} from "../../../types/sdk/models";
 

@@ -8,7 +8,7 @@ import path = require('path');
 import Promise = require('bluebird');
 
 const fs = require('fs');
-import {uniq, merge, keyBy, isEqual, find, camelCase} from 'lodash';
+import {uniq, uniqWith, merge, keyBy, isEqual, find, camelCase} from 'lodash';
 import {
   ExpAssay2reagentResultSet,
   ExpManualScoreCodeResultSet,
@@ -746,16 +746,15 @@ function getNewAssayIds() {
               .catch((error) => {
                 return new Error(error);
               })
-          }
-          else {
+          } else {
             return;
           }
         })
 
     })
-      // .then(() => {
-      //   return cleanManualScores();
-      // })
+    // .then(() => {
+    //   return cleanManualScores();
+    // })
       .then(() => {
         let mappedManualScores = mapManualScores();
         return createNewManualScores(mappedManualScores);
@@ -793,8 +792,7 @@ function mapManualScores() {
     });
     if (!code) {
       throw new Error(`Could not find code for matching manual score ${manualScore}`);
-    }
-    else {
+    } else {
       if (mappedResult) {
         let newManualScore = new ExpManualScoresResultSet({
           treatmentGroupId: mappedResult.expAssay2reagent.treatmentGroupId,
@@ -822,6 +820,7 @@ function mapManualScores() {
     return value;
   });
 
+  // mappedManualScores = uniqWith(mappedManualScores, isEqual);
   mappedData.map((thing) => {
     let expAssay2reagent: ExpAssay2reagentResultSet = thing.expAssay2reagent;
     let firstPassScore = new ExpManualScoresResultSet({
@@ -861,8 +860,8 @@ function cleanManualScores() {
   return new Promise((resolve, reject) => {
     //@ts-ignore
     Promise.map(mappedData, (mappedResult) => {
-      return app.models.ExpManualScores
-        .destroyAll({where: {treatmentGroupId: mappedResult.expAssay2reagent.treatmentGroupId}})
+      //@ts-ignore
+      return app.models.ExpManualScores.destroyAll({where: {treatmentGroupId: mappedResult.expAssay2reagent.treatmentGroupId}})
     })
       .then(() => {
         resolve();
@@ -874,6 +873,7 @@ function cleanManualScores() {
 }
 
 function createNewManualScores(mappedManualScores) {
+  console.log('creating new scores!');
   return new Promise((resolve, reject) => {
     //@ts-ignore
     Promise.map(mappedManualScores, (manualScore: ExpManualScoresResultSet) => {
@@ -892,7 +892,7 @@ function createNewManualScores(mappedManualScores) {
         .catch((error) => {
           return new Error(`${error} ${JSON.stringify(manualScore)}`);
         })
-    })
+    }, {concurrency: 1})
       .then((scored) => {
         resolve();
       })
@@ -906,12 +906,14 @@ function readInData() {
   return new Promise((resolve, reject) => {
     //@ts-ignore
     return Promise.map(Object.keys(data), (dataKey) => {
+      //@ts-ignore
       console.log(`File: ${data[dataKey].file}`);
       return parseFile(dataKey);
     })
       .then(() => {
         console.log('in resolve!');
         data = filterExpAssays();
+        console.log('finished reading in data!');
         resolve();
       })
       .catch((error) => {

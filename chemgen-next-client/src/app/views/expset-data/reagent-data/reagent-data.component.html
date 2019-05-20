@@ -1,0 +1,110 @@
+<div *ngIf="expSet.rnaisList?.length">
+    <h2>RNAi Data</h2>
+    <div class="table-responsive" *ngFor="let rnai of expSet.rnaisList">
+        <table class="table table-striped table-hover">
+            <tbody>
+            <tr>
+                <td>Reagent Type</td>
+                <td>{{rnai.reagentType}}</td>
+            </tr>
+            <tr>
+                <td>Reagent Name</td>
+                <td>{{rnai.reagentName}}</td>
+            </tr>
+            <tr>
+                <td>Primary Target Gene Id</td>
+                <td>{{rnai.primaryTargetGeneId}}</td>
+            </tr>
+            <tr>
+                <td>Primary Target Gene Systematic Name</td>
+                <td>{{rnai.primaryTargetGeneSystematicName}}</td>
+            </tr>
+            <tr>
+                <td>Primary Target Gene Common Name</td>
+                <td>{{rnai.primaryTargetGeneCommonName}}</td>
+            </tr>
+            <tr>
+                <td>Master Plate Well</td>
+                <td>{{rnai.masterPlateWell}}</td>
+            </tr>
+            <tr>
+                <td>Stock Plate Well</td>
+                <td>{{rnai.stockPlateWell}}</td>
+            </tr>
+            <tr>
+                <td>
+                    Fwd Primer
+                </td>
+                <td>{{rnai.fwdPrimer}}</td>
+            </tr>
+            <tr>
+                <td>
+                    Rev Primer
+                </td>
+                <td>{{rnai.revPrimer}}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!--Angular does not like this - gives some error about unsafe urls-->
+        <!--<div *ngIf="rnai.xrefs?.length > 0 && rnai.xrefs[0].wbGeneAccession">-->
+        <!--<div class="embed-responsive embed-responsive-16by9">-->
+        <!--<iframe class="embed-responsive-item"-->
+        <!--src="https://www.wormbase.org/species/c_elegans/gene/{{rnai.xrefs[0].wbGeneAccession}}"></iframe>-->
+        <!--</div>-->
+        <!--</div>-->
+    </div>
+
+</div>
+<div *ngIf="expSet.compoundsList?.length">
+    <h2>Compounds Data</h2>
+    <div *ngFor="let compound of expSet.compoundsList">
+        <table class="table table-striped table-hover">
+            <tbody>
+            <tr>
+                <td>
+                    Compound Id (Database Id)
+                </td>
+                <td>{{compound.compoundId}}</td>
+            </tr>
+            <tr>
+                <td>
+                    Library Id
+                </td>
+                <td>{{returnLibraryName(compound.libraryId)}}</td>
+            </tr>
+            <tr>
+                <td>
+                    Compound Library Id (Id directly from the excel sheet)
+                </td>
+                <td>{{compound.compoundLibraryId}}</td>
+            </tr>
+            <tr>
+                <td>
+                    Plate-Well
+                </td>
+                <td>{{compound.plate}}-{{compound.well}}</td>
+            </tr>
+            <tr>
+                <td>
+                    Compound Systematic Name
+                </td>
+                <td>{{compound.compoundSystematicName}}</td>
+            </tr>
+            <tr>
+                <td>
+                    Compound Molecular Weight
+                </td>
+                <td>{{compound.compoundMw}}</td>
+            </tr>
+            <tr>
+                <td>
+                    Compound Formula
+                </td>
+                <td>{{compound.compoundFormula}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+

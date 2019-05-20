@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ExpsetToggleComponent} from './expset-toggle.component';
 import {FormsModule} from "@angular/forms";
-import {SDKBrowserModule} from "../../../types/sdk";
+import {SDKBrowserModule} from "../../../../../chemgen-next-server/common/types/custom/types/sdk";
 
 import {UiSwitchModule} from "ngx-ui-switch";
 // UiSwitchModule.forRoot({}),

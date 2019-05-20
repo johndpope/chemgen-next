@@ -1,7 +1,7 @@
 import {Component, Input, Output, EventEmitter} from "@angular/core";
 import {ExperimentData, ScreenDesign, SearchExpBiosamples} from "../src/app/exp-screen/upload-screen/helpers";
-import {ExpSetSearch, ExpSetSearchResults} from "../src/types/custom/ExpSetTypes";
-import {ExpManualScoresResultSet, ExpScreenResultSet, ExpScreenUploadWorkflowResultSet} from "../src/types/sdk/models";
+import {ExpSetSearch, ExpSetSearchResults} from "../../chemgen-next-server/common/types/custom/types/custom/ExpSetTypes";
+import {ExpManualScoresResultSet, ExpScreenResultSet, ExpScreenUploadWorkflowResultSet} from "../../chemgen-next-server/common/types/custom/types/sdk/models";
 import {SearchFormExpScreenFormResults} from "../src/app/search/search.module";
 import {SearchFormRnaiFormResults} from "../src/app/search/search.module";
 import {ExpsetModule} from "../src/app/scoring/expset/expset.module";

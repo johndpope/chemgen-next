@@ -130,7 +130,7 @@ RnaiLibrary.extract.workflows.getRnaiLibraryFromUserGeneList = function (genes, 
     });
 };
 /**
- * First do a (kind of) full text search on the RnaiWormbaseXrefs table
+ * First do a (kind of) full text expSetSearch on the RnaiWormbaseXrefs table
  * Then go back to the RnaiLibrary table to get these
  * @param {Array<string>} genes
  * @param {object} search

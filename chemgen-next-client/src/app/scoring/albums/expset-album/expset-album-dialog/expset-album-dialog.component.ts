@@ -1,6 +1,6 @@
 import {Component, OnInit, Input, ViewChild, ChangeDetectionStrategy} from '@angular/core';
-import {ModelPredictedCountsResultSet} from '../../../../../types/sdk/models';
-import {ExpSetApi} from '../../../../../types/sdk/services/custom';
+import {ModelPredictedCountsResultSet} from "../../../../../types/sdk/models";
+import {ExpSetApi} from "../../../../../types/sdk/services/custom";
 import {ModalDirective} from 'ngx-bootstrap/modal';
 import {Lightbox} from 'angular2-lightbox';
 import {get} from 'lodash';
@@ -17,6 +17,7 @@ export class ExpsetAlbumDialogComponent implements OnInit {
     @Input('albums') albums: any;
     @Input('score') score: boolean;
     @Input('contactSheetResults') contactSheetResults: any = {interesting: {}};
+    @Input('displayToggle') displayToggle: boolean = true;
 
     @ViewChild('lgModal') lgModal: ModalDirective;
 
@@ -40,13 +41,15 @@ export class ExpsetAlbumDialogComponent implements OnInit {
     }
 
     createAlbum(albumName: string, images: Array<string>) {
-        this.expSetAlbums[albumName] = images.map((image: string) => {
-            if (image) {
-                return image;
-            }
-        }).filter((t) => {
-            return t;
-        });
+        if(get(this.expSetAlbums, albumName)){
+            this.expSetAlbums[albumName] = images.map((image: string) => {
+                if (image) {
+                    return image;
+                }
+            }).filter((t) => {
+                return t;
+            });
+        }
     }
 
 

@@ -1,4 +1,4 @@
-import {ExpSetSearchResults} from "../src/types/custom/ExpSetTypes";
+import {ExpSetSearchResults} from "../../chemgen-next-server/common/types/custom/types/custom/ExpSetTypes";
 
 const data : any = {
     "expAssays": [

@@ -4,7 +4,7 @@ import {ExpsetSheetComponent} from './expset-sheet.component';
 import {FormsModule} from '@angular/forms';
 import {ModalModule} from 'ngx-bootstrap';
 import {MockExpsetAlbumComponent, MockExpsetAlbumDialog} from "../../../../test/MockComponents";
-import {SDKBrowserModule} from "../../../types/sdk";
+import {SDKBrowserModule} from "../../../../../chemgen-next-server/common/types/custom/types/sdk";
 
 describe('ExpsetSheetComponent', () => {
     let component: ExpsetSheetComponent;

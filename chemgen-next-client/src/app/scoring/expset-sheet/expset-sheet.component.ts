@@ -1,6 +1,5 @@
 import {Component, OnInit, Input} from '@angular/core';
-import {ExpsetModule} from '../expset/expset.module';
-import {ExpSetSearch} from "../../../types/custom/ExpSetTypes";
+import {ExpsetModule, ExpSetSearch} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 
 /**
  * WIP

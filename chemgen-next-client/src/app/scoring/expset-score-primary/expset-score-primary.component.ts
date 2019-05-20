@@ -1,10 +1,10 @@
 import {Component, OnInit, Output, Input, EventEmitter} from '@angular/core';
 import {has, get, find, isArray} from 'lodash';
 import {ExpManualScoreCodeResultSet, ExpManualScoresResultSet} from "../../../types/sdk/models";
-import {ExpsetModule} from "../expset/expset.module";
+import {ExpsetModule} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 import {Lightbox} from "angular2-lightbox";
 import {trim, isEqual, isEmpty} from 'lodash';
-import {ExpManualScoresApi} from "../../../types/sdk/services/custom";
+import {ExpManualScoreCodeApi, ExpManualScoresApi} from "../../../types/sdk/services/custom";
 import {HotkeysService, HotkeysDirective, Hotkey} from "angular2-hotkeys";
 import {ManualScoresModule} from "../manual-scores/manual-scores.module";
 
@@ -18,6 +18,7 @@ export class ExpsetScorePrimaryComponent implements OnInit {
     @Input('expSetModule') expSetModule: ExpsetModule;
     @Input('score') score: boolean;
     @Input('contactSheetResults') contactSheetResults: any = {interesting: {}};
+
     @Output() getMoreExpSets = new EventEmitter<boolean>();
     expSetPrimaryScoreFormResults: ExpSetPrimaryScoreFormResults;
     public userName: string;
@@ -46,9 +47,9 @@ export class ExpsetScorePrimaryComponent implements OnInit {
     ngOnInit() {
     }
 
-    checkSubmission(){
+    checkSubmission() {
         this.expSetPrimaryScoreFormResults.checkEmbSteOne();
-        if(!this.expSetPrimaryScoreFormResults.mEmbErrorMessage && !this.expSetPrimaryScoreFormResults.wtEmbErrorMessage && !this.expSetPrimaryScoreFormResults.mSteErrorMessage){
+        if (!this.expSetPrimaryScoreFormResults.mEmbErrorMessage && !this.expSetPrimaryScoreFormResults.wtEmbErrorMessage && !this.expSetPrimaryScoreFormResults.mSteErrorMessage) {
             this.onSubmit();
         }
     }
@@ -163,7 +164,7 @@ class ExpSetPrimaryScoreFormResults {
 
     constructor(private hotkeysService: HotkeysService, private expManualScoresApi: ExpManualScoresApi) {
         this.scores = this.manualScoresModule.scores;
-        this.manualScores =this.manualScoresModule.manualScores;
+        this.manualScores = this.manualScoresModule.manualScores;
         this.addMutantHotKeys();
         this.hotkeysService.add(new Hotkey('shift+m', (event: KeyboardEvent): boolean => {
             this.addMutantHotKeys();

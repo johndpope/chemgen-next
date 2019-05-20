@@ -191,6 +191,7 @@ var ExpsetModule = /** @class */ (function () {
             return lodash_1.isEqual(counts.treatmentGroupId, treatmentGroupId);
         });
     };
+    //TODO This is really find the expDesign rows, not the expSet
     ExpsetModule.prototype.findExpSets = function (treatmentGroupId) {
         return this.expSets.expSets.filter(function (expSet) {
             return lodash_1.isEqual(treatmentGroupId, expSet[0].treatmentGroupId);
@@ -367,6 +368,27 @@ var ExpsetModule = /** @class */ (function () {
     return ExpsetModule;
 }());
 exports.ExpsetModule = ExpsetModule;
+var ExpSetDeNorm = /** @class */ (function () {
+    function ExpSetDeNorm(data) {
+        Object.assign(this, data);
+    }
+    return ExpSetDeNorm;
+}());
+exports.ExpSetDeNorm = ExpSetDeNorm;
+var AssayImage = /** @class */ (function () {
+    function AssayImage(data) {
+        Object.assign(this, data);
+    }
+    return AssayImage;
+}());
+exports.AssayImage = AssayImage;
+var ExpSetDeNormAlbum = /** @class */ (function () {
+    function ExpSetDeNormAlbum(data) {
+        Object.assign(this, data);
+    }
+    return ExpSetDeNormAlbum;
+}());
+exports.ExpSetDeNormAlbum = ExpSetDeNormAlbum;
 var PredictPrimaryPhenotypeExpSet = /** @class */ (function () {
     function PredictPrimaryPhenotypeExpSet(data) {
         Object.assign(this, data);

@@ -22,7 +22,7 @@ const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
 /**
  * ExpScreenUploadWorkflow is a config that can then be casted into the database,
  * but on its own it has a lot of metadata about the experiment itself
- * So when search for :
+ * So when expSetSearch for :
  * wormStrains, temperatures, temperatureRanges, instrumentPlateIds
  */
 
@@ -121,7 +121,7 @@ ExpSet.extract.searchByScreen = function (search: ScreenMetaDataCriteria) {
 };
 
 /**
- * There is something weird about using the loopback API to search for temperature,
+ * There is something weird about using the loopback API to expSetSearch for temperature,
  * so we are using the mongoose api instead
  * @param search
  */
@@ -154,7 +154,7 @@ ExpSet.extract.searchByTemperature = function (search: ScreenMetaDataCriteria) {
       //   .connector.connect(function (error, db) {
       //   const collection = db.collection('ExpScreenUploadWorkflow');
       //   collection.find(
-      //     {"temperature.$numberDouble": String(search.temperature)},
+      //     {"temperature.$numberDouble": String(expSetSearch.temperature)},
       //     function (error, results) {
       //       results.toArray().then((t) => {
       //         const ids = t.map((expWorkflow: ExpScreenUploadWorkflowResultSet) => {
@@ -387,7 +387,7 @@ ExpSet.extract.getExpWorkflowsByRNAiReagentData = function (search: ReagentDataC
     //Search stocks for plates
     //Search Plates for ExpWorkflowIds
     //But this is stupid, the exp_workflow_id should be in the stock tables
-    //It would also be nice if everything was in the plate plan, and then could search there directly
+    //It would also be nice if everything was in the plate plan, and then could expSetSearch there directly
     search.rnaiList = compact(search.rnaiList);
     if (search.rnaiList.length) {
       app.models.RnaiLibrary.extract.workflows
@@ -438,7 +438,7 @@ ExpSet.extract.getExpWorkflowsByRNAiReagentData = function (search: ReagentDataC
  * TODO - If we are ONLY searching for RNAi (no other values), then just return the expSet list
  * TODO - BUT if we are searching for RNAis in permissive blahblahblah
  * THEN we need to combine those
- * This resolves the expSets that has a given gene name -
+ * This resolves the expSets that correspond to a given gene name -
  * Gene name can be the gene name, cosmid ID, or wormbase ID
  * @param search
  */

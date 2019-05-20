@@ -4,6 +4,8 @@
 // bootstrap the mysql and mongodb data with librarydata
 // Experimental data is periodically pulled from the onyx server
 
+// These all map to the docker-compose service names,
+// database names, users, and passwords in the root folder of this project
 
 module.exports = {
   db: {
@@ -11,24 +13,31 @@ module.exports = {
     connector: 'memory'
   },
   arrayscanDS: {
+    //This is the actual arrayscan database, which is an mssql db
+    //Except that in my docker-compose instance its also an mysql db
     name: 'arrayscanDS',
-    connector: 'memory',
-    // connector: 'mssql',
-    // connector: process.env.ARRAYSCAN_CONNECTOR || 'mssql',
-    // port : process.env.ARRAYSCAN_PORT || 1433,
-    // host: process.env.ARRAYSCAN_HOST || "10.230.9.202",
-    // database: process.env.ARRAYSCAN_DB || "store",
-    // user: process.env.ARRAYSCAN_USER || "mysqluser",
-    // password: process.env.ARRAYSCAN_PASS || "password",
+    connector: 'mysql',
+    host: 'arrayscan_mysql_db',
+    port: 3306,
+    database: 'arrayscan',
+    user: 'arrayscan',
+    password: 'password',
+  },
+  arrayscanMySQLDS: {
+    //This is the mirror we have setup in mysql
+    name: 'arrayscanMySQLDS',
+    connector: 'mysql',
+    host: 'arrayscan_mysql_db',
+    port: 3306,
+    database: 'arrayscan',
+    user: 'arrayscan',
+    password: 'password',
   },
   chemgenDS: {
     name: 'chemgenDS',
-    // connector: 'memory',
     connector: 'mysql',
-    // host: 'localhost',
     host: 'chemgen_next_dev_mysql_db',
     port: 3306,
-    // port: 3308,
     database: 'chemgen-next-dev',
     user: 'chemgen',
     password: 'password',

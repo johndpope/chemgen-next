@@ -12,7 +12,7 @@ import {Memoize} from 'lodash-decorators';
 declare var Object: any;
 
 /**
- * ExpSetSearch Interface is the main interface used by the Angular frontEnd to search for expSets
+ * ExpSetSearch Interface is the main interface used by the Angular frontEnd to expSetSearch for expSets
  * Its used at a few different points in a few different ways, but you can see it in action here -
  * ExpSet.extract.buildNativeQueryExpWorkflowId
  */
@@ -29,6 +29,7 @@ export interface ExpSetSearchInterface {
   plateSearch?: Array<number>;
   currentPage?: number;
   expGroupSearch?: Array<number>;
+  treatmentGroupSearch?: Array<number>;
   skip?: number;
   pageSize?: number;
   ctrlLimit?: number;
@@ -69,6 +70,7 @@ export class ExpSetSearch {
   };
   plateSearch ?: Array<number>;
   expGroupSearch ?: Array<number>;
+  treatmentGroupSearch ?: Array<number>;
   currentPage ?: number;
   method ?: string;
   skip ?: number;
@@ -301,6 +303,7 @@ export class ExpsetModule {
     });
   }
 
+  //TODO This is really find the expDesign rows, not the expSet
   @Memoize()
   findExpSets(treatmentGroupId) {
     return this.expSets.expSets.filter((expSet: Array<ExpDesignResultSet>) => {
@@ -459,6 +462,82 @@ export class ExpsetModule {
       return t;
     });
     return expSetAlbums;
+  }
+}
+
+export interface ExpSetDeNormInterface {
+  treatmentGroupId: number;
+  albums: {};
+  expWorkflow: ExpScreenUploadWorkflowResultSet;
+  expSet: any;
+  expScreen: ExpScreenResultSet;
+  rnaisList: RnaiLibraryResultSet[];
+  compoundsList: ChemicalLibraryResultSet[];
+  expPlates: ExpPlateResultSet[];
+  expManualScores: ExpManualScoresResultSet[];
+}
+
+export class ExpSetDeNorm implements ExpSetDeNormInterface {
+  treatmentGroupId: number;
+  albums: {};
+  expWorkflow: ExpScreenUploadWorkflowResultSet;
+  expSet: any;
+  expScreen: ExpScreenResultSet;
+  rnaisList: RnaiLibraryResultSet[];
+  compoundsList: ChemicalLibraryResultSet[];
+  expPlates: ExpPlateResultSet[];
+  expManualScores: ExpManualScoresResultSet[];
+
+  constructor(data?: ExpSetDeNormInterface) {
+    Object.assign(this, data);
+  }
+}
+
+export interface AssayImageInterface {
+  assayId: number;
+  assayImagePath: string;
+  plateId: number;
+  src: string;
+  thumb: string;
+}
+
+export class AssayImage implements AssayImageInterface {
+  assayId: number;
+  assayImagePath: string;
+  plateId: number;
+  src: string;
+  thumb: string;
+
+  constructor(data?: AssayImageInterface) {
+    Object.assign(this, data);
+  }
+}
+
+export interface ExpSetDeNormAlbumInterface {
+  ctrlNullImages: Array<AssayImage>;
+  ctrlStrainImages: Array<AssayImage>;
+  ctrlReagentImages: Array<AssayImage>;
+  treatmentReagentImages: Array<AssayImage>;
+  ctrlReagentId: number;
+  treatmentGroupId: number;
+  treatmentReagentId: number;
+  expWorkflow: ExpScreenUploadWorkflowResultSet;
+  expWorkflowId: string;
+}
+
+export class ExpSetDeNormAlbum {
+  ctrlNullImages: Array<AssayImage>;
+  ctrlStrainImages: Array<AssayImage>;
+  ctrlReagentImages: Array<AssayImage>;
+  treatmentReagentImages: Array<AssayImage>;
+  ctrlReagentId: number;
+  treatmentGroupId: number;
+  treatmentReagentId: number;
+  expWorkflow: ExpScreenUploadWorkflowResultSet;
+  expWorkflowId: string;
+
+  constructor(data?: ExpSetDeNormAlbum) {
+    Object.assign(this, data);
   }
 }
 

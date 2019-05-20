@@ -41,7 +41,7 @@ RnaiWormbaseXrefs.extract.genTaxTerms = function (rows, where) {
 
 /**
  *
- * Given a list of genes, perform a pseudo full text search
+ * Given a list of genes, perform a pseudo full text expSetSearch
  * @param {string[]} genes
  */
 RnaiWormbaseXrefs.extract.fullText = function (genes: string[]) {

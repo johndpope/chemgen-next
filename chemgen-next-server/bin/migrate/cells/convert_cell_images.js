@@ -92,15 +92,12 @@ var generateImageJob = function (imagesList, plateData) {
 // plateDataList = plateDataList.slice(0, 10);
 app.models.Plate.find({
     where: {
-        csPlateid: 14320
-        // or: [
-        //   {
-        //     name: {like: '%SK%PanB%'}
-        //   },
-        //   {
-        //     name: {like: 'SK%PanA%'}
-        //   }
-        // ]
+        // csPlateid: 14320
+        or: [
+            {
+                name: { like: 'SK%Sent%' }
+            },
+        ]
     }
 })
     .then(function (platesDataList) {
@@ -108,6 +105,7 @@ app.models.Plate.find({
     platesDataList.map(function (plateData) {
         app.winston.info("Found Plate: " + plateData.name);
     });
+    // process.exit(0);
     // platesDataList = shuffle(platesDataList);
     return Promise.map(lodash_1.shuffle(platesDataList), function (plateData) {
         var expPlate = new models_1.ExpPlateResultSet({

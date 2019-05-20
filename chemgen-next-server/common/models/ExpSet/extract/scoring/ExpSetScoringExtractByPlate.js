@@ -111,7 +111,7 @@ ExpSet.extract.genExpGroupTypeAlbums = function (data, search) {
     };
     data.albums.map(function (album) {
         ['ctrlNullImages', 'ctrlStrainImages'].map(function (albumType) {
-            // expSet[albumType] = shuffle(expSet[albumType].slice(0, search.ctrlLimit));
+            // expSet[albumType] = shuffle(expSet[albumType].slice(0, expSetSearch.ctrlLimit));
         });
     });
     var expGroupTypes = lodash_1.groupBy(data.expAssay2reagents, 'reagentType');

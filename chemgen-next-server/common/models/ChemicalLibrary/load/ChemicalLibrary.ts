@@ -49,7 +49,7 @@ ChemicalLibrary.load.createWorkflowSearchObj = function (workflowData: any) {
   return ChemicalLibrary.load[workflowData.screenStage].createWorkflowSearchObj(workflowData);
 };
 
-//TODO These are the same for all screens - only search terms are different
+//TODO These are the same for all screens - only expSetSearch terms are different
 ChemicalLibrary.load.primary.createWorkflowSearchObj = function (workflowData: any) {
   return {
     and: [
@@ -74,13 +74,13 @@ ChemicalLibrary.load.primary.createWorkflowSearchObj = function (workflowData: a
       // {
       //   'replicates.1.0': workflowData.replicates[1][0],
       // },
-      //   "search": {
+      //   "expSetSearch": {
       // "library": {
       //   "chemical": {
       //     "chembridge": {
 
       // {
-      //   'search.library.chemical.chembridge.plate': workflowData.search.library.chemical.chembridge.plate,
+      //   'expSetSearch.library.chemical.chembridge.plate': workflowData.expSetSearch.library.chemical.chembridge.plate,
       // },
     ]
   };

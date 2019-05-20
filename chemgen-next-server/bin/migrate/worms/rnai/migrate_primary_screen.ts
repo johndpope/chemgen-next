@@ -214,7 +214,7 @@ function findQuads(primaryData) {
   if (get(primaryData, ['search', 'library', 'rnai', 'ahringer', 'quadrant'])) {
     let copy = deepcopy(primaryData);
     let libraryQuadrant = get(primaryData, ['search', 'library', 'rnai', 'ahringer', 'quadrant']);
-    //Sometimes the search term is RNA, sometimes RNAI
+    //Sometimes the expSetSearch term is RNA, sometimes RNAI
     // let searchNamePatterns = [`RN%${chromosome}.${libraryPlate}${libraryQuadrant}%${conditionCode}%`,
     //   `RN%${chromosome}${libraryPlate}${libraryQuadrant}%${conditionCode}%`, `L4440${conditionCode}%`];
     let searchNamePatterns = [`RN%${chromosome}.${libraryPlate}${libraryQuadrant}%`,
@@ -240,7 +240,7 @@ function findQuads(primaryData) {
     quadrants.map((libraryQuadrant) => {
       let copy = deepcopy(primaryData);
       //For E this si fine
-      //For S we have to have a search condition that is matches S or just does not match E
+      //For S we have to have a expSetSearch condition that is matches S or just does not match E
       //Some restrictive screens have the S, some don't
       copy.search.library.rnai.ahringer.quadrant = libraryQuadrant;
       let searchNamePatterns = [`RN%${chromosome}.${libraryPlate}${libraryQuadrant}%${conditionCode}%`,

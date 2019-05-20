@@ -1,0 +1,28 @@
+<div *ngIf="expSet.expManualScores?.length" class="row">
+  <div class="col-md-12">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+          <td>User</td>
+          <td>AssayId</td>
+          <td>Group</td>
+          <td>Code</td>
+          <td>Value</td>
+          <td>Timestamp</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let manualscore of expSet.expManualScores">
+          <td>{{manualscore.userName}}</td>
+          <td>{{manualscore.assayId}}</td>
+          <td>{{manualscore.manualscoreGroup}}</td>
+          <td>{{manualscore.manualscoreCode}}</td>
+          <td>{{manualscore.manualscoreValue}}</td>
+          <td>{{manualscore.timestamp}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div *ngIf="expSets && expSets.expWorkflows?.length" class="x_panel batchInfo">
+    <div class="x_content">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Screen : {{expSets.expScreens[0].screenName}}</h3>
+                <h3>Batch: {{expSets.expWorkflows[0].name}}</h3>
+                <h3>Screen Stage: {{expSets.expWorkflows[0].screenStage}}</h3>
+                <h3>Temperature: {{expSets.expWorkflows[0].temperature}}</h3>
+                <h3>Worm Strains: {{expSets.expWorkflows[0].biosamples.experimentBiosample.name}} +
+                    {{expSets.expWorkflows[0].biosamples.ctrlBiosample.name}} </h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="thisPlate" class="x_panel plateInfo">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="x_content">
+                <h3>Barcode: {{thisPlate.barcode}}</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row" *ngIf="plateAlbum?.length">
+    <div class="col-md-12 x_panel">
+        <div class="x_content">
+            <div class="col-md-2" *ngFor="let image of plateAlbum; let i = index">
+                <!--Begin Display Open ExpSets Button-->
+                <div *ngIf="image.treatmentGroupId" class="row">
+                    <div class="col-md-6">
+                            <a target="_blank" [routerLink]="['/related_expsets', image.treatmentGroupId]">
+                                <div class="link">
+                                    Related ExpSets
+                                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+                                          tooltip="Get all ExpSets that have the same reagents. This includes different screens, temperatures, batches.">
+                                </span>
+                                </div>
+                            </a>
+                    </div>
+                    <div class="col-md-6">
+                        <app-expset-album-dialog [expSet]="image.expSet" [score]="true" [displayToggle]="false"
+                                                 [albums]="image.expSet.albums"></app-expset-album-dialog>
+                    </div>
+                </div>
+                <!--End Display Image-->
+                <!--Begin Display Image-->
+                <div class="row">
+                    <div class="col-md-12">
+                        <img tabindex="0" class="img-thumbnail" [src]="image.thumb" (click)="open(i)"/>
+                    </div>
+                </div>
+                <!--End Display Image-->
+            </div>
+        </div>
+    </div>
+</div>

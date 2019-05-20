@@ -264,7 +264,7 @@ emptySpreadsheet(batchConfigs)
 
 let spreadsheet: Array<{ ScreenName, Chromosome, Plate, Quadrant, condition, barcode, csPlateid, imageDate }> = [];
 
-//TODO Refactor this to search per treatment type (treat_rnai, ctrl_rnai, ctrl_strain, ctrl_null)
+//TODO Refactor this to expSetSearch per treatment type (treat_rnai, ctrl_rnai, ctrl_strain, ctrl_null)
 function getChromosomePlateMappings(batchConfig) {
   return new Promise((resolve, reject) => {
     //@ts-ignore
@@ -592,7 +592,7 @@ function mapOldWorkflow(buckets, chrom, plate, quadrant) {
     if (isNull(thing)) {
 
       console.error('Things are missing that should not be missing!');
-      // console.error(JSON.stringify(workflowData.search));
+      // console.error(JSON.stringify(workflowData.expSetSearch));
       process.exit(1);
     }
   });

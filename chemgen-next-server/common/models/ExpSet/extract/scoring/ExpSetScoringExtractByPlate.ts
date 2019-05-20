@@ -128,7 +128,7 @@ ExpSet.extract.genExpGroupTypeAlbums = function (data: ExpSetSearchResults, sear
 
   data.albums.map((album) => {
     ['ctrlNullImages', 'ctrlStrainImages'].map((albumType) => {
-      // expSet[albumType] = shuffle(expSet[albumType].slice(0, search.ctrlLimit));
+      // expSet[albumType] = shuffle(expSet[albumType].slice(0, expSetSearch.ctrlLimit));
     });
   });
 

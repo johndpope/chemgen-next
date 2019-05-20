@@ -11,3 +11,20 @@
   border-radius: 0;
 }
 
+.scored_box {
+  float: right;
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  border: 1px solid rgba(0, 0, 0, .2);
+}
+
+.interesting {
+  background: green;
+}
+.not_interesting {
+  background: red;
+}
+.not_scored {
+  background: gray;
+}

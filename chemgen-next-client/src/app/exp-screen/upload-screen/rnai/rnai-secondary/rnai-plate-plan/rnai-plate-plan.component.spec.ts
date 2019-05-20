@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {RnaiPlatePlanComponent} from './rnai-plate-plan.component';
-import {SDKBrowserModule} from "../../../../../../types/sdk";
+import {SDKBrowserModule} from "../../../../../../../../chemgen-next-server/common/types/custom/types/sdk";
 import {FormsModule} from "@angular/forms";
 
 describe('RnaiPlatePlanComponent', () => {
