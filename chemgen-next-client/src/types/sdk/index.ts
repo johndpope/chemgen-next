@@ -60,6 +60,7 @@ import { ChemicalXrefsApi } from './services/custom/ChemicalXrefs';
 import { RnaiLibraryStockApi } from './services/custom/RnaiLibraryStock';
 import { RnaiWormbaseXrefsApi } from './services/custom/RnaiWormbaseXrefs';
 import { PlateApi } from './services/custom/Plate';
+import { ArrayScanPlateMirrorApi } from './services/custom/ArrayScanPlateMirror';
 import { ExpScreenUploadWorkflowApi } from './services/custom/ExpScreenUploadWorkflow';
 import { WpTermsApi } from './services/custom/WpTerms';
 import { WpPostsApi } from './services/custom/WpPosts';
@@ -124,6 +125,7 @@ export class SDKBrowserModule {
         RnaiLibraryStockApi,
         RnaiWormbaseXrefsApi,
         PlateApi,
+        ArrayScanPlateMirrorApi,
         ExpScreenUploadWorkflowApi,
         WpTermsApi,
         WpPostsApi,

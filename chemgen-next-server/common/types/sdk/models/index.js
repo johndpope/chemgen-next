@@ -20,6 +20,7 @@ __export(require("./ChemicalXrefsResultSet"));
 __export(require("./RnaiLibraryStockResultSet"));
 __export(require("./RnaiWormbaseXrefsResultSet"));
 __export(require("./PlateResultSet"));
+__export(require("./ArrayScanPlateMirrorResultSet"));
 __export(require("./ExpScreenUploadWorkflowResultSet"));
 __export(require("./WpTermsResultSet"));
 __export(require("./WpPostsResultSet"));

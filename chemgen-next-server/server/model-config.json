@@ -108,6 +108,9 @@
   "Plate": {
     "dataSource": "arrayscanDS"
   },
+  "ArrayScanPlateMirror": {
+    "dataSource": "arrayscanMySQLDS"
+  },
   "ExpScreenUploadWorkflow": {
     "dataSource": "mongoDB",
     "public": true

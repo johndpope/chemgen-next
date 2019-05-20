@@ -27,10 +27,10 @@ module.exports = {
     //This is the mirror we have setup in mysql
     name: 'arrayscanMySQLDS',
     connector: 'mysql',
-    host: 'arrayscan_mysql_db',
+    host: 'chemgen_next_dev_mysql_db',
     port: 3306,
-    database: 'arrayscan',
-    user: 'arrayscan',
+    database: 'chemgen-next-dev',
+    user: 'chemgen',
     password: 'password',
   },
   chemgenDS: {

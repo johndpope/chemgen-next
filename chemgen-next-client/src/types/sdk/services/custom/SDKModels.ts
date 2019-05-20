@@ -16,6 +16,7 @@ import { ChemicalXrefsResultSet } from '../../models/ChemicalXrefsResultSet';
 import { RnaiLibraryStockResultSet } from '../../models/RnaiLibraryStockResultSet';
 import { RnaiWormbaseXrefsResultSet } from '../../models/RnaiWormbaseXrefsResultSet';
 import { PlateResultSet } from '../../models/PlateResultSet';
+import { ArrayScanPlateMirrorResultSet } from '../../models/ArrayScanPlateMirrorResultSet';
 import { ExpScreenUploadWorkflowResultSet } from '../../models/ExpScreenUploadWorkflowResultSet';
 import { WpTermsResultSet } from '../../models/WpTermsResultSet';
 import { WpPostsResultSet } from '../../models/WpPostsResultSet';
@@ -59,6 +60,7 @@ export class SDKModels {
     RnaiLibraryStockResultSet: RnaiLibraryStockResultSet,
     RnaiWormbaseXrefsResultSet: RnaiWormbaseXrefsResultSet,
     PlateResultSet: PlateResultSet,
+    ArrayScanPlateMirrorResultSet: ArrayScanPlateMirrorResultSet,
     ExpScreenUploadWorkflowResultSet: ExpScreenUploadWorkflowResultSet,
     WpTermsResultSet: WpTermsResultSet,
     WpPostsResultSet: WpPostsResultSet,

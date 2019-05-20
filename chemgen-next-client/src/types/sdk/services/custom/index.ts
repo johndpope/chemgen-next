@@ -15,6 +15,7 @@ export * from './ChemicalXrefs';
 export * from './RnaiLibraryStock';
 export * from './RnaiWormbaseXrefs';
 export * from './Plate';
+export * from './ArrayScanPlateMirror';
 export * from './ExpScreenUploadWorkflow';
 export * from './WpTerms';
 export * from './WpPosts';
