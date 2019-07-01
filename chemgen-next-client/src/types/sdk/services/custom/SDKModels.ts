@@ -37,6 +37,7 @@ import { ExpSetResultSet } from '../../models/ExpSetResultSet';
 import { ModelsResultSet } from '../../models/ModelsResultSet';
 import { ReactomeEnityResultSet } from '../../models/ReactomeEnityResultSet';
 import { ReactomePathwayResultSet } from '../../models/ReactomePathwayResultSet';
+import { PlateSearchConfigurationResultSet } from '../../models/PlateSearchConfigurationResultSet';
 
 export interface Models { [name: string]: any }
 
@@ -81,6 +82,7 @@ export class SDKModels {
     ModelsResultSet: ModelsResultSet,
     ReactomeEnityResultSet: ReactomeEnityResultSet,
     ReactomePathwayResultSet: ReactomePathwayResultSet,
+    PlateSearchConfigurationResultSet: PlateSearchConfigurationResultSet,
     
   };
 

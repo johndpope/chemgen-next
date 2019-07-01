@@ -17,20 +17,6 @@ services:
     networks:
       - app-tier
 
-  ## I have been using this one to test actual database dumps
-  # chemgen_next_dev_mysql_db:
-  #   image: mysql   # Pull mysql image from Docker Hub
-  #   environment:   # Set up mysql database name and password
-  #     MYSQL_ROOT_PASSWORD: password
-  #     MYSQL_DATABASE: chemgen-next-dev
-  #     MYSQL_USER: chemgen
-  #     MYSQL_PASSWORD: password
-  #   ports:    # Set up ports exposed for other containers to connect to
-  #     - "3308:3306"
-  #   volumes:  # Mount relative path source folder on host to absolute path destination folder on docker container
-  ##       /docker-entrypoint-initdb.d will only process 1 mysql file
-  #     - ./chemgen-next-dev-mysqldb:/docker-entrypoint-initdb.d
-
   ## This is an empty testing instance
   ## It only has the library info and workflows
   chemgen_next_dev_mysql_db:
@@ -64,6 +50,19 @@ services:
       MYSQL_PASSWORD: password
     ports:    # Set up ports exposed for other containers to connect to
       - 8081:80
+    networks:
+      - app-tier
+
+  chemgen_next_dev_arrayscan_db_phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:   # Set up mysql database name and password
+      PMA_HOST: arrayscan_mysql_db
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: arrayscan
+      MYSQL_USER: arrayscan
+      MYSQL_PASSWORD: password
+    ports:    # Set up ports exposed for other containers to connect to
+      - 8082:80
     networks:
       - app-tier
 

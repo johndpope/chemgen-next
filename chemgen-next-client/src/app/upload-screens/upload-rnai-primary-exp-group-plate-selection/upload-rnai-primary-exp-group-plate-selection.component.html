@@ -1,0 +1,75 @@
+<!--Begin search criteria-->
+<div class="x_panel">
+    <div class="x_content">
+        <div class="row">
+            <div class="col-md-10">
+                <h3>{{title}} Dates</h3>
+            </div>
+            <div class="col-md-2">
+                <div class="{{class}} square"></div>
+            </div>
+        </div>
+        <div *ngFor="let date of plateGridTable.dates; let dateIndex = index" class="row">
+            <div class="col-md-8">
+                <input name="plateGridDate"
+                       type="text"
+                       placeholder="Datepicker"
+                       class="form-control"
+                       [(ngModel)]="plateGridTable.dates[dateIndex]"
+                       bsDatepicker>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-danger"
+                        (click)="plateGridTable.removeDate(dateIndex)">Remove
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" (click)="plateGridTable.addDate()">Add Imaging Date
+                </button>
+            </div>
+            <div *ngIf="screenUploadResults?.screenType?.barcodeKey" class="col-md-12">
+                <button type="button" class="btn btn-primary" (click)="search()">Search for
+                    {{title}} Plates
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End search criteria-->
+<!--Begin display plates in grid-->
+<div *ngIf="plateGridTable.rows?.length" class="x_panel">
+    <div class="x_content">
+        <div class="row">
+            <div class="col-md-10">
+                <h3>{{title}} Plates</h3>
+            </div>
+            <div class="col-md-2">
+                <div class="{{class}} square"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" (click)="plateGridTable.removeRows()">Remove Selected
+                    Rows
+                </button>
+                <ag-grid-angular
+                        style="width: 100%; height:20%;"
+                        class="ag-theme-balham"
+                        (gridReady)="plateGridTable.onGridReady($event)"
+                        [enableColResize]="true"
+                        [enableSorting]="true"
+                        [enableFilter]="true"
+                        [rowSelection]="plateGridTable.rowSelection"
+                        [rowData]="plateGridTable.rows"
+                        [columnDefs]="plateGridTable.columnDefs"
+                >
+                </ag-grid-angular>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--End display plates in grid-->

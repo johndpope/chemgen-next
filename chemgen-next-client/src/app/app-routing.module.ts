@@ -28,6 +28,8 @@ import {DetailedScoresComponent} from "./scoring/detailed-scores/detailed-scores
 import {SearchFormDetailedScoresComponent} from "./search-forms/search-form-detailed-scores/search-form-detailed-scores.component";
 import {ContactSheetReplicateViewRouteComponent} from "./scoring/contact-sheet-replicate-view-route/contact-sheet-replicate-view-route.component";
 import {ExpsetScorePrimaryRouteComponent} from "./scoring/expset-score-primary-route/expset-score-primary-route.component";
+import {UploadRnaiPrimaryComponent} from "./upload-screens/upload-rnai-primary/upload-rnai-primary.component";
+import {UploadRnaiPrimaryFromGoogleSheetsRouteComponent} from "./upload-screens/upload-rnai-primary-from-google-sheets-route/upload-rnai-primary-from-google-sheets-route.component";
 
 const appRoutes: Routes = [
     {path: 'pages', component: PagesComponent},
@@ -51,6 +53,8 @@ const appRoutes: Routes = [
     {path: 'search-form-detailed-scores', component: SearchFormDetailedScoresComponent},
     {path: 'contact-sheet-replicate-view/:treatmentGroupId', component: ContactSheetReplicateViewRouteComponent},
     {path: 'expset-score-primary/:treatmentGroupId', component: ExpsetScorePrimaryRouteComponent},
+    {path: 'upload-rnai-primary', component: UploadRnaiPrimaryComponent},
+    {path: 'upload-rnai-primary-spreadsheet', component: UploadRnaiPrimaryFromGoogleSheetsRouteComponent},
     /* WIP */
     {path: 'counts-viz', component: ScatterplotCountsComponent},
     {path: '', redirectTo: '/empty', pathMatch: 'full'},

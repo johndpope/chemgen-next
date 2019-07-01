@@ -134,8 +134,12 @@ import {SearchFormRnaiLibraryComponent} from './search-forms/search-form-rnai-li
 import {SearchFormChemicalLibraryComponent} from './search-forms/search-form-chemical-library/search-form-chemical-library.component';
 import {DetailedScoresComponent} from './scoring/detailed-scores/detailed-scores.component';
 import {SearchFormDetailedScoresComponent} from "./search-forms/search-form-detailed-scores/search-form-detailed-scores.component";
-import { ContactSheetReplicateViewRouteComponent } from './scoring/contact-sheet-replicate-view-route/contact-sheet-replicate-view-route.component';
-import { ExpsetScorePrimaryRouteComponent } from './scoring/expset-score-primary-route/expset-score-primary-route.component';
+import {ContactSheetReplicateViewRouteComponent} from './scoring/contact-sheet-replicate-view-route/contact-sheet-replicate-view-route.component';
+import {ExpsetScorePrimaryRouteComponent} from './scoring/expset-score-primary-route/expset-score-primary-route.component';
+import {UploadRnaiPrimaryComponent} from './upload-screens/upload-rnai-primary/upload-rnai-primary.component';
+import {UploadRnaiPrimaryExpGroupPlateSelectionComponent} from './upload-screens/upload-rnai-primary-exp-group-plate-selection/upload-rnai-primary-exp-group-plate-selection.component';
+import { UploadRnaiPrimaryFromGoogleSheetsComponent } from './upload-screens/upload-rnai-primary-from-google-sheets/upload-rnai-primary-from-google-sheets.component';
+import { UploadRnaiPrimaryFromGoogleSheetsRouteComponent } from './upload-screens/upload-rnai-primary-from-google-sheets-route/upload-rnai-primary-from-google-sheets-route.component';
 
 @NgModule({
     imports: [
@@ -216,6 +220,10 @@ import { ExpsetScorePrimaryRouteComponent } from './scoring/expset-score-primary
         SearchFormDetailedScoresComponent,
         ContactSheetReplicateViewRouteComponent,
         ExpsetScorePrimaryRouteComponent,
+        UploadRnaiPrimaryComponent,
+        UploadRnaiPrimaryExpGroupPlateSelectionComponent,
+        UploadRnaiPrimaryFromGoogleSheetsComponent,
+        UploadRnaiPrimaryFromGoogleSheetsRouteComponent,
     ],
     entryComponents: [],
     providers: [],

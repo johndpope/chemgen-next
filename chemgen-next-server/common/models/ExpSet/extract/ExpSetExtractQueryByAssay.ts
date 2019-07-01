@@ -101,10 +101,10 @@ ExpSet.extract.getExpSetsByLibraryData = function (reagentSearch: Array<{ reagen
     let data = new ExpSetSearchResults({});
     let search = new ExpSetSearch({});
     let expAssay2reagentSearch = {or: []};
-    reagentSearch.map((searchCriteria) => {
-      expAssay2reagentSearch.or.push({and: [{libraryId: searchCriteria.libraryId}, {reagentId: searchCriteria.reagentId}]});
-    });
     if (isArray(reagentSearch) && reagentSearch.length) {
+      reagentSearch.map((searchCriteria) => {
+        expAssay2reagentSearch.or.push({and: [{libraryId: searchCriteria.libraryId}, {reagentId: searchCriteria.reagentId}]});
+      });
       app.models.ExpAssay2reagent
         .find({where: expAssay2reagentSearch})
         .then((results: ExpAssay2reagentResultSet[]) => {

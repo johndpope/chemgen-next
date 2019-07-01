@@ -1,18 +1,9 @@
 #!/usr/bin/env node
-console.log(`Hello!: ${JSON.stringify(process.env.HELLO)}`);
-//
-// {
-//   "where"
-// :
-//   {
-//     "and"
-//   :
-//     [{"reagentTable": "RnaiLibraryStock"}, {"reagentId": {"neq": "null"}}]
-//   }
 
+let barcode = 'RnaiI.1Q1S';
 
-let t = {
-  "where": {
-    "and": [{"reagentTable": "RnaiLibraryStock"}, {"reagentId": {"neq": "null"}}]
-  }
-}
+// let match = new RegExp('Rnai(\w{1}).(\d{+})(\w{2}).*');
+let match = /Rnai(\w+).(\d+)(\w{2})/;
+let matches = match.exec(barcode);
+
+console.log(matches);

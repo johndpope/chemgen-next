@@ -175,6 +175,9 @@
     "stockPrepDate": {
       "type": "date"
     },
+    "cultureDate": {
+      "type": "date"
+    },
     "assayDates": {
       "type": [
         "date"

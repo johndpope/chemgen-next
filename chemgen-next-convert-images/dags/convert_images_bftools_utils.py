@@ -135,6 +135,9 @@ def convert_worm_image_template(instrument_image, converted_image, base_image):
     For wormm images we  convert the instrument proprietary image to png
     And add in some autolevel correction
     As well as jpegs for web
+    This assumes everything is passed in through the web interface
+    There is another function in worm_convert_images_dag_def
+    that addresses running things straight from the filesystem
     :param instrument_image:
     :param converted_image:
     :return:

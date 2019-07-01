@@ -1,0 +1,194 @@
+<div class="row">
+    <div class="col-md-12">
+        <!--Begin choose Suppressor / Enhancer-->
+        <div class="x_panel">
+            <div class="x_content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="conditions">Condition</label>
+                        <select class="form-control" id="conditions"
+                                required
+                                [(ngModel)]="screenUploadResults.screenType"
+                                name="condition"
+                        >
+                            <option *ngFor="let type of screenType"
+                                    [ngValue]="type">
+                                {{type.display}}
+                            </option>
+                        </select>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!--End choose Suppressor / Enhancer-->
+
+        <!--Begin CtrlNull-->
+        <app-upload-rnai-primary-exp-group-plate-selection
+                [plateGridTable]="ctrlNullTable"
+                [title]="'Ctrl Null'"
+                [class]="'ctrl-null-bg'"
+                [screenUploadResults]="screenUploadResults"
+                (searchPlates)="searchCtrlNullPlates($event)"
+        ></app-upload-rnai-primary-exp-group-plate-selection>
+        <!--End CtrlNull-->
+
+        <!--Begin CtrlStrain-->
+        <app-upload-rnai-primary-exp-group-plate-selection
+                [plateGridTable]="ctrlStrainTable"
+                [title]="'Ctrl Strain'"
+                [class]="'ctrl-strain-bg'"
+                [screenUploadResults]="screenUploadResults"
+                (searchPlates)="searchCtrlStrainPlates($event)"
+        ></app-upload-rnai-primary-exp-group-plate-selection>
+        <!--End CtrlStrain-->
+
+        <!--Begin CtrlRnaI-->
+        <app-upload-rnai-primary-exp-group-plate-selection
+                [plateGridTable]="ctrlRnaiTable"
+                [title]="'Ctrl Rnai'"
+                [class]="'ctrl-reagent-bg'"
+                [screenUploadResults]="screenUploadResults"
+                (searchPlates)="searchCtrlRnaiPlates($event)"
+        ></app-upload-rnai-primary-exp-group-plate-selection>
+        <!--End CtrlRnaI-->
+
+        <!--Begin TreatRnai-->
+        <app-upload-rnai-primary-exp-group-plate-selection
+                [plateGridTable]="treatRnaiTable"
+                [title]="'Treat Rnai'"
+                [class]="'treat-reagent-bg'"
+                [screenUploadResults]="screenUploadResults"
+                (searchPlates)="searchTreatRnaiPlates($event)"
+        ></app-upload-rnai-primary-exp-group-plate-selection>
+        <!--End TreatRnai-->
+
+    </div>
+</div>
+
+<!--Begin batches results-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_content">
+                <button type="button" class="btn btn-info"
+                        (click)="splitToBatches()">Split to Stock Plates
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="batchesList.length">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_content">
+                    <h4>Control Plates</h4>
+                    <!-- Begin Ctrl Null -->
+                    <div class="col-md-6">
+                        <h4>Ctrl Null</h4>
+                        <table class="table table-responsive table-bordered ctrl-null-bg">
+                            <thead>
+                            <tr>
+                                <th>Barcode</th>
+                                <th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let plate of ctrlNullTable.getDisplayedRows()">
+                                <td>{{plate.name}}</td>
+                                <td>{{plate.creationdate}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <!--End Ctrl Null-->
+                    <!-- Begin Ctrl Null -->
+                    <div class="col-md-6">
+                        <h4>Ctrl Strain</h4>
+                        <table class="table table-responsive table-bordered ctrl-strain-bg">
+                            <thead>
+                            <tr>
+                                <th>Barcode</th>
+                                <th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let plate of ctrlStrainTable.getDisplayedRows()">
+                                <td>{{plate.name}}</td>
+                                <td>{{plate.creationdate}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <!--End Ctrl Null-->
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div *ngFor="let batch of batchesList" class="row">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_content">
+                    <div class="row">
+                        <!-- Begin Treat Rnai-->
+                        <div class="col-md-6">
+                            <button type="button" class="btn btn-success"
+                                    (click)="splitToBatches()">Submit stock plate {{batch.name}}
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Name: {{batch.name}}</h4>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-responsive table-bordered treat-reagent-bg">
+                                <thead>
+                                <tr>
+                                    <th>Barcode</th>
+                                    <th>Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let plate of batch.treatRnai">
+                                    <td>{{plate.name}}</td>
+                                    <td>{{plate.creationdate}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <!--End Treat Rnai-->
+                        <!--Begin Ctrl Rnai-->
+                        <div class="col-md-6">
+                            <table class="table table-responsive table-bordered ctrl-reagent-bg">
+                                <thead>
+                                <tr>
+                                    <th>Barcode</th>
+                                    <th>Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let plate of batch.ctrlRnai">
+                                    <td>{{plate.name}}</td>
+                                    <td>{{plate.creationdate}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <!--End Ctrl Rnai-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End batches results-->

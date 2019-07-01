@@ -101,12 +101,12 @@ export class InterestingSummaryComponent implements OnInit {
                 reagentNames: expSet.rnaisList.map((rnaiResult: RnaiLibraryResultSet) => {
                     return rnaiResult.reagentName;
                 }).join(", "),
-                reagentTypes: this.getReagentNames(expSet),
-                primaryTargetGeneIds: this.getPrimaryTargetGeneIds(expSet),
-                primaryTargetGeneSytematicNames: this.getPrimaryTargetGeneSystematicNames(expSet),
-                primaryTargetGeneCommonNames: this.getPrimaryTargetGeneCommonNames(expSet),
-                stockPlateWells: this.getStockPlateWells(expSet),
-                masterPlateWells: this.getMasterPlateWells(expSet),
+                reagentTypes: InterestingSummaryComponent.getReagentNames(expSet),
+                primaryTargetGeneIds: InterestingSummaryComponent.getPrimaryTargetGeneIds(expSet),
+                primaryTargetGeneSytematicNames: InterestingSummaryComponent.getPrimaryTargetGeneSystematicNames(expSet),
+                primaryTargetGeneCommonNames: InterestingSummaryComponent.getPrimaryTargetGeneCommonNames(expSet),
+                stockPlateWells: InterestingSummaryComponent.getStockPlateWells(expSet),
+                masterPlateWells: InterestingSummaryComponent.getMasterPlateWells(expSet),
             }
         });
         console.log(rows);
@@ -114,25 +114,25 @@ export class InterestingSummaryComponent implements OnInit {
         return rows;
     }
 
-    getMasterPlateWells(expSet) {
+    static getMasterPlateWells(expSet) {
         expSet.rnaisList.map((rnaiResult: RnaiLibraryResultSet) => {
             return rnaiResult.masterPlateWell;
         }).join(", ")
     }
 
-    getStockPlateWells(expSet) {
+    static getStockPlateWells(expSet) {
         return expSet.rnaisList.map((rnaiResult: RnaiLibraryResultSet) => {
             return rnaiResult.stockPlateWell;
         }).join(", ")
     }
 
-    getPrimaryTargetGeneCommonNames(expSet) {
+    static getPrimaryTargetGeneCommonNames(expSet) {
         return expSet.rnaisList.map((rnaiResult: RnaiLibraryResultSet) => {
             return rnaiResult.primaryTargetGeneCommonName;
         }).join(", ")
     }
 
-    getPrimaryTargetGeneSystematicNames(expSet) {
+    static getPrimaryTargetGeneSystematicNames(expSet) {
         return expSet.rnaisList.map((rnaiResult: RnaiLibraryResultSet) => {
             return rnaiResult.primaryTargetGeneSystematicName;
         }).join(", ");
@@ -142,13 +142,13 @@ export class InterestingSummaryComponent implements OnInit {
      * Get the reagent names from either the chemical list or the rnaiList
      * @param expSet
      */
-    getReagentNames(expSet) {
+    static getReagentNames(expSet) {
         return expSet.rnaisList.map((rnaiResult: RnaiLibraryResultSet) => {
             return rnaiResult.reagentName;
         }).join(", ")
     }
 
-    getPrimaryTargetGeneIds(expSet) {
+    static getPrimaryTargetGeneIds(expSet) {
         return expSet.rnaisList.map((rnaiResult: RnaiLibraryResultSet) => {
             return rnaiResult.primaryTargetGeneId;
         }).join(", ");

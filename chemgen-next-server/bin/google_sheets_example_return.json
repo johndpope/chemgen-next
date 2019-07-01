@@ -1,0 +1,85 @@
+{
+  "spreadsheetId": "18bVhzk3qgOEnWRtTltZ9FBksriElyqOXnXCButo4kus",
+  "properties": {
+    "title": "MAV_RNAi_Screen_2019.05.21",
+    "locale": "en_GB",
+    "autoRecalc": "ON_CHANGE",
+    "timeZone": "Asia/Dubai",
+    "defaultFormat": {
+      "backgroundColor": {
+        "red": 1,
+        "green": 1,
+        "blue": 1
+      },
+      "padding": {
+        "top": 2,
+        "right": 3,
+        "bottom": 2,
+        "left": 3
+      },
+      "verticalAlignment": "BOTTOM",
+      "wrapStrategy": "OVERFLOW_CELL",
+      "textFormat": {
+        "foregroundColor": {},
+        "fontFamily": "arial,sans,sans-serif",
+        "fontSize": 10,
+        "bold": false,
+        "italic": false,
+        "strikethrough": false,
+        "underline": false
+      }
+    }
+  },
+  "sheets": [
+    {
+      "properties": {
+        "sheetId": 1642791660,
+        "title": "ScreenMetadata",
+        "index": 0,
+        "sheetType": "GRID",
+        "gridProperties": {
+          "rowCount": 1017,
+          "columnCount": 26
+        }
+      }
+    },
+    {
+      "properties": {
+        "sheetId": 0,
+        "title": "ScreenExperimentalData",
+        "index": 1,
+        "sheetType": "GRID",
+        "gridProperties": {
+          "rowCount": 1011,
+          "columnCount": 27,
+          "frozenRowCount": 2
+        }
+      }
+    },
+    {
+      "properties": {
+        "sheetId": 1871161477,
+        "title": "Sheet9",
+        "index": 2,
+        "sheetType": "GRID",
+        "gridProperties": {
+          "rowCount": 1000,
+          "columnCount": 26
+        }
+      }
+    },
+    {
+      "properties": {
+        "sheetId": 882489262,
+        "title": "RNAiLibraryPlates",
+        "index": 3,
+        "sheetType": "GRID",
+        "gridProperties": {
+          "rowCount": 1000,
+          "columnCount": 27
+        }
+      }
+    }
+  ],
+  "spreadsheetUrl": "https://docs.google.com/a/nyu.edu/spreadsheets/d/18bVhzk3qgOEnWRtTltZ9FBksriElyqOXnXCButo4kus/edit"
+}

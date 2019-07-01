@@ -14,6 +14,12 @@ import random
 import subprocess
 from pprint import pprint
 
+"""
+WIP - Run cellprofiler with airflow
+I got a start on this, but the team prefers to run cellprofiler manually until their pipeline is worked out
+Here is some skeleton code to run it as an automatic process.
+"""
+
 """Test out with Python
 import requests
 import json

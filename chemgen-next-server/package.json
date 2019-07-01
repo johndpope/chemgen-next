@@ -27,6 +27,7 @@
     "fast-memoize": "^2.3.2",
     "flat": "^4.0.0",
     "glob-promise": "^3.4.0",
+    "googleapis": "^39.2.0",
     "helmet": "^1.3.0",
     "js-php-serialize": "0.0.4",
     "jsonfile": "^4.0.0",

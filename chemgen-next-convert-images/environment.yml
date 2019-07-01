@@ -16,3 +16,5 @@ dependencies:
   - airflow-with-postgres
   - psycopg2
   - paramiko
+  - dask
+  - pydash

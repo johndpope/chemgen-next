@@ -93,10 +93,10 @@ ExpSet.extract.getExpSetsByLibraryData = function (reagentSearch) {
         var data = new ExpSetTypes_1.ExpSetSearchResults({});
         var search = new ExpSetTypes_1.ExpSetSearch({});
         var expAssay2reagentSearch = { or: [] };
-        reagentSearch.map(function (searchCriteria) {
-            expAssay2reagentSearch.or.push({ and: [{ libraryId: searchCriteria.libraryId }, { reagentId: searchCriteria.reagentId }] });
-        });
         if (lodash_1.isArray(reagentSearch) && reagentSearch.length) {
+            reagentSearch.map(function (searchCriteria) {
+                expAssay2reagentSearch.or.push({ and: [{ libraryId: searchCriteria.libraryId }, { reagentId: searchCriteria.reagentId }] });
+            });
             app.models.ExpAssay2reagent
                 .find({ where: expAssay2reagentSearch })
                 .then(function (results) {

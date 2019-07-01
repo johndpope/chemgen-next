@@ -54,13 +54,13 @@ services:
         networks:
           - app-tier
 
-    adminer:
-        image: adminer
-        restart: always
-        ports:
-            - 8088:8080
-        networks:
-            - app-tier
+    #adminer:
+    #    image: adminer
+    #    restart: always
+    #    ports:
+    #        - 8090:8080
+    #    networks:
+    #        - app-tier
 
     # In order to build the image run
     # It needs to be retagged to upload to quay

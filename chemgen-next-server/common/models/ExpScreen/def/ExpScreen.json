@@ -39,6 +39,21 @@
         "nullable": "Y"
       }
     },
+    "screenMoniker": {
+      "type": "String",
+      "required": false,
+      "length": 100,
+      "precision": null,
+      "scale": null,
+      "mysql": {
+        "columnName": "ScreenMoniker",
+        "dataType": "varchar",
+        "dataLength": 100,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "Y"
+      }
+    },
     "screenType": {
       "type": "String",
       "required": false,

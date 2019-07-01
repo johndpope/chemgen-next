@@ -36,5 +36,6 @@ export * from './ExpSetResultSet';
 export * from './ModelsResultSet';
 export * from './ReactomeEnityResultSet';
 export * from './ReactomePathwayResultSet';
+export * from './PlateSearchConfigurationResultSet';
 export * from './BaseModels';
 

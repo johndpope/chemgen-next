@@ -35,7 +35,8 @@
       "../common/models/Analysis/def",
       "../common/models/wordpress/def",
       "../common/models/ReactomeEntity/def",
-      "../common/models/ReactomePathway/def"
+      "../common/models/ReactomePathway/def",
+      "../common/models/PlateSearchConfiguration/def"
     ],
     "mixins": [
       "loopback/common/mixins",
@@ -189,6 +190,10 @@
   },
   "ReactomePathway": {
     "dataSource": "reactomeDS",
+    "public": true
+  },
+  "PlateSearchConfiguration": {
+    "dataSource": "mongoDB",
     "public": true
   }
 }

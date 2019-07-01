@@ -81,6 +81,7 @@ import { ExpSetApi } from './services/custom/ExpSet';
 import { ModelsApi } from './services/custom/Models';
 import { ReactomeEnityApi } from './services/custom/ReactomeEnity';
 import { ReactomePathwayApi } from './services/custom/ReactomePathway';
+import { PlateSearchConfigurationApi } from './services/custom/PlateSearchConfiguration';
 /**
 * @module SDKBrowserModule
 * @description
@@ -146,6 +147,7 @@ export class SDKBrowserModule {
         ModelsApi,
         ReactomeEnityApi,
         ReactomePathwayApi,
+        PlateSearchConfigurationApi,
         internalStorageProvider,
         { provide: SDKStorage, useClass: StorageBrowser }
       ]

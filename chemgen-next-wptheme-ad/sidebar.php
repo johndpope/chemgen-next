@@ -147,6 +147,19 @@
                 </ul>
                 <!--End Help Menu-->
 
+                <!--Begin DRAFTS / WIPS Menu-->
+                <ul class="nav side-menu">
+                    <li><a><i class="fa fa-list"></i> DRAFT Interfaces<span
+                            class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/upload-rnai-primary-spreadsheet"
+                                   >Upload RNAi AHR2 Primary(DRAFT)</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <!--End Search Menu-->
+
             </div>
         </div>
         <!-- /sidebar menu -->
