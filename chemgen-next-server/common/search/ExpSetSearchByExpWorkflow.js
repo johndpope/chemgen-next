@@ -10,7 +10,7 @@ var ExpSet = app.models.ExpSet;
 /**
  * ExpScreenUploadWorkflow is a config that can then be casted into the database,
  * but on its own it has a lot of metadata about the experiment itself
- * So when search for :
+ * So when expSetSearch for :
  * wormStrains, temperatures, temperatureRanges, instrumentPlateIds
  */
 /**
@@ -103,7 +103,7 @@ ExpSet.extract.searchByScreen = function (search) {
     });
 };
 /**
- * There is something weird about using the loopback API to search for temperature,
+ * There is something weird about using the loopback API to expSetSearch for temperature,
  * so we are using the mongoose api instead
  * @param search
  */
@@ -134,7 +134,7 @@ ExpSet.extract.searchByTemperature = function (search) {
             //   .connector.connect(function (error, db) {
             //   const collection = db.collection('ExpScreenUploadWorkflow');
             //   collection.find(
-            //     {"temperature.$numberDouble": String(search.temperature)},
+            //     {"temperature.$numberDouble": String(expSetSearch.temperature)},
             //     function (error, results) {
             //       results.toArray().then((t) => {
             //         const ids = t.map((expWorkflow: ExpScreenUploadWorkflowResultSet) => {
@@ -365,7 +365,7 @@ ExpSet.extract.getExpWorkflowsByRNAiReagentData = function (search) {
         //Search stocks for plates
         //Search Plates for ExpWorkflowIds
         //But this is stupid, the exp_workflow_id should be in the stock tables
-        //It would also be nice if everything was in the plate plan, and then could search there directly
+        //It would also be nice if everything was in the plate plan, and then could expSetSearch there directly
         search.rnaiList = lodash_1.compact(search.rnaiList);
         if (search.rnaiList.length) {
             app.models.RnaiLibrary.extract.workflows
@@ -414,7 +414,7 @@ ExpSet.extract.getExpWorkflowsByRNAiReagentData = function (search) {
  * TODO - If we are ONLY searching for RNAi (no other values), then just return the expSet list
  * TODO - BUT if we are searching for RNAis in permissive blahblahblah
  * THEN we need to combine those
- * This resolves the expSets that has a given gene name -
+ * This resolves the expSets that correspond to a given gene name -
  * Gene name can be the gene name, cosmid ID, or wormbase ID
  * @param search
  */
@@ -423,18 +423,25 @@ ExpSet.extract.getExpSetsByRNAiReagentData = function (search) {
         search.rnaiList = lodash_1.compact(search.rnaiList);
         console.log("Search is : " + JSON.stringify(search));
         if (search.rnaiList.length) {
-            app.models.RnaiLibrary.extract.workflows
-                .getRnaiLibraryFromUserGeneList(search.rnaiList, search)
+            app.models.RnaiLibrary
+                .extract.getFromUpdatedGeneMappingLibrary(search.rnaiList, search)
                 .then(function (rnaiLibraryResults) {
-                var query = knex('exp_assay2reagent')
-                    .distinct('treatment_group_id');
-                rnaiLibraryResults.map(function (rnaiLibraryResult) {
-                    query
-                        .orWhere({ library_id: rnaiLibraryResult.libraryId, reagent_id: rnaiLibraryResult.rnaiId });
-                });
-                query.andWhere({ reagent_type: 'treat_rnai' });
-                query.select('exp_workflow_id');
-                return query;
+                app.winston.info('Got RNAILibrary Results!');
+                app.winston.info(JSON.stringify(rnaiLibraryResults));
+                if (rnaiLibraryResults.length) {
+                    var query_1 = knex('exp_assay2reagent')
+                        .distinct('treatment_group_id');
+                    rnaiLibraryResults.map(function (rnaiLibraryResult) {
+                        query_1
+                            .orWhere({ library_id: rnaiLibraryResult.libraryId, reagent_id: rnaiLibraryResult.rnaiId });
+                    });
+                    query_1.andWhere({ reagent_type: 'treat_rnai' });
+                    query_1.select('exp_workflow_id');
+                    return query_1;
+                }
+                else {
+                    return [];
+                }
             })
                 .then(function (expAssay2ReagentResults) {
                 var results = { expWorkflowIds: [], expGroupIds: [], expGroups: [] };

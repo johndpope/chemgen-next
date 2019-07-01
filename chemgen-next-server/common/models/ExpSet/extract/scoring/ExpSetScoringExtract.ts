@@ -74,6 +74,12 @@ ExpSet.extract.workflows.filterByScores = function (search: ExpSetSearch) {
   });
 };
 
+/**
+ * WIP - Working on an API that can query based on complex searches
+ * @param data
+ * @param search
+ * @param treatmentGroupIds
+ */
 ExpSet.extract.getScoresByFilter = function (data: ExpSetSearchResults, search: ExpSetSearch, treatmentGroupIds?: Array<number>) {
   return new Promise((resolve, reject) => {
     let query = ExpSet.extract.buildFilterByScoresQuery(data, search, treatmentGroupIds);
@@ -266,7 +272,7 @@ ExpSet.extract.workflows.getUnscoredExpSetsByFirstPass = function (search: ExpSe
     } else {
       search.scoresExist = true;
     }
-    // search.scoresExist = true;
+    // expSetSearch.scoresExist = true;
     let sqlQuery = ExpSet.extract.buildNativeQueryByFirstPass(data, search, search.scoresExist);
     // sqlQuery = sqlQuery.count('assay_id');
     ExpSet.extract.workflows.getExpAssay2reagentsByFirstPassScores(data, search, search.scoresExist)
@@ -503,6 +509,9 @@ ExpSet.extract.buildNativeQueryExpWorkflowId = function (data: ExpSetSearchResul
     }
   });
 
+  //TODO These are no longer valid
+  //Need to query by treatment_group_id
+  //or exp_group_id
   //Add Rnai reagent Lookup
   if (!isEmpty(data.rnaisList)) {
     query = query
@@ -630,6 +639,9 @@ ExpSet.extract.buildNativeQuery = function (data: ExpSetSearchResults, search: E
  * @param hasManualScores
  */
 ExpSet.extract.workflows.getExpWorkflowIdsNotScoredContactSheet = function (search: ExpSetSearch) {
+  if (!search) {
+    search = new ExpSetSearch({});
+  }
   return new Promise((resolve, reject) => {
     ExpSet.extract.workflows.getExpWorkflowIdsContactSheet(search, false)
       .then((expWorkflowIds: String[]) => {
@@ -644,9 +656,13 @@ ExpSet.extract.workflows.getExpWorkflowIdsNotScoredContactSheet = function (sear
 ExpSet.extract.workflows.getExpWorkflowIdsContactSheet = function (search: ExpSetSearch, hasManualScores: Boolean) {
   return new Promise((resolve, reject) => {
     let data = new ExpSetSearchResults({});
-    let sqlQuery = ExpSet.extract.buildNativeQuery(data, search, hasManualScores);
+    let sqlQuery = ExpSet.extract.buildNativeQueryContactSheet(data, search, hasManualScores);
+    // let sqlQuery = ExpSet.extract.buildNativeQuery(data, expSetSearch, hasManualScores);
+    app.winston.info(`GetExpWorkflowIDsContactSheet`);
+    app.winston.info(sqlQuery.toString());
     sqlQuery
       .then((expWorkflowIds: Array<{ exp_workflow_id }>) => {
+        app.winston.info(`ExpWorkflowIds: ${JSON.stringify(expWorkflowIds[0])}`);
         resolve(uniq(expWorkflowIds.map((expWorkflowId) => {
           return expWorkflowId.exp_workflow_id;
         })));
@@ -657,3 +673,68 @@ ExpSet.extract.workflows.getExpWorkflowIdsContactSheet = function (search: ExpSe
       });
   });
 };
+
+ExpSet.extract.buildNativeQueryContactSheet = function (data: ExpSetSearchResults, search: ExpSetSearch, hasManualScores: Boolean) {
+  let query = knex('exp_assay2reagent');
+  query = query
+    .select('exp_workflow_id')
+    .where('reagent_type', 'LIKE', 'treat%')
+    .whereNot({reagent_id: null});
+  //Add Base experiment lookup
+  ['screen', 'library', 'expWorkflow', 'plate', 'expGroup', 'assay'].map((searchType) => {
+    if (!isEmpty(search[`${searchType}Search`])) {
+      let sql_col = decamelize(`${searchType}Id`);
+      let sql_values = search[`${searchType}Search`];
+      query = query.whereIn(sql_col, sql_values);
+    }
+  });
+
+  // For the reagent lookups they must have the reagent_id and the library id
+  //You cannot look up here by arbitrary names
+  //Add Rnai reagent Lookup
+  if (!isEmpty(data.rnaisList)) {
+    query = query
+      .where(function () {
+        let firstVal: RnaiLibraryResultSet = data.rnaisList.shift();
+        let firstWhere = this.orWhere({'reagent_id': firstVal.rnaiId, library_id: firstVal.libraryId});
+        data.rnaisList.map((rnai: RnaiLibraryResultSet) => {
+          firstWhere = firstWhere.orWhere({reagent_id: rnai.rnaiId, library_id: firstVal.libraryId});
+        });
+        data.rnaisList.push(firstVal);
+      })
+  }
+
+  //Add Chemical Lookup
+  if (!isEmpty(data.compoundsList)) {
+    query = query
+      .where(function () {
+        let firstVal: ChemicalLibraryResultSet = data.compoundsList.shift();
+        let firstWhere = this.orWhere({'reagent_id': firstVal.compoundId, library_id: firstVal.libraryId});
+        data.compoundsList.map((compound: ChemicalLibraryResultSet) => {
+          firstWhere = firstWhere.orWhere({reagent_id: compound.compoundId, library_id: firstVal.libraryId});
+        });
+        data.compoundsList.push(firstVal);
+      })
+  }
+
+  //Get if value exists in the manual score table
+  if (hasManualScores) {
+    query = query
+      .whereExists(function () {
+        this.select(1)
+          .from('exp_manual_scores')
+          .whereRaw('exp_assay2reagent.assay_id = exp_manual_scores.assay_id');
+      });
+  } else {
+    query = query
+      .whereNotExists(function () {
+        this.select(1)
+          .from('exp_manual_scores')
+          .whereRaw('exp_assay2reagent.assay_id = exp_manual_scores.assay_id');
+      });
+
+  }
+
+  return query;
+};
+

@@ -47,7 +47,7 @@ describe('RnaiLibrary.load', function () {
         });
     });
     //TODO Update this test
-    it('Should search for things in the RnaiWormbaseXrefs', function (done) {
+    it('Should expSetSearch for things in the RnaiWormbaseXrefs', function (done) {
         app.models.RnaiWormbaseXrefs.extract.genTaxTerms({
             where: {
                 wbGeneSequenceId: 'None',

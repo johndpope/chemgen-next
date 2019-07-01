@@ -17,20 +17,6 @@ services:
     networks:
       - app-tier
 
-  ## I have been using this one to test actual database dumps
-  # chemgen_next_dev_mysql_db:
-  #   image: mysql   # Pull mysql image from Docker Hub
-  #   environment:   # Set up mysql database name and password
-  #     MYSQL_ROOT_PASSWORD: password
-  #     MYSQL_DATABASE: chemgen-next-dev
-  #     MYSQL_USER: chemgen
-  #     MYSQL_PASSWORD: password
-  #   ports:    # Set up ports exposed for other containers to connect to
-  #     - "3308:3306"
-  #   volumes:  # Mount relative path source folder on host to absolute path destination folder on docker container
-  ##       /docker-entrypoint-initdb.d will only process 1 mysql file
-  #     - ./chemgen-next-dev-mysqldb:/docker-entrypoint-initdb.d
-
   ## This is an empty testing instance
   ## It only has the library info and workflows
   chemgen_next_dev_mysql_db:
@@ -47,6 +33,7 @@ services:
     volumes:
       #       /docker-entrypoint-initdb.d will only process 1 mysql file
       - ./chemgen-next-web-docker/chemgen-next-test-mysqldb:/docker-entrypoint-initdb.d
+      - chemgen_next_dev_mysql_db_volume:/var/lib/mysql
     networks:
       - app-tier
 
@@ -63,6 +50,19 @@ services:
       MYSQL_PASSWORD: password
     ports:    # Set up ports exposed for other containers to connect to
       - 8081:80
+    networks:
+      - app-tier
+
+  chemgen_next_dev_arrayscan_db_phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:   # Set up mysql database name and password
+      PMA_HOST: arrayscan_mysql_db
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: arrayscan
+      MYSQL_USER: arrayscan
+      MYSQL_PASSWORD: password
+    ports:    # Set up ports exposed for other containers to connect to
+      - 8082:80
     networks:
       - app-tier
 
@@ -86,6 +86,8 @@ services:
     links:
       - chemgen_next_mongodb
     build: ./chemgen-next-web-docker/chemgen-next-dev-mongodb
+    volumes:
+      - ./chemgen-next-web-docker/chemgen-next-dev-mongodb:/chemgen-next-dev-mongodb
     networks:
       - app-tier
 
@@ -108,8 +110,6 @@ services:
   wordpress:
     depends_on:
       - wordpress_db
-    links:
-      - wordpress_db:mysql
     image: wordpress:latest
     ports:
       - "8000:80"
@@ -119,7 +119,7 @@ services:
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: password
     volumes:
-      - ./chemgen-next-wptheme:/var/www/html/wp-content/themes/chemgen-next-wptheme:ro
+      - ./chemgen-next-wptheme-ad:/var/www/html/wp-content/themes/chemgen-next-wptheme:ro
     networks:
       - app-tier
 
@@ -131,50 +131,49 @@ services:
     networks:
       - app-tier
 
-#  chemgen_next_server:
-#    build: ./chemgen-next-server
-#    user: "node"
-#    working_dir: /home/node/app
-#    depends_on:
-#    - wordpress_db
-#    - chemgen_next_dev_mysql_db
-#    - arrayscan_mysql_db
-#    - redis
-#    - chemgen_next_mongodb
-#    links:
-#    - wordpress_db
-#    - chemgen_next_dev_mysql_db
-#    - arrayscan_mysql_db
-#    - redis
-#    - chemgen_next_mongodb
-#    environment:
-#    - NODE_ENV=dev
-#    volumes:
-#    - ./chemgen-next-server:/home/node/app
-#    ports:
-#    - "3001:3000"
-#    networks:
-#    - app-tier
+  chemgen_next_server:
+    build: ./chemgen-next-server
+    user: "node"
+    working_dir: /home/node/app
+    depends_on:
+    - wordpress_db
+    - chemgen_next_dev_mysql_db
+    - arrayscan_mysql_db
+    - redis
+    - chemgen_next_mongodb
+    environment:
+    - NODE_ENV=dev
+    volumes:
+    - ./chemgen-next-server:/home/node/app
+    - server_node_modules:/home/node/app/node_modules
+    ports:
+    - "3000:3000"
+    networks:
+    - app-tier
 
 #  chemgen_next_client:
-#    image: "node:9"
+#    build: ./chemgen-next-client
 #    user: "node"
-#    depends_on:
-#    - chemgen_next_server
 #    working_dir: /home/node/app
+#    depends_on:
+#      - chemgen_next_server
 #    environment:
-#    - NODE_ENV=dev
+#      - NODE_ENV=dev
 #    volumes:
-#    - ./chemgen-next-client:/home/node/app
-#    ports:
-#    - "4201:4200"
-#    command: "npm install -g @angular/cli; ng serve"
+#      - ./chemgen-next-client:/home/node/app
+#      - client_node_modules:/home/node/app/node_modules
+##    ports:
+##      - "4200:4200"
+##      - "49153:49153"
 #    networks:
-#    - app-tier
+#      - app-tier
 
 ## Using volumes will persist data
 volumes:
   wordpress_db_data:
+  server_node_modules:
+  client_node_modules:
+  chemgen_next_dev_mysql_db_volume:
 
 networks:
   app-tier:

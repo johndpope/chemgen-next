@@ -35,45 +35,42 @@
                     <!--Begin ExpSet Data-->
                     <div class="row">
                         <!--Begin Screen Data-->
-                        <div class="col-md-8">
-                            <h4>{{expSet.expScreen.screenName}}</h4>
-                            <h4>{{expSet.expWorkflow.name}}</h4>
-                            <div class="row">
-                                <!--Begin Exp Workflow Data-->
-                                <div class="col-md-4">
-                                    <table class="table table-striped table-hover">
-                                        <tbody>
-                                        <tr>
-                                            <td>Temperature</td>
-                                            <td>{{expSet.expWorkflow.temperature}}</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Screen Stage</td>
-                                            <td>{{expSet.expWorkflow.screenStage}}</td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Screen Type</td>
-                                            <td>{{expSet.expWorkflow.screenType}}</td>
-                                            <td></td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!--End Exp Workflow Data-->
-
-                                <!--Begin Gene Info-->
-                                <div class="col-md-6">
-
-                                </div>
-                                <!--End Gene Info-->
-                            </div>
+                        <div class="col-md-6">
+                            <app-batch-data [expSet]="expSet"></app-batch-data>
                         </div>
                         <!--End Screen Data-->
 
+                        <!--Begin Related ExpSets Url-->
+                        <div class="col-md-2">
+                            <a target="_blank" [routerLink]="['/related_expsets', expSet.albums.treatmentGroupId]">
+                                <div class="link">
+                                    Related ExpSets
+                                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+                                          tooltip="Get all ExpSets that have the same reagents. This includes different screens, temperatures, batches.">
+                                </span>
+                                </div>
+                            </a>
+                            <a target="_blank" [routerLink]="['/contact-sheet-replicate-view', expSet.albums.treatmentGroupId]">
+                                <div class="link">
+                                    Score Interesting/Not
+                                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+                                          tooltip="Score in the contact sheet (only this expSet)">
+                                </span>
+                                </div>
+                            </a>
+                            <a target="_blank" [routerLink]="['/expset-score-primary', expSet.albums.treatmentGroupId]">
+                                <div class="link">
+                                    Score using Detailed Score Form
+                                    <span class="glyphicon glyphicon-question-sign" aria-hidden="true"
+                                          tooltip="Score in the detailed scoring form (only this expSet)">
+                                </span>
+                                </div>
+                            </a>
+                        </div>
+                        <!--Begin Related ExpSet Url-->
+
                         <!--Begin ExpSet Toggle-->
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <div *ngIf="displayToggle">
                                 <app-expset-toggle [treatmentGroupId]="expSet.albums.treatmentGroupId"
                                                    [expScreen]="expSet.expScreen"
@@ -83,8 +80,13 @@
                                                    [submit]="true"
                                 ></app-expset-toggle>
                             </div>
+                            <div *ngIf="!displayToggle">
+                                <div [ngClass]="isExpSetInteresting(expSet.albums.treatmentGroupId)"></div>
+                            </div>
                         </div>
                         <!--End ExpSet Toggle-->
+
+                        <!--TODO If no toggle just display-->
 
                     </div>
                     <!--Begin ExpSet Data-->
@@ -202,115 +204,14 @@
                 <!--Begin Reagent Data Tab-->
                 <div role="tabpanel" class="tab-pane fade" id="reagent-data-{{expSet.albums.treatmentGroupId}}"
                      aria-labelledby="reagent-data-tab">
-                    <div *ngIf="expSet.rnaisList">
-                        <h2>RNAi Data</h2>
-                        <div class="table-responsive" *ngFor="let rnai of expSet.rnaisList">
-                            <table class="table table-striped table-hover">
-                                <tbody>
-                                <tr>
-                                    <td>Gene</td>
-                                    <td>{{rnai.geneName}}</td>
-                                </tr>
-                                <tr *ngIf="rnai.xrefs?.length > 0">
-                                    <td>Cosmid ID</td>
-                                    <td>{{rnai.xrefs[0].wbGeneCgcName}}</td>
-                                </tr>
-                                <tr *ngIf="rnai.xrefs?.length > 0">
-                                    <td>Wormbase ID</td>
-                                    <td>
-                                        <a href="https://www.wormbase.org/species/c_elegans/gene/{{rnai.xrefs[0].wbGeneAccession}}">
-                                            {{rnai.xrefs[0].wbGeneAccession}} (Click this to go to wormbase)
-                                        </a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Chromo Plate Well</td>
-                                    <td> {{rnai.chrom}} {{rnai.plate}} {{rnai.well}}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Fwd Primer
-                                    </td>
-                                    <td>{{rnai.fwdPrimer}}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Rev Primer
-                                    </td>
-                                    <td>{{rnai.revPrimer}}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Bio Loc
-                                    </td>
-                                    <td>{{rnai.bioloc}}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Stock Loc
-                                    </td>
-                                    <td>{{rnai.stockloc}}</td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        Stock Title
-                                    </td>
-                                    <td>{{rnai.stocktitle}}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                            <!--Angular does not like this - gives some error about unsafe urls-->
-                            <!--<div *ngIf="rnai.xrefs?.length > 0 && rnai.xrefs[0].wbGeneAccession">-->
-                            <!--<div class="embed-responsive embed-responsive-16by9">-->
-                            <!--<iframe class="embed-responsive-item"-->
-                            <!--src="https://www.wormbase.org/species/c_elegans/gene/{{rnai.xrefs[0].wbGeneAccession}}"></iframe>-->
-                            <!--</div>-->
-                            <!--</div>-->
-                        </div>
-
-                    </div>
-                    <div *ngIf="expSet.compoundsList?.length">
-                        <h2>Compounds Data</h2>
-                        <div *ngFor="let compound of expSet.compoundsList">
-                        </div>
-                    </div>
-
-
+                    <app-reagent-data [expSet]="expSet"></app-reagent-data>
                 </div>
                 <!--End Reagent Data Tab-->
 
                 <!--Begin ExpManualScores Data Tab-->
                 <div role="tabpanel" class="tab-pane fade" id="manualscores-data-{{expSet.albums.treatmentGroupId}}"
                      aria-labelledby="manualscores-data-tab">
-                    <div *ngIf="expSet.expManualScores?.length" class="row">
-                        <div class="col-md-12">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                    <tr>
-                                        <td>User</td>
-                                        <td>AssayId</td>
-                                        <td>Group</td>
-                                        <td>Code</td>
-                                        <td>Value</td>
-                                        <td>Timestamp</td>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr *ngFor="let manualscore of expSet.expManualScores">
-                                        <td>{{manualscore.userName}}</td>
-                                        <td>{{manualscore.assayId}}</td>
-                                        <td>{{manualscore.manualscoreGroup}}</td>
-                                        <td>{{manualscore.manualscoreCode}}</td>
-                                        <td>{{manualscore.manualscoreValue}}</td>
-                                        <td>{{manualscore.timestamp}}</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <app-score-data [expSet]="expSet"></app-score-data>
 
                 </div>
 
@@ -319,26 +220,8 @@
                 <!--Begin Plate Data Tab-->
                 <div role="tabpanel" class="tab-pane fade" id="plate-data-{{expSet.albums.treatmentGroupId}}"
                      aria-labelledby="plate-data-tab">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th>Barcode</th>
-                                        <th>Imaging Date</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr *ngFor="let expPlate of expSet.expPlates">
-                                        <td>{{expPlate.barcode}}</td>
-                                        <td>{{expPlate.plateImageDate}}</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <app-plate-data [expSet]="expSet"></app-plate-data>
+
                 </div>
                 <!--End Plate Data Tab-->
 

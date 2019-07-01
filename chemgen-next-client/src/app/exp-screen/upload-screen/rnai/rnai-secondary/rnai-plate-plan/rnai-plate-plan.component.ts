@@ -1,10 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {get, padStart, isNull, isEmpty} from 'lodash';
-
-import {LoopBackConfig} from '../../../../../../types/sdk';
-import {RnaiLibraryApi, PlatePlan96Api, RnaiWormbaseXrefsApi} from '../../../../../../types/sdk/services/custom';
-import {PlatePlan96ResultSet, RnaiLibraryResultSet, RnaiWormbaseXrefsResultSet} from '../../../../../../types/sdk/models';
 import {SearchPlatePlans} from '../../../helpers';
+import {LoopBackConfig} from "../../../../../../types/sdk";
+import {RnaiLibraryApi, PlatePlan96Api, RnaiWormbaseXrefsApi} from "../../../../../../types/sdk";
+import {PlatePlan96ResultSet, RnaiLibraryResultSet, RnaiWormbaseXrefsResultSet} from "../../../../../../types/sdk";
 
 @Component({
   selector: 'app-rnai-plate-plan',

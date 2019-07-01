@@ -807,6 +807,7 @@ function mapManualScores() {
     }).filter(function (value) {
         return value;
     });
+    // mappedManualScores = uniqWith(mappedManualScores, isEqual);
     mappedData.map(function (thing) {
         var expAssay2reagent = thing.expAssay2reagent;
         var firstPassScore = new sdk_1.ExpManualScoresResultSet({
@@ -844,8 +845,8 @@ function cleanManualScores() {
     return new Promise(function (resolve, reject) {
         //@ts-ignore
         Promise.map(mappedData, function (mappedResult) {
-            return app.models.ExpManualScores
-                .destroyAll({ where: { treatmentGroupId: mappedResult.expAssay2reagent.treatmentGroupId } });
+            //@ts-ignore
+            return app.models.ExpManualScores.destroyAll({ where: { treatmentGroupId: mappedResult.expAssay2reagent.treatmentGroupId } });
         })
             .then(function () {
             resolve();
@@ -856,6 +857,7 @@ function cleanManualScores() {
     });
 }
 function createNewManualScores(mappedManualScores) {
+    console.log('creating new scores!');
     return new Promise(function (resolve, reject) {
         //@ts-ignore
         Promise.map(mappedManualScores, function (manualScore) {
@@ -874,7 +876,7 @@ function createNewManualScores(mappedManualScores) {
                 .catch(function (error) {
                 return new Error(error + " " + JSON.stringify(manualScore));
             });
-        })
+        }, { concurrency: 1 })
             .then(function (scored) {
             resolve();
         })
@@ -887,12 +889,14 @@ function readInData() {
     return new Promise(function (resolve, reject) {
         //@ts-ignore
         return Promise.map(Object.keys(data), function (dataKey) {
+            //@ts-ignore
             console.log("File: " + data[dataKey].file);
             return parseFile(dataKey);
         })
             .then(function () {
             console.log('in resolve!');
             data = filterExpAssays();
+            console.log('finished reading in data!');
             resolve();
         })
             .catch(function (error) {

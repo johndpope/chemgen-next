@@ -4,7 +4,7 @@ import {Component, Input} from "@angular/core";
 import {RnaiPrimaryComponent} from './rnai-primary.component';
 import {FormsModule} from "@angular/forms";
 import {DndModule} from "ng2-dnd";
-import {SDKBrowserModule} from "../../../../../types/sdk";
+import {SDKBrowserModule} from "../../../../../../../chemgen-next-server/common/types/custom/types/sdk";
 import {MockExpScreenInfoComponent, MockPlateImagingDatesComponent} from "../../../../../../test/MockComponents";
 
 describe('RnaiPrimaryComponent', () => {

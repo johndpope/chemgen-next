@@ -1,0 +1,52 @@
+<!--Begin Display Scores Tables-->
+<div class="row" *ngIf="expSets">
+    <div class="x_panel">
+        <div class="x_content">
+            <div class="row" *ngIf="detailedScoreTableData">
+                <div class="col-md-12">
+                    <h2>Main Phenotypes</h2>
+                    <ag-grid-angular
+                            style="width: 100%; height: 50%;"
+                            class="ag-theme-balham"
+                            (gridReady)="onGridReady($event)"
+                            [enableColResize]="true"
+                            [enableSorting]="true"
+                            [enableFilter]="true"
+                            [rowSelection]="rowSelection"
+                            (selectionChanged)="onSelectionChangedPrimary($event)"
+                            [rowData]="detailedScoreTableData"
+                            [columnDefs]="mainPhenoTypeColumnDefs"
+                            [pagination]="true"
+                    >
+                    </ag-grid-angular>
+                </div>
+                <div class="col-md-12">
+                    <h2>Secondary Phenotypes</h2>
+                    <ag-grid-angular
+                            style="width: 100%; height: 50%;"
+                            class="ag-theme-balham"
+                            (gridReady)="onSecondaryGridReady($event)"
+                            [enableColResize]="true"
+                            [enableSorting]="true"
+                            [enableFilter]="true"
+                            [rowSelection]="rowSelection"
+                            [rowData]="detailedScoreTableData"
+                            (selectionChanged)="onSelectionChangedSecondary($event)"
+                            [columnDefs]="secondaryPhenoTypeColumnDefs"
+                            [pagination]="true"
+                    >
+                    </ag-grid-angular>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Display Scores Tables-->
+
+<div class="row" *ngIf="expSets">
+    <div class="col-md-12">
+        <app-expset-sheet [expSets]="expSets" [expSetModule]="expSetModule"
+                          [displayToggle]="false"
+                          [expSetSearch]="expSetSearch"></app-expset-sheet>
+    </div>
+</div>

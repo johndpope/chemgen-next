@@ -1,0 +1,34 @@
+<h4>{{expSet.expScreen.screenName}}</h4>
+<h4>{{expSet.expWorkflow.name}}</h4>
+
+<div class="row">
+    <!--Begin Exp Workflow Data-->
+    <div class="col-md-8">
+        <table class="table table-striped table-hover">
+            <tbody>
+            <tr>
+                <td>Temperature</td>
+                <td>{{expSet.expWorkflow.temperature}}</td>
+            </tr>
+            <tr>
+                <td>Screen Stage</td>
+                <td>{{expSet.expWorkflow.screenStage}}</td>
+            </tr>
+            <tr>
+                <td>Screen Type</td>
+                <td>{{expSet.expWorkflow.screenType}}</td>
+            </tr>
+            <tr>
+                <td>Exp Worm Strain</td>
+                <td>{{expSet.expWorkflow.biosamples.experimentBiosample.name}}</td>
+            </tr>
+            <tr>
+                <td>Ctrl Worm Strain</td>
+                <td>{{expSet.expWorkflow.biosamples.ctrlBiosample.name}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <!--End Exp Workflow Data-->
+</div>
+

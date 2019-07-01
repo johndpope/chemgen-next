@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {RnaiSecondaryComponent} from './rnai-secondary.component';
 import {FormsModule} from "@angular/forms";
-import {SDKBrowserModule} from "../../../../../types/sdk";
+import {SDKBrowserModule} from "../../../../../../../chemgen-next-server/common/types/custom/types/sdk";
 import {DndModule} from "ng2-dnd";
 import {MockPlateImagingDatesComponent, MockExpScreenInfoComponent} from "../../../../../../test/MockComponents";
 

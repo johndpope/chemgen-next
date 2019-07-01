@@ -259,6 +259,7 @@ function updateExpAssays(model, expGroupIds: Array<number>) {
           .then((results) => {
             Promise.map(results, (row) => {
               console.log(`Old Row: ${JSON.stringify(row)}`);
+              //@ts-ignore
               row.expGroupId = masterId;
               app.models[model]
                 .upsert(row)

@@ -43,6 +43,7 @@ function getPagedExpPlates(paginationResults) {
                 data['expPlates'] = results;
                 //@ts-ignore
                 return Promise.map(data.expPlates, function (expPlate) {
+                    //@ts-ignore
                     return getCountsApi(expPlate);
                 }, { concurrency: 1 });
             })

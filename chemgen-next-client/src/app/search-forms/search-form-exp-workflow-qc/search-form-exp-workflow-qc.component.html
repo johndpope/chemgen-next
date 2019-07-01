@@ -1,4 +1,5 @@
 <app-search-form-base [searchFormParams]="searchFormParams"
+                      [showRNAiTab]="false"
                       [title]="'Batch QC Interface (AKA The Kitchen Sink)'"></app-search-form-base>
 
 <!--Start Spinner-->
@@ -22,6 +23,7 @@
                            (expSetsScored)="getNewExpSets($event)"
         ></app-exp-workflow-qc>
       </div>
+
       <!--End Content-->
       <div *ngIf="searchFormParams.expSets && ! searchFormParams.expSets.expWorkflows?.length">
         <h2>Empty ResultSet</h2>

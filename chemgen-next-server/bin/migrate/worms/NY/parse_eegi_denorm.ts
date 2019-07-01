@@ -24,7 +24,7 @@ import {
   RnaiLibraryResultSet,
   RnaiWormbaseXrefsResultSet
 } from "../../../../common/types/sdk/models";
-import {ExpScreenUploadWorkflowResultSet} from "../../../../../chemgen-next-client/src/types/sdk/models";
+import {ExpScreenUploadWorkflowResultSet} from "../../../../common/types/custom/types/sdk/models";
 
 const path = require('path');
 const fs = require('fs');

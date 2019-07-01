@@ -1,7 +1,7 @@
 import {Component, OnInit, Input} from '@angular/core';
 import {ManualScoresModule} from "../../../scoring/manual-scores/manual-scores.module";
 import {isEqual, orderBy} from 'lodash';
-import {ExpManualScoreCodeResultSet} from "../../../../types/sdk/models";
+import {ExpManualScoresResultSet, ExpManualScoreCodeResultSet} from "../../../../types/sdk/models";
 
 @Component({
     selector: 'app-search-form-filter-by-scores-advanced',

@@ -6,13 +6,15 @@ dependencies:
   - python=3.6
   - openjdk
   - imagemagick
-  - airflow=1.10.0
-  - airflow-with-mysql
+  - airflow=1.10.1
+  - sshtunnel
   - flask-cors
   - jira
   - flower
   - celery
   - ipython
-  - mysqlclient
-  - mysql-connector-python
+  - airflow-with-postgres
+  - psycopg2
   - paramiko
+  - dask
+  - pydash

@@ -135,6 +135,38 @@ var ExpScreenUploadWorkflowApi = /** @class */ (function (_super) {
         return result;
     };
     /**
+     * <em>
+           * (The remote method definition does not provide any description.)
+           * </em>
+     *
+     * @param {any} googleSheetUrl
+     *
+     * @param {object} data Request data.
+     *
+     * This method does not accept any data. Supply an empty object.
+     *
+     * @returns {object} An empty reference that will be
+     *   populated with the actual data once the response is returned
+     *   from the server.
+     *
+     * Data properties:
+     *
+     *  - `batchObj` – `{any}` -
+     */
+    ExpScreenUploadWorkflowApi.prototype.uploadFromGoogleSpreadSheet = function (googleSheetUrl, customHeaders) {
+        if (googleSheetUrl === void 0) { googleSheetUrl = {}; }
+        var _method = "POST";
+        var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
+            "/ExpScreenUploadWorkflows/uploadFromGoogleSpreadSheet";
+        var _routeParams = {};
+        var _postBody = {};
+        var _urlParams = {};
+        if (typeof googleSheetUrl !== 'undefined' && googleSheetUrl !== null)
+            _urlParams.googleSheetUrl = googleSheetUrl;
+        var result = this.request(_method, _url, _routeParams, _urlParams, _postBody, null, customHeaders);
+        return result;
+    };
+    /**
      * The name of the model represented by this $resource,
      * i.e. `ExpScreenUploadWorkflowResultSet`.
      */

@@ -1,0 +1,37 @@
+{
+  "name": "PlateSearchConfiguration",
+  "base": "Model",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "screenName": {
+      "type": "string",
+      "required": true
+    },
+    "screenMoniker": {
+      "type": "string",
+      "required": true
+    },
+    "screenId": {
+      "type": "number",
+      "required": true
+    },
+    "expWorkflowName": {
+      "type": "string"
+    },
+    "barcodeSearches": {
+      "type": "object",
+      "required": true
+    },
+    "biosamples": {
+      "type": "object",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

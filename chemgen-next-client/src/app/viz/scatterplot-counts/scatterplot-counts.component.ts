@@ -1,10 +1,8 @@
 import {Component, OnInit} from '@angular/core';
+import {ExpSetSearchResults, ExpSetSearch, ExpsetModule} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 import {ExpSetApi} from "../../../types/sdk/services/custom";
-import {ExpsetModule} from "../../scoring/expset/expset.module";
 import {ModelPredictedCountsResultSet} from "../../../types/sdk/models";
 import {get, minBy, maxBy} from 'lodash';
-import {ExpSetSearchResults, ExpSetSearch} from "../../../types/custom/ExpSetTypes";
-
 import * as Highcharts from 'highcharts';
 
 @Component({

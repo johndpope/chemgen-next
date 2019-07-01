@@ -1,41 +1,13 @@
-#!/usr/bin/env bash
-
-set -x -e
-
 mkdir -p {{{images.makeDir}}}
-mkdir -p /tmp/{{{random}}}
-
-##If you process an entire directory of images using bftools it tries to do some manner of normalization across the plates
-##This takes FOREVER and does not seem to be very beneficial
-##So instead we copy each image to a random temp dir and process it there
-cp -f "{{{images.instrumentImage}}}" "{{{images.tmpImage}}}"
-
 if [ ! -f {{{images.baseImage}}}-autolevel.png ]; then
-    /var/data/bftools/bfconvert -nogroup -overwrite "{{{images.tmpImage}}}" "{{{images.baseImage}}}.png"
-
-    ##This is the initial bmp that gets used for all downstream processing
-    #convert -layers flatten -quality 100 "{{{images.baseImage}}}.tiff" "{{{images.baseImage}}}.bmp"
-
-    ##These are the ones we use in the machine learning models
+    bfconvert -nogroup -overwrite "{{{images.instrumentImage}}}" "{{{images.baseImage}}}.png"
     convert -auto-level -quality 100 "{{{images.baseImage}}}.png" "{{{images.baseImage}}}-autolevel.png"
+    convert  -strip -layers flatten -quality 50 "{{{images.baseImage}}}-autolevel.png" "{{{images.baseImage}}}-autolevel.jpeg"
+    rm -rf {{{images.baseImage}}}.png
 fi
-
-#if [ ! -f {{{images.baseImage}}}-autolevel.png ]; then
-#    convert  "{{{images.baseImage}}}-autolevel.bmp" "{{{images.baseImage}}}-autolevel.png"
-#fi
-
-## All the jpeg images are only for the web interface
-#if [ ! -f {{{images.baseImage}}}-autolevel.jpeg ]; then
-convert  -strip -layers flatten -quality 50 "{{{images.baseImage}}}-autolevel.png" "{{{images.baseImage}}}-autolevel.jpeg"
-#fi
-
 {{#thumbSizes}}
   if [ ! -f {{{images.baseImage}}}-autolevel-{{{.}}}.jpeg ]; then
       convert -thumbnail {{{.}}} "{{{images.baseImage}}}-autolevel.jpeg" "{{{images.baseImage}}}-autolevel-{{{.}}}.jpeg"
   fi
 {{/thumbSizes}}
 
-cd /tmp
-rm -rf /tmp/{{{random}}}
-#rm -rf "{{{images.baseImage}}}.bmp"
-#rm -rf "{{{images.baseImage}}}.tiff"

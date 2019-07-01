@@ -15,6 +15,17 @@ export interface RnaiLibraryResultSetInterface {
   "bioloc": string;
   "stocktitle": string;
   "stockloc": string;
+  "reagentType"?: string;
+  "reagentName"?: string;
+  "masterPlateWell"?: string;
+  "masterPlate"?: string;
+  "masterWell"?: string;
+  "stockPlateWell"?: string;
+  "stockPlate"?: string;
+  "stockWell"?: string;
+  "primaryTargetGeneId"?: string;
+  "primaryTargetGeneSystematicName"?: string;
+  "primaryTargetGeneCommonName"?: string;
 }
 
 export class RnaiLibraryResultSet implements RnaiLibraryResultSetInterface {
@@ -30,6 +41,17 @@ export class RnaiLibraryResultSet implements RnaiLibraryResultSetInterface {
   "bioloc": string;
   "stocktitle": string;
   "stockloc": string;
+  "reagentType": string;
+  "reagentName": string;
+  "masterPlateWell": string;
+  "masterPlate": string;
+  "masterWell": string;
+  "stockPlateWell": string;
+  "stockPlate": string;
+  "stockWell": string;
+  "primaryTargetGeneId": string;
+  "primaryTargetGeneSystematicName": string;
+  "primaryTargetGeneCommonName": string;
   constructor(data?: RnaiLibraryResultSetInterface) {
     Object.assign(this, data);
   }
@@ -109,6 +131,50 @@ export class RnaiLibraryResultSet implements RnaiLibraryResultSetInterface {
         },
         "stockloc": {
           name: 'stockloc',
+          type: 'string'
+        },
+        "reagentType": {
+          name: 'reagentType',
+          type: 'string'
+        },
+        "reagentName": {
+          name: 'reagentName',
+          type: 'string'
+        },
+        "masterPlateWell": {
+          name: 'masterPlateWell',
+          type: 'string'
+        },
+        "masterPlate": {
+          name: 'masterPlate',
+          type: 'string'
+        },
+        "masterWell": {
+          name: 'masterWell',
+          type: 'string'
+        },
+        "stockPlateWell": {
+          name: 'stockPlateWell',
+          type: 'string'
+        },
+        "stockPlate": {
+          name: 'stockPlate',
+          type: 'string'
+        },
+        "stockWell": {
+          name: 'stockWell',
+          type: 'string'
+        },
+        "primaryTargetGeneId": {
+          name: 'primaryTargetGeneId',
+          type: 'string'
+        },
+        "primaryTargetGeneSystematicName": {
+          name: 'primaryTargetGeneSystematicName',
+          type: 'string'
+        },
+        "primaryTargetGeneCommonName": {
+          name: 'primaryTargetGeneCommonName',
           type: 'string'
         },
       },

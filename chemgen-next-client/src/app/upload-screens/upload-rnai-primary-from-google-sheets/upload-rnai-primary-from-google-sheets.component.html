@@ -1,0 +1,299 @@
+<!--Begin get the google sheets url-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+
+            <div class="x_title">
+                <h2>Spreadsheet URL</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="col-md-12">
+                    <form (ngSubmit)="onSubmit()" autocomplete="off">
+                        <div class="col-md-8">
+                            <input required="required" type="text" name="googlespreadsheetUrl"
+                                   [(ngModel)]="spreadsheetUrl">
+                        </div>
+                        <div class="col-md-4">
+                            <button *ngIf="spreadsheetUrl"
+                                    type="submit" id="searchFormSubmit" class="btn btn-success">Submit
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-12">
+                    <div *ngIf="spreadsheetId">
+                        <hr>
+                        <p><strong>SpreadsheetID:</strong> {{spreadsheetId}}</p>
+                        <p></p>
+                    </div>
+                    <hr>
+                    <p>You must cut and paste the entire url:</p>
+                    <p><strong>Example:</strong>
+                        https://docs.google.com/spreadsheets/d/1caver7axyuwivx-dhr1nwx2yaikrzcdtru-sd8hsuvc/edit#gid=1642791660
+                    </p>
+                    <p>In this case the spreadsheet ID is: 1cAvER7aXYuwIVX-DHR1NWX2YaiKRZCDtru-sd8HSuVc </p>
+                    <p>Or all the letters, numbers and dashes from the spreadsheets/d/(ID-HERE)/edit</p>
+                    <hr>
+                    <p>If the SpreadsheetID is not correct your spreadsheet will not be parsed!</p>
+                    <p>Your spreadsheet must be shared with jdr400@nyu.edu! That is the authentication account and the
+                        API will not be able to access your spreadsheet unless it is shared!</p>
+                    <p>Your spreadsheet MUST be a google sheets, not just an excel sheet uploaded to google drive.</p>
+                    <hr>
+                    <h3>Example of a spreadsheet that is correctly parsed: </h3>
+                    <p>
+                        https://docs.google.com/spreadsheets/d/1ZctLTu9Bc8RrT-Q2mdPd30urFqhMoNRi1gLP2BxjhXw/edit#gid=1642791660</p>
+                    <hr>
+                    <h3>Example of a spreadsheet that has a typo in the date moniker: </h3>
+                    <p>
+                        https://docs.google.com/spreadsheets/d/1cAvER7aXYuwIVX-DHR1NWX2YaiKRZCDtru-sd8HSuVc/edit#gid=0
+                    <hr>
+                    <h3>Example of a spreadsheet that has date type errors and stock plate errors: </h3>
+                    <p>
+                        https://docs.google.com/spreadsheets/d/1yRoBQ9ybGH19t-ryw9tMiKiAiUSKV-hO3Co6FG3LeiY/edit#gid=0
+                    <hr>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!--End get the google sheets url-->
+
+<!--Begin Display the data parsing results-->
+<div *ngIf="parsedBatchData">
+
+    <div class="row" *ngIf="parsedBatchData.hasErrors">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Spreadsheet ERRORS</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="alert-danger">
+                        <p>The parser found errors. See the errors below. You must fix all errors before any batches can
+                            be uploaded.</p>
+                    </div>
+                    <table class="table table-responsive table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Row Index</th>
+                            <th>Screen Monikers</th>
+                            <th>BatchID</th>
+                            <th>Ctrl RNAi</th>
+                            <th>Ctrl Strain</th>
+                            <th>Ctrl Null</th>
+                            <th>Stock Plate</th>
+                            <th>Errors</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let row of rowsWithErrors">
+                            <td>{{row.rowIndex}}</td>
+                            <td>{{row.ScreenMoniker}}</td>
+                            <td>{{row.BatchID}}</td>
+                            <td>{{row.CtrlRNAiSet}}</td>
+                            <td>{{row.CtrlStrainSet}}</td>
+                            <td>{{row.CtrlNullSet}}</td>
+                            <td>{{row.StockPlate}}</td>
+                            <td><p *ngFor="let error of row.errors">{{error}}</p></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" *ngIf="parseSheetsheetAPIError">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Spreadsheet ERRORS</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="alert-danger">
+                        <p>There was an unknown error!</p>
+                        <p>{{parseSheetsheetAPIError}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="!parsedBatchData.hasErrors">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Success</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="alert-success">
+                        <p>The parser did not find errors. Please verify the uploads.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" *ngIf="parsedBatchData?.foundWorkflows?.length">
+        <div class="col-md-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Previously processed stock plates</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <li>
+                        </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="col-md-6">
+                        <table class="table table-responsive table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Finished</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let name of parsedBatchData.foundWorkflows">
+                                <td>{{name}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--If the parsing was success output the data-->
+    <div class="row" *ngFor="let expWorkflow of parsedBatchData.expWorkflows">
+        <div class="x_panel">
+            <div class="x_title">
+                <!--TODO Add in a SUBMIT THIS BOX-->
+                <h2>{{expWorkflow.name}}</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <li>
+                    </li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <div class="col-md-12">
+
+                    <div class="row">
+                        <!--Begin Ctrl Null-->
+                        <div class="col-md-6">
+                            <table class="table table-responsive table-bordered ctrl-null-bg">
+                                <thead>
+                                <tr>
+                                    <th>Barcode</th>
+                                    <th>Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let plate of expWorkflow.experimentGroups.ctrl_null.plates">
+                                    <td>{{plate.name}}</td>
+                                    <td>{{plate.creationdate}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!--End Ctrl Null-->
+
+                        <!--Begin Ctrl Strain-->
+                        <div class="col-md-6">
+                            <table class="table table-responsive table-bordered ctrl-strain-bg">
+                                <thead>
+                                <tr>
+                                    <th>Barcode</th>
+                                    <th>Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let plate of expWorkflow.experimentGroups.ctrl_strain.plates">
+                                    <td>{{plate.name}}</td>
+                                    <td>{{plate.creationdate}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <!--End Ctrl Strain-->
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-responsive table-bordered treat-reagent-bg">
+                                <thead>
+                                <tr>
+                                    <th>Barcode</th>
+                                    <th>Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let plate of expWorkflow.experimentGroups.treat_rnai.plates">
+                                    <td>{{plate.name}}</td>
+                                    <td>{{plate.creationdate}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <!--End Treat Rnai-->
+                        <!--Begin Ctrl Rnai-->
+                        <div class="col-md-6">
+                            <table class="table table-responsive table-bordered ctrl-reagent-bg">
+                                <thead>
+                                <tr>
+                                    <th>Barcode</th>
+                                    <th>Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let plate of expWorkflow.experimentGroups.ctrl_rnai.plates">
+                                    <td>{{plate.name}}</td>
+                                    <td>{{plate.creationdate}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <!--End Ctrl Rnai-->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--End display the data parsing results-->
+
+<!--Begin Ngx Spinner-->
+<ngx-spinner
+        bdColor="rgba(51, 51, 51, 0.8)"
+        size="large"
+        color="#fff"
+        type="ball-atom"
+></ngx-spinner>
+<!--End Ngx Spinner-->
+

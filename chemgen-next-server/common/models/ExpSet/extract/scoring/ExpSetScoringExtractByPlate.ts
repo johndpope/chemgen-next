@@ -17,6 +17,7 @@ import {
 import {ExpSetSearch, ExpSetSearchResults} from "../../../../types/custom/ExpSetTypes";
 
 import config = require('config');
+
 let knex = config.get('knex');
 
 import redis = require('redis');
@@ -74,7 +75,7 @@ ExpSet.extract.workflows.getUnscoredExpSetsByPlate = function (search: ExpSetSea
             })
         }
       })
-      .then((data: ExpSetSearchResults) =>{
+      .then((data: ExpSetSearchResults) => {
         resolve(data);
       })
       .catch((error) => {
@@ -127,26 +128,32 @@ ExpSet.extract.genExpGroupTypeAlbums = function (data: ExpSetSearchResults, sear
 
   data.albums.map((album) => {
     ['ctrlNullImages', 'ctrlStrainImages'].map((albumType) => {
-      // expSet[albumType] = shuffle(expSet[albumType].slice(0, search.ctrlLimit));
+      // expSet[albumType] = shuffle(expSet[albumType].slice(0, expSetSearch.ctrlLimit));
     });
   });
 
   let expGroupTypes: any = groupBy(data.expAssay2reagents, 'reagentType');
 
-  Object.keys(expGroupTypes).map((expGroup: string) => {
-    let mappedExpGroup = ExpSet.extract.mapExpGroupTypes(expGroup);
-    // app.winston.info(`MappedExpGroup: ${mappedExpGroup} ExpGroupType: ${expGroup}`);
-    expGroupTypes[mappedExpGroup] = ExpSet.extract.genImageMeta(data, expGroupTypes[expGroup]);
-    if (isEqual(mappedExpGroup, 'ctrlNull') || isEqual(mappedExpGroup, 'ctrlStrain')) {
-      expGroupTypes[mappedExpGroup].map((imageMeta: any) => {
-        imageMeta.treatmentGroupId = null;
-      });
-    }
-    delete expGroupTypes[expGroup];
-  });
-  data.expGroupTypeAlbums = expGroupTypes;
-  app.winston.info(`Complete: genExpGroupTypeAlbums`);
-  return data;
+  try {
+    Object.keys(expGroupTypes).map((expGroup: string) => {
+      let mappedExpGroup = ExpSet.extract.mapExpGroupTypes(expGroup);
+      // app.winston.info(`MappedExpGroup: ${mappedExpGroup} ExpGroupType: ${expGroup}`);
+      expGroupTypes[mappedExpGroup] = ExpSet.extract.genImageMeta(data, expGroupTypes[expGroup]);
+      if (isEqual(mappedExpGroup, 'ctrlNull') || isEqual(mappedExpGroup, 'ctrlStrain')) {
+        expGroupTypes[mappedExpGroup].map((imageMeta: any) => {
+          imageMeta.treatmentGroupId = null;
+        });
+      }
+      delete expGroupTypes[expGroup];
+    });
+    data.expGroupTypeAlbums = expGroupTypes;
+    app.winston.info(`Complete: genExpGroupTypeAlbums`);
+    return data;
+  } catch (error) {
+    app.winston.error(`Got an error`);
+    app.winston.error(error);
+    return data;
+  }
 };
 
 ExpSet.extract.genAlbumsByPlate = function (data: ExpSetSearchResults, search: ExpSetSearch) {

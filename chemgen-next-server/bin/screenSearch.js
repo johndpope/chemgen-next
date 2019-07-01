@@ -10,8 +10,8 @@ var Promise = require('bluebird');
 var ExpSetTypes_1 = require("../common/types/custom/ExpSetTypes");
 var expWorkflowDeepSearch = { 'screenStage': 'primary', 'screenType': 'permissive' };
 // @ts-ignore
-// const search = new ExpSetSearch({'expWorkflowDeepSearch': expWorkflowDeepSearch});
-// const search = new ExpSetSearch({expWorkflowDeepSearch: {instrumentPlateIds: ['RNAi--2012-10-03--15.0--pod-2--ye60-F2--53171', 53116]}});
+// const expSetSearch = new ExpSetSearch({'expWorkflowDeepSearch': expWorkflowDeepSearch});
+// const expSetSearch = new ExpSetSearch({expWorkflowDeepSearch: {instrumentPlateIds: ['RNAi--2012-10-03--15.0--pod-2--ye60-F2--53171', 53116]}});
 var search = new ExpSetTypes_1.ExpSetSearch({
     expWorkflowDeepSearch: {
         instrumentPlateIds: ['51184',

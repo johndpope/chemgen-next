@@ -1,21 +1,17 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {NgxSpinnerService} from "ngx-spinner";
 import {ExpManualScoresApi, ExpSetApi} from "../../../types/sdk/services/custom";
-import {ExpSetSearchResults} from "../../../types/custom/ExpSetTypes";
-import {isEqual, orderBy, find} from 'lodash';
-import {ExpManualScoresResultSet, ExpPlateResultSet} from "../../../types/sdk/models";
+import {ExpSetSearchResults} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
+import {get, uniq, trim, isEqual, orderBy, find} from 'lodash';
+import {ExpAssay2reagentResultSet, ExpManualScoresResultSet, ExpPlateResultSet} from "../../../types/sdk/models";
 import {Lightbox} from "angular2-lightbox";
+import {Memoize} from 'lodash-decorators';
 
-const qcScoreCode = {
-    "manualscorecodeId": "69",
-    "description": "Has the batch passed through a manual QC Stage.",
-    "shortDescription": "Batch QC",
-    "formName": "BATCH_QC",
-    "formCode": "BATCH_QC",
-    "manualValue": "1",
-    "manualGroup": "BATCH_QC"
-};
-
+/**
+ * WIP - Create tables like the one I have in slack, or the one that is created when I create those spreadsheets
+ * That have a mapping of plates -> ExpGroupTypes
+ * And Wells -> ExpGroupTypes
+ */
 @Component({
     selector: 'app-exp-workflow-qc',
     templateUrl: './exp-workflow-qc.component.html',
@@ -25,11 +21,52 @@ export class ExpWorkflowQcComponent implements OnInit {
 
     @Input('expSets') expSets: ExpSetSearchResults;
     @Output('expSetsScored') expSetsScored = new EventEmitter<boolean>();
-    public platesAlbum: Array<any> = [];
-    public qcWellResults: {} = {};
-    public qcPlateResults: {} = {};
-    public userName: any;
-    public userId: any;
+    public qcWellTable: Array<any> = [];
+    public qcPlateTable: Array<any> = [];
+
+    public qcPerWellColumnDefs = [
+        {headerName: 'Barcode', field: 'Barcode'},
+        {headerName: 'Well', field: 'Well'},
+        {
+            headerName: 'ExpGroupType', field: 'ExpGroupType', cellStyle: function (params) {
+                if (params.value.match('treat')) {
+                    //mark police cells as red
+                    return {color: 'white', backgroundColor: '#8FBC8F'};
+                } else if (params.value == 'ctrl_rnai') {
+                    return {color: 'white', backgroundColor: '#BA55D3'};
+                } else if (params.value == 'ctrl_null') {
+                    return {color: 'white', backgroundColor: '#9370DB'};
+                } else if (params.value == 'ctrl_strain') {
+                    return {color: 'white', backgroundColor: '#DDA0DD'};
+                }
+            }
+        },
+        {headerName: 'ExpGroupId', field: 'ExpGroupId'},
+        {headerName: 'TreatmentGroupId', field: 'TreatmentGroupId'},
+    ];
+    private qcPerWellGridApi;
+    private qcPerWellGridColumnApi;
+
+    public qcPerPlateColumnDefs = [
+        {headerName: 'Barcode', field: 'Barcode'},
+        {
+            headerName: 'ExpGroupTypes', field: 'ExpGroupTypes', cellStyle: function (params) {
+                if (params.value.match('treat')) {
+                    //mark police cells as red
+                    return {color: 'white', backgroundColor: '#8FBC8F'};
+                } else if (params.value.match('rnai')) {
+                    return {color: 'white', backgroundColor: '#BA55D3'};
+                } else if (params.value.match('ctrl_null')) {
+                    return {color: 'white', backgroundColor: '#9370DB'};
+                } else if (params.value.match('ctrl_strain')) {
+                    return {color: 'white', backgroundColor: '#DDA0DD'};
+                }
+            }
+        },
+        {headerName: 'ImageDate', field: 'ImageDate'},
+    ];
+    private qcPerPlateGridApi;
+    private qcPerPlateGridColumnApi;
 
     constructor(
         private spinner: NgxSpinnerService,
@@ -37,136 +74,92 @@ export class ExpWorkflowQcComponent implements OnInit {
         private expManualScoresApi: ExpManualScoresApi,
         public _lightbox: Lightbox,
     ) {
-        const userName = document.getElementById('userName');
-        const userId = document.getElementById('userId');
-        if (userName) {
-            this.userName = userName.innerText || 'dummyUser';
-        }
-        if (userId) {
-            this.userId = userId.innerText || 0;
-        }
     }
 
     ngOnInit() {
         if (this.expSets) {
-            this.createPlateAlbums();
+            this.createPerWellQCTable();
+            this.createQCPerPlateTable();
         }
     }
 
-    /**
-     * Reorder the albums so they are grouped by plate instead of by expSet
-     */
-    createPlateAlbums() {
-        this.expSets.expPlates = orderBy(this.expSets.expPlates, ['barcode'], ['asc']);
-        this.platesAlbum = this.expSets.expPlates.map((expPlate: ExpPlateResultSet) => {
-            let o = {};
-            o['albums'] = [];
-            o['plateId'] = expPlate.plateId;
-            o['barcode'] = expPlate.barcode;
-            return o;
-        });
 
-        Object.keys(this.expSets.expGroupTypeAlbums).map((key: string) => {
-            this.expSets.expGroupTypeAlbums[key].map((album: { plateId, src, caption, assayId, assayWell, treatmentGroupId }) => {
-                let expAssay: any = find(this.expSets.expAssays, {assayId: album.assayId});
-                album.assayWell = expAssay.assayWell;
-                let plateAlbum = find(this.platesAlbum, {plateId: album.plateId});
-                plateAlbum.albums.push(album);
-            });
-        });
-        this.platesAlbum.map((plateAlbum) => {
-            plateAlbum.albums = orderBy(plateAlbum.albums, ['assayWell'], ['asc']);
-        });
-        this.initializeNotJunk();
-        console.log('done');
-    }
-
-    /**
-     * Initially all wells get initialized as 'not junk', since we expect most to not be junk anyways
-     */
-    initializeNotJunk() {
-        this.platesAlbum.map((plateAlbum) => {
-            this.qcPlateResults[plateAlbum.plateId] = false;
-            plateAlbum.albums.map((album) => {
-                this.qcWellResults[album.assayId] = false;
-            });
-        });
-        this.expSets.expManualScores.filter((expManualScore: ExpManualScoresResultSet) => {
-            return isEqual(expManualScore.manualscoreGroup, 'JUNK') && isEqual(expManualScore.manualscoreValue, 1);
-        }).map((expManualScore: ExpManualScoresResultSet) => {
-            this.qcWellResults[expManualScore.assayId] = true;
+    createPerWellQCTable() {
+        this.qcWellTable = this.expSets.expAssay2reagents.map((expAssay2reagent: ExpAssay2reagentResultSet) => {
+            return this.setPerWellQCRow(expAssay2reagent);
         });
     }
 
-    toggleQcPlate(plateIndex) {
-        let isJunk = false;
-        if (this.qcPlateResults[this.platesAlbum[plateIndex].plateId]) {
-            isJunk = true;
-        }
+    setPerWellQCRow(expAssay2reagent: ExpAssay2reagentResultSet) {
+        let row: { Barcode, Well, ExpGroupType, ExpGroupId, TreatmentGroupId } = {
+            Barcode: '',
+            Well: '',
+            ExpGroupType: '',
+            ExpGroupId: '',
+            TreatmentGroupId: ''
+        };
+        row['Barcode'] = get(this.findExpPlate(expAssay2reagent), 'barcode');
+        row['Well'] = get(this.findExpAssay(expAssay2reagent), 'assayWell');
+        row['ExpGroupType'] = expAssay2reagent.reagentType;
+        row['ExpGroupId'] = expAssay2reagent.expGroupId;
+        row['TreatmentGroupId'] = expAssay2reagent.treatmentGroupId;
+        return row;
+    }
 
-        this.platesAlbum[plateIndex].albums.map((album) => {
-            this.qcWellResults[album.assayId] = isJunk;
+    createQCPerPlateTable() {
+        this.qcPlateTable = this.expSets.expPlates.map((expPlate: ExpPlateResultSet) => {
+            let expGroupTypes = this.findExpGroupTypes(expPlate).sort();
+            let row : {Barcode, ExpGroupTypes, ImageDate} = {Barcode: expPlate.barcode, ImageDate: expPlate.plateImageDate, ExpGroupTypes: expGroupTypes.join(', ')};
+            return row;
         });
     }
 
-    generateQcScores() {
-
-        // Add the initial score indicating the entire batch has been through QC
-        let qcScores = [];
-        let expScreen : any = find(this.expSets.expScreens, {screenId: Number(this.expSets.expWorkflows[0].screenId)});
-        qcScores.push({
-            'manualscoreGroup': 'BATCH_QC',
-            'manualscoreCode': 'BATCH_QC',
-            'manualscoreValue': 1,
-            'screenId': this.expSets.expWorkflows[0].screenId,
-            'screenName': expScreen.screenName,
-            // 'assayId': 0,
-            // 'treatmentGroupId': 0,
-            'scoreCodeId': 69,
-            'userId': this.userId,
-            'userName': this.userName,
-            'expWorkflowId': String(this.expSets.expWorkflows[0].id),
+    findExpGroupTypes(expPlate: ExpPlateResultSet) : Array<string>{
+        let expAssay2reagents: ExpAssay2reagentResultSet[] = this.expSets.expAssay2reagents.filter((expAssay2reagent) => {
+            return isEqual(expAssay2reagent.plateId, expPlate.plateId);
         });
-
-        Object.keys(this.qcWellResults).map((assayId) => {
-
-            let expAssay2reagent: any = find(this.expSets.expAssay2reagents, {assayId: Number(assayId)});
-            let isJunk = 0;
-            if (this.qcWellResults[assayId]) {
-                isJunk = 1;
-            }
-            qcScores.push({
-                'manualscoreGroup': 'JUNK',
-                'manualscoreCode': 'JUNK',
-                'manualscoreValue': isJunk,
-                'screenId': this.expSets.expWorkflows[0].screenId,
-                'screenName': expScreen.screenName,
-                'assayId': assayId,
-                'treatmentGroupId': expAssay2reagent.treatmentGroupId,
-                'scoreCodeId': 68,
-                'userId': this.userId,
-                'userName': this.userName,
-                'expWorkflowId': String(this.expSets.expWorkflows[0].id),
-            });
+        let expGroupTypes = expAssay2reagents.map((expAssay2reagent) => {
+            return expAssay2reagent.reagentType;
         });
-
-        return qcScores;
+        return uniq(expGroupTypes);
     }
 
-    onSubmit() {
-        const qcScores = this.generateQcScores();
-        this.expManualScoresApi
-            .submitScores(qcScores)
-            .subscribe((results) => {
-                this.expSets = null;
-                this.expSetsScored.emit(true);
-            }, (error) => {
-
-            });
+    findExpAssay(expAssay2reagent: ExpAssay2reagentResultSet) {
+        return find(this.expSets.expAssays, {assayId: expAssay2reagent.assayId});
     }
 
-    open(plateAlbumIndex, imageIndex: number): void {
-        this._lightbox.open(this.platesAlbum[0].albums, imageIndex);
+    @Memoize
+    findExpPlate(expAssay2reagent: ExpAssay2reagentResultSet) {
+        return find(this.expSets.expPlates, {plateId: expAssay2reagent.plateId});
     }
 
+    sizeToFit() {
+        this.qcPerWellGridApi.sizeColumnsToFit();
+        this.qcPerPlateGridApi.sizeColumnsToFit();
+
+    }
+
+    autoSizeAll() {
+        let allColumnIds = [];
+        this.qcPerWellGridColumnApi.getAllColumns().forEach(function (column) {
+            allColumnIds.push(column.colId);
+        });
+        this.qcPerWellGridColumnApi.autoSizeColumns(allColumnIds);
+        allColumnIds = [];
+        this.qcPerPlateGridColumnApi.getAllColumns().forEach(function (column) {
+            allColumnIds.push(column.colId);
+        });
+        this.qcPerPlateGridColumnApi.autoSizeColumns(allColumnIds);
+    }
+
+    onPerWellGridReady(params) {
+        this.qcPerWellGridApi = params.api;
+        this.qcPerWellGridColumnApi = params.columnApi;
+        this.qcPerWellGridApi.sizeColumnsToFit();
+    }
+    onPerPlateGridReady(params) {
+        this.qcPerPlateGridApi = params.api;
+        this.qcPerPlateGridColumnApi = params.columnApi;
+        this.qcPerPlateGridApi.sizeColumnsToFit();
+    }
 }

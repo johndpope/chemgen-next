@@ -1,13 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {
-    ExpBiosampleApi,
-    ExpScreenApi,
-    ExpScreenUploadWorkflowApi,
-    ExpSetApi
-} from '../../../../types/sdk/services/custom';
-import {find, get, set} from 'lodash';
+import {ExpBiosampleApi, ExpScreenApi, ExpScreenUploadWorkflowApi, ExpSetApi} from "../../../../types/sdk/services/custom";
+import {ScreenMetaDataCriteria, ReagentDataCriteria} from "../../../../../../chemgen-next-server/common/types/custom/search";
+import {isEmpty, find, get, set} from 'lodash';
 import {ScreenMetaDataSearch, SearchFormExpScreenFormResults, SearchModule} from "../../../search/search.module";
-import {ScreenMetaDataCriteria} from "../../../../types/custom/search";
+import {ExpScreenUploadWorkflowResultSet} from "../../../../types/sdk/models";
 
 /**
  * This form is there to filter Exp Screens and Batches to get specific results
@@ -28,7 +24,7 @@ export class SearchFormExpScreenComponent implements OnInit {
 
     noResult = false;
 
-    // search: ExpSetSearch = new ExpSetSearch();
+    // expSetSearch: ExpSetSearch = new ExpSetSearch();
 
     constructor(private expScreenApi: ExpScreenApi,
                 private expSetApi: ExpSetApi,
@@ -48,7 +44,7 @@ export class SearchFormExpScreenComponent implements OnInit {
     /**
      * Begin Typeahead checks
      * Ensure the typeahead is getting an actual value - it is possible to trick it
-     * If it has an actual value go search the expWorkflows for it
+     * If it has an actual value go expSetSearch the expWorkflows for it
      * If it doesn't then raise an error
      * Typeahead will only take a scalar value as its IN/OUT
      * We use the NAME since that is what the user wants to see
@@ -80,6 +76,18 @@ export class SearchFormExpScreenComponent implements OnInit {
     assignNameToExpWorkflow() {
         set(this.formResults, 'expWorkflowFound', false);
         this.formResults.expScreenWorkflow = null;
+        // The ngx typeahead really does not work as i expected
+        // So I'm implementing my own typeahead functionality here
+        if (isEmpty(this.formResults.expScreenWorkflowName)) {
+            this.searchModule.typeAheadExpScreenWorkflows = this.searchModule.expScreenWorkflows;
+            this.assignNameToExpScreen();
+        } else {
+            this.searchModule.typeAheadExpScreenWorkflows = this.searchModule.expScreenWorkflows.filter((expScreenWorkflow: ExpScreenUploadWorkflowResultSet) => {
+                let re = new RegExp(this.formResults.expScreenWorkflowName, 'i');
+                // console.log(re.exec(expScreenWorkflow.name));
+                return expScreenWorkflow.name.match(re);
+            });
+        }
         let expWorkflow: any = find(this.searchModule.expScreenWorkflows, {name: this.formResults.expScreenWorkflowName});
         if (expWorkflow) {
             this.formResults.expScreenWorkflow = expWorkflow;
@@ -111,7 +119,6 @@ export class SearchFormExpScreenComponent implements OnInit {
      * this is not right
      * we want someplace to aggregate all the batches
      */
-
     searchCriteriaChanged() {
         this.formResults.setSearchCriteria();
         // If the user sets the batchId then we don't need to go and look for it

@@ -1,20 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {
-    ExpBiosampleResultSet,
-    ExpScreenResultSet,
-    PlateResultSet,
-    ReagentLibraryResultSet
-} from '../../../../../types/sdk/models';
+    RnaiScreenUploadWorkflowResultSet
+} from "../../../../../types/sdk/models";
 import {
     PlateApi,
     ExpScreenUploadWorkflowApi,
     ExpBiosampleApi,
-    ReagentLibraryApi
-} from '../../../../../types/sdk/services/custom';
-
-import {ExpScreenApi} from '../../../../../types/sdk/services/custom';
-
-import {RnaiScreenUploadWorkflowResultSet} from '../../../../../types/sdk/models';
+    ReagentLibraryApi,
+    ExpScreenApi
+} from "../../../../../types/sdk/services/custom";
 import {JsonPipe} from '@angular/common';
 import {orderBy, padStart, isNull, isEmpty, chunk} from 'lodash';
 

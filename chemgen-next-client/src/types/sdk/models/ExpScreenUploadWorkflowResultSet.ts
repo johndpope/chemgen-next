@@ -26,6 +26,7 @@ export interface ExpScreenUploadWorkflowResultSetInterface {
   "instrumentLookUp"?: string;
   "biosampleType"?: string;
   "stockPrepDate"?: Date;
+  "cultureDate"?: Date;
   "assayDates"?: Array<any>;
   "search"?: any;
   "replicates"?: any;
@@ -65,6 +66,7 @@ export class ExpScreenUploadWorkflowResultSet implements ExpScreenUploadWorkflow
   "instrumentLookUp": string;
   "biosampleType": string;
   "stockPrepDate": Date;
+  "cultureDate": Date;
   "assayDates": Array<any>;
   "search": any;
   "replicates": any;
@@ -202,6 +204,10 @@ export class ExpScreenUploadWorkflowResultSet implements ExpScreenUploadWorkflow
         },
         "stockPrepDate": {
           name: 'stockPrepDate',
+          type: 'Date'
+        },
+        "cultureDate": {
+          name: 'cultureDate',
           type: 'Date'
         },
         "assayDates": {

@@ -1,7 +1,7 @@
 import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {isEqual} from 'lodash';
 import {Lightbox, LightboxConfig} from 'angular2-lightbox';
-import {ExpsetModule} from "../../expset/expset.module";
+import {ExpsetModule} from "../../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 
 @Component({
     selector: 'app-grid-album',

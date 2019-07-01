@@ -1,78 +1,90 @@
 <!--Start Search Form-->
 <div class="row">
-  <div class="col-md-12">
-    <div class="x_panel">
-      <div class="x_title">
-        <h2>{{title}}</h2>
-        <ul class="nav navbar-right panel_toolbox">
-          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-          </li>
-          <li><a class="close-link"><i class="fa fa-close"></i></a>
-          </li>
-        </ul>
-        <div class="clearfix"></div>
-      </div>
-      <div class="x_content">
-
-        <form (ngSubmit)="searchFormParams.onSubmit()" autocomplete="off">
-          <div class="col-xs-3">
-            <!-- required for floating -->
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs tabs-left">
-              <li class="active"><a href="#screenData" data-toggle="tab">Screen</a>
-              </li>
-              <li><a href="#rnaiData" data-toggle="tab">RNAi</a>
-                <!--<li><a href="#filterScores" data-toggle="tab">Filter By Scores - Simple</a>-->
-                <!--<li><a href="#filterScoresAdvanced" data-toggle="tab">Filter By Scores - Advanced</a>-->
-                <!--</li>-->
-                <!--<li><a href="#chemicalData" data-toggle="tab">Chemical</a>-->
-                <!--</li>-->
-            </ul>
-            <div class="clearfix"></div>
-            <br>
-            <button type="button" (click)="searchFormParams.onReset()" class="btn btn-danger">Reset</button>
-            <button type="submit" id="searchFormSubmit" class="btn btn-success">Submit</button>
-            <div class="clearfix"></div>
-          </div>
-
-          <div class="col-xs-9">
-            <!-- Tab panes -->
-            <div class="tab-content">
-              <div class="tab-pane active" id="screenData">
-                <p class="lead">Screen Data</p>
-                <app-search-form-exp-screen
-                        [formResults]="searchFormParams.searchFormExpScreenResults"
-                        [screenMetaDataSearch]="searchFormParams.screenMetaDataSearch"
-                        [searchModule]="searchFormParams.searchModule"></app-search-form-exp-screen>
-              </div>
-              <div class="tab-pane" id="rnaiData">
-                <p class="lead">RNAis List</p>
-                <app-search-form-rnai [rnaiSearch]="searchFormParams.rnaiSearch"></app-search-form-rnai>
-              </div>
-              <div class="tab-pane" id="filterScores">
-                <p class="lead">Filter By Scores - Simple</p>
-                <app-search-form-filter-by-scores
-                        [searchFormFilterByScoresResults]="searchFormParams.searchFormFilterByScoresResults"></app-search-form-filter-by-scores>
-              </div>
-              <div class="tab-pane" id="filterScoresAdvanced">
-                <p class="lead">Filter By Scores - Advanced</p>
-                <app-search-form-filter-by-scores-advanced
-                        [searchFormFilterByScoresAdvancedResults]="searchFormParams.searchFormFilterByScoresAdvancedResults"
-                ></app-search-form-filter-by-scores-advanced>
-              </div>
-              <!--<div class="tab-pane" id="chemicalData">Chemical</div>-->
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>{{title}}</h2>
+                <div class="clearfix"></div>
+                <h5>
+                    {{formDesc}}
+                </h5>
             </div>
-          </div>
+            <div class="x_content">
 
-          <div class="clearfix"></div>
-        </form>
-        <div class="alert alert-warning" *ngIf="searchFormParams.message">
-          {{searchFormParams.message}}
+                <form (ngSubmit)="searchFormParams.onSubmit()" autocomplete="off">
+                    <div class="col-xs-3">
+                        <!-- required for floating -->
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs tabs-left">
+                            <li class="active"><a href="#screenData" data-toggle="tab">Screen</a>
+                            </li>
+                            <!--Only optionally show RNAi tabs - not needed on contact sheets-->
+                            <li *ngIf="showRNAiTab"><a href="#rnaiData" data-toggle="tab">RNAi</a>
+                                <!--<li><a href="#filterScores" data-toggle="tab">Filter By Scores - Simple</a>-->
+                                <!--<li><a href="#filterScoresAdvanced" data-toggle="tab">Filter By Scores - Advanced</a>-->
+                                <!--</li>-->
+                                <!--<li><a href="#chemicalData" data-toggle="tab">Chemical</a>-->
+                                <!--</li>-->
+                        </ul>
+                        <div class="clearfix"></div>
+                        <br>
+                        <button type="button" (click)="searchFormParams.onReset()" class="btn btn-danger">Reset</button>
+                        <button *ngIf="! searchFormParams.rnaiSearch.geneNotFoundMessage && ! searchFormParams.errorMessage && searchFormParams.searchModule.typeAheadExpScreenWorkflows.length"
+                                type="submit" id="searchFormSubmit" class="btn btn-success">Submit
+                        </button>
+                        <div class="clearfix"></div>
+                    </div>
+
+                    <div class="col-xs-9">
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="screenData">
+                                <p class="lead">Screen Data</p>
+                                <app-search-form-exp-screen
+                                        [formResults]="searchFormParams.searchFormExpScreenResults"
+                                        [screenMetaDataSearch]="searchFormParams.screenMetaDataSearch"
+                                        [searchModule]="searchFormParams.searchModule"></app-search-form-exp-screen>
+                            </div>
+                            <div class="tab-pane" id="rnaiData">
+                                <p class="lead">Search Experiments by RNAi Reagent</p>
+                                <app-search-form-rnai [rnaiSearch]="searchFormParams.rnaiSearch"></app-search-form-rnai>
+                            </div>
+                            <div class="tab-pane" id="filterScores">
+                                <p class="lead">Filter By Scores - Simple</p>
+                                <app-search-form-filter-by-scores
+                                        [searchFormFilterByScoresResults]="searchFormParams.searchFormFilterByScoresResults"></app-search-form-filter-by-scores>
+                            </div>
+                            <div class="tab-pane" id="filterScoresAdvanced">
+                                <p class="lead">Filter By Scores - Advanced</p>
+                                <app-search-form-filter-by-scores-advanced
+                                        [searchFormFilterByScoresAdvancedResults]="searchFormParams.searchFormFilterByScoresAdvancedResults"
+                                ></app-search-form-filter-by-scores-advanced>
+                            </div>
+                            <!--<div class="tab-pane" id="chemicalData">Chemical</div>-->
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                </form>
+                <div class="alert alert-warning" *ngIf="searchFormParams.errorMessage">
+                    {{searchFormParams.errorMessage}}
+                    <p>You cannot submit a search with invalid search parameters.</p>
+                </div>
+                <div class="alert alert-warning" *ngIf="searchFormParams.rnaiSearch.geneNotFoundMessage">
+                    {{searchFormParams.rnaiSearch.geneNotFoundMessage}}
+                    <br>
+                    <p>You cannot submit a search with invalid search parameters.</p>
+                </div>
+                <div *ngIf="! searchFormParams.searchModule.typeAheadExpScreenWorkflows.length"
+                     class="alert alert-warning">
+                    <p>No batches matching your search criteria were found.</p>
+                    <br>
+                    <p>You cannot submit a search with invalid search parameters.</p>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-  </div>
+    </div>
 </div>
 <!--End Search Form-->
 
@@ -82,40 +94,4 @@
         color="#fff"
         type="ball-atom"
 ></ngx-spinner>
-
-<!--TODO Unsure about pagination...-->
-<!--&lt;!&ndash;Start Pagination&ndash;&gt;-->
-<!--<div class="row" *ngIf="searchFormParams.expSets">-->
-  <!--<div class="col-md-12">-->
-
-    <!--<nav aria-label="Page navigation example">-->
-      <!--<ul class="pagination pagination-lg" *ngIf="searchFormParams.paginationData.currentPage > 1">-->
-        <!--<li class="page-item"><a class="page-link"-->
-                                 <!--(click)="getNewPage(searchFormParams.paginationData.currentPage - 1)">Previous</a>-->
-        <!--</li>-->
-      <!--</ul>-->
-      <!--<ul class="pagination pagination-lg">-->
-        <!--<li class="page-item disabled">-->
-          <!--<a class="page-link" tabindex="-1">{{searchFormParams.paginationData.currentPage}}</a>-->
-        <!--</li>-->
-      <!--</ul>-->
-      <!--<ul class="pagination pagination-lg" *ngFor="let pageNo of searchFormParams.paginationData.lowerRange">-->
-        <!--<li class="page-item"><a class="page-link" [routerLink]=""-->
-                                 <!--(click)="getNewPage(pageNo + 1)">{{pageNo + 1}}</a></li>-->
-      <!--</ul>-->
-      <!--<ul class="pagination pagination-lg" *ngIf="searchFormParams.paginationData.lowerRange?.length">-->
-        <!--<li class="page-item disabled"><a class="page-link">...</a></li>-->
-      <!--</ul>-->
-      <!--<ul class="pagination pagination-lg" *ngFor="let pageNo of searchFormParams.paginationData.upperRange">-->
-        <!--<li class="page-item"><a [routerLink]="" class="page-link"-->
-                                 <!--(click)="getNewPage(pageNo + 1)">{{pageNo + 1}}</a></li>-->
-      <!--</ul>-->
-      <!--<ul class="pagination pagination-lg" *ngIf="searchFormParams.paginationData.currentPage < searchFormParams.paginationData.totalPages">-->
-        <!--<li class="page-item"><a class="page-link" [routerLink]=""-->
-                                 <!--(click)="getNewPage(searchFormParams.paginationData.currentPage)">Next</a></li>-->
-      <!--</ul>-->
-    <!--</nav>-->
-  <!--</div>-->
-<!--</div>-->
-<!--&lt;!&ndash;End Pagination&ndash;&gt;-->
 

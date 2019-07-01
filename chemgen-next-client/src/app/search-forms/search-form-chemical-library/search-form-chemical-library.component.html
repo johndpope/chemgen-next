@@ -1,0 +1,89 @@
+<!--Start Spinner-->
+<ngx-spinner
+        bdColor="rgba(51, 51, 51, 0.8)"
+        size="large"
+        color="#fff"
+        type="ball-atom"
+></ngx-spinner>
+<!--End Spinner-->
+
+<!--Begin Form Explanation-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_content">
+                <h2>Search by Chemical Library Data</h2>
+                <p>Belong is a table displaying the Chemical Library Information.</p>
+                <p>Mouse over each column name, for example, Reagent Name, to bring up a filter option. Click on the 3
+                    horizontal lines that come up to filter that column.</p>
+                <p>Select a row by clicking on it, and additional rows by Ctrl/Cmd and clicking on them.</p>
+                <p>Please be advised that there is a cap on 100 search items.</p>
+                <p>Library Id 2 is the Chembridge Library, Library Id 3 is FDA.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Form Explanation-->
+
+<!--Begin ChemicalLibrary Data Table-->
+<div *ngIf="chemicalLibraryTable" class="row" id="chemicalLibraryTable">
+    <div class="col-md-12">
+    </div>
+    <div class="col-md-12">
+        <div class="x_panel">
+            <div class="x_content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-info" (click)="onSelectionChanged()">
+                            Search for Exp Sets with the Selected Reagents
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <div *ngIf="invalidSearch" class="alert alert-danger">
+                            {{invalidSearch}}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <ag-grid-angular
+                                style="width: 100%; height: 100%;"
+                                class="ag-theme-balham"
+                                (gridReady)="onGridReady($event)"
+                                [enableColResize]="true"
+                                [enableSorting]="true"
+                                [enableFilter]="true"
+                                [rowSelection]="rowSelection"
+                                [rowData]="chemicalLibraryTable"
+                                [columnDefs]="columnDefs"
+                                [pagination]="true"
+                        >
+                        </ag-grid-angular>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--End ChemicalLibrary Data Table-->
+
+<!--Start Content-->
+<div class="row" id="chemical-library-results-expsets">
+    <div class="col-md-12">
+        <!--Begin Current Content-->
+        <div *ngIf="expSets" class="expSets">
+            <app-expset-sheet [expSets]="expSets" [expSetModule]="expSetsModule"
+                              [displayToggle]="false"
+                              [expSetSearch]="expSetSearch"></app-expset-sheet>
+        </div>
+        <div *ngIf="expSets && ! expSets.expWorkflows?.length">
+            <h2>Empty ResultSet</h2>
+            <p>The search you performed returned an empty result set.</p>
+            <p>Either your search is incorrect, or not in the database.</p>
+        </div>
+        <!--End Current Content-->
+    </div>
+</div>
+<!--End Content-->

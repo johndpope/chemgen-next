@@ -1,4 +1,10 @@
-<app-search-form-base [searchFormParams]="searchFormParams" [title]="'Contact Sheet Replicate View'"></app-search-form-base>
+<app-search-form-base
+        [searchFormParams]="searchFormParams"
+        [showRNAiTab]="false"
+        [title]="'Contact Sheet Replicate View'"
+        [formDesc]="'Replicate sets marked as interesting will be queued (as a set)
+                 and passed to the Score Experiment Set page for manual scoring.'">
+</app-search-form-base>
 
 <!--Start Spinner-->
 <ngx-spinner
@@ -8,6 +14,20 @@
         type="ball-atom"
 ></ngx-spinner>
 <!--End Spinner-->
+
+<!--Review of which have been submitting and which haven't for the screen-->
+<div *ngIf="contactSheetsSubmitted.length" class="x_panel">
+    <div class="x_content">
+        <div class="row">
+            <div class="col-md-12" *ngFor="let batch of contactSheetsSubmitted; let i = index">
+                <div class="alert-success">
+                    <h3>Batch: {{batch.name}} submitted successfully</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Review of which have been submitting and which haven't for the screen-->
 
 <!--Start Content-->
 <div class="row">
@@ -25,10 +45,23 @@
             </div>
             <!--End Content-->
             <div *ngIf="searchFormParams.expSets && ! searchFormParams.expSets.expWorkflows?.length">
-                <h2>Empty ResultSet</h2>
-                <p>The search you performed returned an empty result set.</p>
-                <p>Either your search is incorrect, all plates are scored for this screen, or not in the database.</p>
+                <div class="x_panel">
+                    <div class="x_content">
+                        <div *ngIf="wasBatchScored()">
+                            <h3>Already Scored</h3>
+                            <p>The batch you are trying to search for was already scored.</p>
+
+                        </div>
+                        <div *ngIf="!wasBatchScored()">
+                            <h3>Empty ResultSet</h3>
+                            <p>The search you performed returned an empty result set.</p>
+                            <p>Either your search is incorrect, all plates are scored for this screen, or not in the
+                                database.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+
         </div>
     </div>
 </div>

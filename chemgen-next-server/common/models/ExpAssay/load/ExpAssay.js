@@ -8,6 +8,7 @@ var Promise = require("bluebird");
 var _ = require("lodash");
 var lodash_1 = require("lodash");
 var request = require('request-promise');
+var uri = "http://" + config.get('imageConversionHost') + ":" + config.get('imageConversionPort');
 var ExpAssay = app.models['ExpAssay'];
 /**
  * Workflows for loading data into the Exp*Tables
@@ -488,6 +489,7 @@ ExpAssay.load.workflows.imageConversionPipeline.nyMicroscope = function (workflo
  */
 ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowData, plateData) {
     return new Promise(function (resolve, reject) {
+        app.winston.info('Converting arrayscan images!');
         //@ts-ignore
         Promise.map(plateData.wellDataList, function (wellData) {
             var images = ExpAssay.helpers.genImageFileNames(plateData.expPlate, wellData.stockLibraryData.well);
@@ -500,28 +502,28 @@ ExpAssay.load.workflows.imageConversionPipeline.arrayScan = function (workflowDa
                 };
                 if (true) {
                     // if (!fs.existsSync(`${images.baseImage}-autolevel.png`) || true) {
-                    //TODO Make this a parameter somewhere
-                    return request({
-                        timeout: 50,
-                        uri: "http://" + config.get('imageConversionHost') + ":" + config.get('imageConversionPort'),
-                        body: imageJob,
-                        method: 'POST',
-                        json: true,
-                    })
-                        .then(function (response) {
-                        return {
-                            baseImage: images.baseImage,
-                            script: imageJob.title,
-                            convert: 1
-                        };
-                    })
-                        .catch(function (error) {
-                        return {
-                            baseImage: images.baseImage,
-                            script: imageJob.title,
-                            convert: 0
-                        };
-                    });
+                    //This is being refactored to a separate service using airflow. see the chemgen-next-convert-images dir for more details
+                    return;
+                    //@ts-ignore
+                    // return axios.post(uri, imageJob)
+                    //   .then((response) => {
+                    //     app.winston.info('Successfully submitted convert image command');
+                    //     // app.winston.info(JSON.stringify(response.data));
+                    //     return {
+                    //       baseImage: images.baseImage,
+                    //       script: imageJob.title,
+                    //       convert: 1
+                    //     };
+                    //   })
+                    //   .catch((error) => {
+                    //     app.winston.info('Error converting images');
+                    //     // app.winston.error(error);
+                    //     return {
+                    //       baseImage: images.baseImage,
+                    //       script: imageJob.title,
+                    //       convert: 0
+                    //     };
+                    //   });
                 }
                 else {
                     // @ts-ignore

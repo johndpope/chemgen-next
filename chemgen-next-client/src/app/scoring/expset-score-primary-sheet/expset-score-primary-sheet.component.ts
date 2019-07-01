@@ -1,6 +1,5 @@
 import {Component, OnInit, Input, Output, OnChanges, EventEmitter} from '@angular/core';
-import {ExpSetSearch} from "../../../types/custom/ExpSetTypes";
-import {ExpsetModule} from "../expset/expset.module";
+import {ExpSetSearch, ExpsetModule} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 import {isEmpty, isEqual} from 'lodash';
 
 @Component({

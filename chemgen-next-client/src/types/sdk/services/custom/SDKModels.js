@@ -24,6 +24,7 @@ var ChemicalXrefsResultSet_1 = require("../../models/ChemicalXrefsResultSet");
 var RnaiLibraryStockResultSet_1 = require("../../models/RnaiLibraryStockResultSet");
 var RnaiWormbaseXrefsResultSet_1 = require("../../models/RnaiWormbaseXrefsResultSet");
 var PlateResultSet_1 = require("../../models/PlateResultSet");
+var ArrayScanPlateMirrorResultSet_1 = require("../../models/ArrayScanPlateMirrorResultSet");
 var ExpScreenUploadWorkflowResultSet_1 = require("../../models/ExpScreenUploadWorkflowResultSet");
 var WpTermsResultSet_1 = require("../../models/WpTermsResultSet");
 var WpPostsResultSet_1 = require("../../models/WpPostsResultSet");
@@ -44,6 +45,7 @@ var ExpSetResultSet_1 = require("../../models/ExpSetResultSet");
 var ModelsResultSet_1 = require("../../models/ModelsResultSet");
 var ReactomeEnityResultSet_1 = require("../../models/ReactomeEnityResultSet");
 var ReactomePathwayResultSet_1 = require("../../models/ReactomePathwayResultSet");
+var PlateSearchConfigurationResultSet_1 = require("../../models/PlateSearchConfigurationResultSet");
 var SDKModels = /** @class */ (function () {
     function SDKModels() {
         this.models = {
@@ -63,6 +65,7 @@ var SDKModels = /** @class */ (function () {
             RnaiLibraryStockResultSet: RnaiLibraryStockResultSet_1.RnaiLibraryStockResultSet,
             RnaiWormbaseXrefsResultSet: RnaiWormbaseXrefsResultSet_1.RnaiWormbaseXrefsResultSet,
             PlateResultSet: PlateResultSet_1.PlateResultSet,
+            ArrayScanPlateMirrorResultSet: ArrayScanPlateMirrorResultSet_1.ArrayScanPlateMirrorResultSet,
             ExpScreenUploadWorkflowResultSet: ExpScreenUploadWorkflowResultSet_1.ExpScreenUploadWorkflowResultSet,
             WpTermsResultSet: WpTermsResultSet_1.WpTermsResultSet,
             WpPostsResultSet: WpPostsResultSet_1.WpPostsResultSet,
@@ -83,6 +86,7 @@ var SDKModels = /** @class */ (function () {
             ModelsResultSet: ModelsResultSet_1.ModelsResultSet,
             ReactomeEnityResultSet: ReactomeEnityResultSet_1.ReactomeEnityResultSet,
             ReactomePathwayResultSet: ReactomePathwayResultSet_1.ReactomePathwayResultSet,
+            PlateSearchConfigurationResultSet: PlateSearchConfigurationResultSet_1.PlateSearchConfigurationResultSet,
         };
     }
     SDKModels.prototype.get = function (modelName) {

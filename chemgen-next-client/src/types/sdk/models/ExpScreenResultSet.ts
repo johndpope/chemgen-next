@@ -5,6 +5,7 @@ declare var Object: any;
 export interface ExpScreenResultSetInterface {
   "screenId"?: number;
   "screenName"?: string;
+  "screenMoniker"?: string;
   "screenType"?: string;
   "screenStage"?: string;
   "screenDescription"?: string;
@@ -17,6 +18,7 @@ export interface ExpScreenResultSetInterface {
 export class ExpScreenResultSet implements ExpScreenResultSetInterface {
   "screenId": number;
   "screenName": string;
+  "screenMoniker": string;
   "screenType": string;
   "screenStage": string;
   "screenDescription": string;
@@ -63,6 +65,10 @@ export class ExpScreenResultSet implements ExpScreenResultSetInterface {
         },
         "screenName": {
           name: 'screenName',
+          type: 'string'
+        },
+        "screenMoniker": {
+          name: 'screenMoniker',
           type: 'string'
         },
         "screenType": {

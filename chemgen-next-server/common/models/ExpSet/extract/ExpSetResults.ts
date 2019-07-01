@@ -86,13 +86,17 @@ ExpSet.extract.insertCountsDataImageMeta = function (data: ExpSetSearchResults) 
  * @param imageMeta
  */
 ExpSet.extract.insertExpManualScoresImageMeta = function (data: ExpSetSearchResults) {
-  data.expGroupTypeAlbums.treatReagent.map((imageMeta: any) => {
-    const expManualScoreByAssayId = find(data.expManualScores, {assayId: imageMeta.assayId});
-    const expManualScoreByTreatmentIds: ExpManualScoresResultSet[] = filter(data.expManualScores, {treatmentGroupId: imageMeta.treatmentGroupId});
-    imageMeta.manualScoreByAssay = get(expManualScoreByAssayId, 'manualscoreId') || null;
-    imageMeta.manualScoreByTreatment = expManualScoreByTreatmentIds || null;
-  });
-  return data;
+  if (get(data, ['expGroupTypeAlbums', 'treatReagent'])) {
+    data.expGroupTypeAlbums.treatReagent.map((imageMeta: any) => {
+      const expManualScoreByAssayId = find(data.expManualScores, {assayId: imageMeta.assayId});
+      const expManualScoreByTreatmentIds: ExpManualScoresResultSet[] = filter(data.expManualScores, {treatmentGroupId: imageMeta.treatmentGroupId});
+      imageMeta.manualScoreByAssay = get(expManualScoreByAssayId, 'manualscoreId') || null;
+      imageMeta.manualScoreByTreatment = expManualScoreByTreatmentIds || null;
+    });
+    return data;
+  } else {
+    return data;
+  }
 };
 
 ExpSet.extract.mapExpGroupTypes = function (expGroupType: string) {

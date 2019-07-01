@@ -1,6 +1,5 @@
 import {Component, OnInit, Input} from '@angular/core';
-import {ExpsetModule} from '../expset/expset.module';
-import {ExpSetSearch} from "../../../types/custom/ExpSetTypes";
+import {ExpsetModule, ExpSetSearch} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 
 /**
  * WIP
@@ -17,6 +16,7 @@ export class ExpsetSheetComponent implements OnInit {
     @Input() expSets: any;
     @Input() expSetSearch: ExpSetSearch;
     @Input() expSetModule: ExpsetModule;
+    @Input() displayToggle: boolean = true;
 
     constructor() {
     }

@@ -153,6 +153,70 @@ var ExpSetApi = /** @class */ (function (_super) {
      *
      *  - `results` – `{any}` -
      */
+    ExpSetApi.prototype.getRelatedExpSets = function (search, customHeaders) {
+        if (search === void 0) { search = {}; }
+        var _method = "POST";
+        var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
+            "/ExpSets/getRelatedExpSets";
+        var _routeParams = {};
+        var _postBody = {};
+        var _urlParams = {};
+        if (typeof search !== 'undefined' && search !== null)
+            _urlParams.search = search;
+        var result = this.request(_method, _url, _routeParams, _urlParams, _postBody, null, customHeaders);
+        return result;
+    };
+    /**
+     * <em>
+           * (The remote method definition does not provide any description.)
+           * </em>
+     *
+     * @param {any} search
+     *
+     * @param {object} data Request data.
+     *
+     * This method does not accept any data. Supply an empty object.
+     *
+     * @returns {object} An empty reference that will be
+     *   populated with the actual data once the response is returned
+     *   from the server.
+     *
+     * Data properties:
+     *
+     *  - `results` – `{any}` -
+     */
+    ExpSetApi.prototype.getExpSetsByLibraryData = function (search, customHeaders) {
+        if (search === void 0) { search = {}; }
+        var _method = "POST";
+        var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
+            "/ExpSets/getExpSetsByLibraryData";
+        var _routeParams = {};
+        var _postBody = {};
+        var _urlParams = {};
+        if (typeof search !== 'undefined' && search !== null)
+            _urlParams.search = search;
+        var result = this.request(_method, _url, _routeParams, _urlParams, _postBody, null, customHeaders);
+        return result;
+    };
+    /**
+     * <em>
+           * (The remote method definition does not provide any description.)
+           * </em>
+     *
+     * @param {any} search
+     *
+     * @param {object} data Request data.
+     *
+     * This method does not accept any data. Supply an empty object.
+     *
+     * @returns {object} An empty reference that will be
+     *   populated with the actual data once the response is returned
+     *   from the server.
+     *
+     * Data properties:
+     *
+     *  - `results` – `{any}` -
+     */
     ExpSetApi.prototype.getExpSetsByWorkflowId = function (search, customHeaders) {
         if (search === void 0) { search = {}; }
         var _method = "POST";
@@ -478,6 +542,70 @@ var ExpSetApi = /** @class */ (function (_super) {
         var _method = "POST";
         var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
             "/ExpSets/getExpWorkflowIdsNotScoredContactSheet";
+        var _routeParams = {};
+        var _postBody = {};
+        var _urlParams = {};
+        if (typeof search !== 'undefined' && search !== null)
+            _urlParams.search = search;
+        var result = this.request(_method, _url, _routeParams, _urlParams, _postBody, null, customHeaders);
+        return result;
+    };
+    /**
+     * <em>
+           * (The remote method definition does not provide any description.)
+           * </em>
+     *
+     * @param {any} search
+     *
+     * @param {object} data Request data.
+     *
+     * This method does not accept any data. Supply an empty object.
+     *
+     * @returns {object} An empty reference that will be
+     *   populated with the actual data once the response is returned
+     *   from the server.
+     *
+     * Data properties:
+     *
+     *  - `results` – `{any}` -
+     */
+    ExpSetApi.prototype.getInterestingExpSets = function (search, customHeaders) {
+        if (search === void 0) { search = {}; }
+        var _method = "POST";
+        var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
+            "/ExpSets/getInterestingExpSets";
+        var _routeParams = {};
+        var _postBody = {};
+        var _urlParams = {};
+        if (typeof search !== 'undefined' && search !== null)
+            _urlParams.search = search;
+        var result = this.request(_method, _url, _routeParams, _urlParams, _postBody, null, customHeaders);
+        return result;
+    };
+    /**
+     * <em>
+           * (The remote method definition does not provide any description.)
+           * </em>
+     *
+     * @param {any} search
+     *
+     * @param {object} data Request data.
+     *
+     * This method does not accept any data. Supply an empty object.
+     *
+     * @returns {object} An empty reference that will be
+     *   populated with the actual data once the response is returned
+     *   from the server.
+     *
+     * Data properties:
+     *
+     *  - `results` – `{any}` -
+     */
+    ExpSetApi.prototype.getScoredExpSets = function (search, customHeaders) {
+        if (search === void 0) { search = {}; }
+        var _method = "POST";
+        var _url = lb_config_1.LoopBackConfig.getPath() + "/" + lb_config_1.LoopBackConfig.getApiVersion() +
+            "/ExpSets/getScoredExpSets";
         var _routeParams = {};
         var _postBody = {};
         var _urlParams = {};

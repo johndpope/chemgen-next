@@ -22,7 +22,7 @@ ExpSet.extract.workflows.getExpSets = function (search) {
             resolve(ExpSet.extract.workflows.filterByScores(search));
         }
         else if (lodash_1.isEqual(search.scoresExist, true)) {
-            //search.scoresExist is a boolean value to say whether or not there exists an entry in the exp_manual_scores for a given treatmentGroupId
+            //expSetSearch.scoresExist is a boolean value to say whether or not there exists an entry in the exp_manual_scores for a given treatmentGroupId
             //It does not do any further filtering
             //It uses the knex api, because it executes a nested select if exists, which is not possible through the loopback api
             app.winston.info('Get UnscoredExpSets');
@@ -41,9 +41,25 @@ ExpSet.extract.workflows.getExpSets = function (search) {
             //Place holder - I haven't written in this one yet
             resolve();
         }
-        else if (search.expGroupSearch.length) {
-            // ExpSet.extract.searchExpAssay2reagents = function (search: ExpSetSearch) {
-            app.winston.info('Getting ExpSets by expGroupId');
+        else if (lodash_1.get(search, ['expGroupSearch']) && search.expGroupSearch.length) {
+            app.winston.info('Getting ExpSets by expAssay2reagent data');
+            resolve(ExpSet.extract.searchExpAssay2reagents(search));
+        }
+        else if (lodash_1.get(search, ['plateSearch']) && search.plateSearch.length) {
+            app.winston.info('Getting ExpSets by expAssay2reagent data');
+            resolve(ExpSet.extract.searchExpAssay2reagents(search));
+        }
+        else if (lodash_1.get(search, ['expWorkflowSearch']) && search.screenSearch.length) {
+            app.winston.info('Getting the ExpSetsByWorkflowId');
+            search.pageSize = 1;
+            resolve(ExpSet.extract.workflows.getExpSetsByWorkflowId(search));
+        }
+        else if (lodash_1.get(search, ['screenSearch']) && search.screenSearch.length) {
+            app.winston.info('Getting ExpSets by expAssay2reagent data');
+            resolve(ExpSet.extract.searchExpAssay2reagents(search));
+        }
+        else if (lodash_1.get(search, ['assaySearch']) && search.assaySearch.length) {
+            app.winston.info('Getting ExpSets by expAssay2reagent data');
             resolve(ExpSet.extract.searchExpAssay2reagents(search));
         }
         else {
@@ -141,11 +157,12 @@ ExpSet.extract.buildReagentQuery = function (data, or, expOr) {
 ExpSet.extract.buildExpAssay2reagentSearch = function (data, search) {
     var or = ExpSet.extract.buildQuery(data, search);
     return {
-        where: { or: or, reagentId: { 'neq': null } },
-        limit: data.pageSize,
-        skip: data.skip,
-        // skip: search.currentPage * search.pageSize,
+        where: { or: or },
+        limit: 1000,
+        // skip: data.skip,
+        // skip: expSetSearch.currentPage * expSetSearch.pageSize,
         fields: {
+            screenId: true,
             assay2reagentId: true,
             reagentType: true,
             expGroupId: true,
@@ -154,6 +171,7 @@ ExpSet.extract.buildExpAssay2reagentSearch = function (data, search) {
             reagentId: true,
             libraryId: true,
             reagentTable: true,
+            expWorkflowId: true,
         },
     };
 };
@@ -305,9 +323,9 @@ ExpSet.extract.getExpManualScoresByExpGroupId = function (data, search) {
     });
 };
 /**
- * Depending on how the search is run (genes list, expGroup, etc)
+ * Depending on how the expSetSearch is run (genes list, expGroup, etc)
  * We may be missing different pieces of data
- * For instance if we search by expGroup=1, up to here only expAssay2Reagent with expGroup=1 will be returned
+ * For instance if we expSetSearch by expGroup=1, up to here only expAssay2Reagent with expGroup=1 will be returned
  * Or if searching for genes we won't have any L4440s
  * So this is a very brute force approach to ensure there is no data missing
  * But we want the whole expSet
@@ -577,6 +595,8 @@ ExpSet.extract.workflows.getReagentData = function (data, search) {
         //@ts-ignore
         Promise.map(Object.keys(reagentTypes), function (reagentType) {
             if (reagentType) {
+                // reagentType = camelCase(reagentType);
+                // reagentType = capitalize(reagentType);
                 return ExpSet.extract.workflows["getReagentData" + reagentType](data, reagentTypes[reagentType]);
             }
             else {
@@ -673,7 +693,7 @@ ExpSet.extract.buildImageObjDEV = function (expAssay) {
         assayImagePath: expAssay.assayImagePath,
         src: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
         caption: "Image " + expAssay.assayImagePath + " caption here",
-        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
+        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel-1024x1024.jpeg",
         assayId: expAssay.assayId,
         plateId: expAssay.plateId,
     };
@@ -683,7 +703,7 @@ ExpSet.extract.buildImageObjAD = function (expAssay) {
         assayImagePath: expAssay.assayImagePath,
         src: config.get('sites')['AD']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
         caption: "Image " + expAssay.assayImagePath + " caption here",
-        thumb: config.get('sites')['DEV']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel.jpeg",
+        thumb: config.get('sites')['AD']['imageUrl'] + "/" + expAssay.assayImagePath + "-autolevel-1024x1024.jpeg",
         assayId: expAssay.assayId,
         plateId: expAssay.plateId,
     };

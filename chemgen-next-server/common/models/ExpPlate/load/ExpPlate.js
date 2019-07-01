@@ -90,7 +90,7 @@ ExpPlate.load.transformInstrumentPlate = function (workflowData, instrumentPlate
     }
     /*
     For some reason if I searched on the whole plate object it was always returning not found
-    So I just search for a subset of the plate object
+    So I just expSetSearch for a subset of the plate object
      */
     var lookUpPlateObj = new models_1.ExpPlateResultSet({
         //Screen Info

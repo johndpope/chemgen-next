@@ -60,6 +60,7 @@ import { ChemicalXrefsApi } from './services/custom/ChemicalXrefs';
 import { RnaiLibraryStockApi } from './services/custom/RnaiLibraryStock';
 import { RnaiWormbaseXrefsApi } from './services/custom/RnaiWormbaseXrefs';
 import { PlateApi } from './services/custom/Plate';
+import { ArrayScanPlateMirrorApi } from './services/custom/ArrayScanPlateMirror';
 import { ExpScreenUploadWorkflowApi } from './services/custom/ExpScreenUploadWorkflow';
 import { WpTermsApi } from './services/custom/WpTerms';
 import { WpPostsApi } from './services/custom/WpPosts';
@@ -80,6 +81,7 @@ import { ExpSetApi } from './services/custom/ExpSet';
 import { ModelsApi } from './services/custom/Models';
 import { ReactomeEnityApi } from './services/custom/ReactomeEnity';
 import { ReactomePathwayApi } from './services/custom/ReactomePathway';
+import { PlateSearchConfigurationApi } from './services/custom/PlateSearchConfiguration';
 /**
 * @module SDKBrowserModule
 * @description
@@ -124,6 +126,7 @@ export class SDKBrowserModule {
         RnaiLibraryStockApi,
         RnaiWormbaseXrefsApi,
         PlateApi,
+        ArrayScanPlateMirrorApi,
         ExpScreenUploadWorkflowApi,
         WpTermsApi,
         WpPostsApi,
@@ -144,6 +147,7 @@ export class SDKBrowserModule {
         ModelsApi,
         ReactomeEnityApi,
         ReactomePathwayApi,
+        PlateSearchConfigurationApi,
         internalStorageProvider,
         { provide: SDKStorage, useClass: StorageBrowser }
       ]

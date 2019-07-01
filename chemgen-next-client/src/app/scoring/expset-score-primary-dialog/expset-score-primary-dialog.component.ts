@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild, Input} from '@angular/core';
-import {ExpsetModule} from "../expset/expset.module";
+import {ExpsetModule} from "../../../../../chemgen-next-server/common/types/custom/ExpSetTypes";
 import {ModalDirective} from "ngx-bootstrap";
 
 @Component({

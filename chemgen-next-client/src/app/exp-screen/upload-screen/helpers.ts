@@ -1,19 +1,19 @@
 import {
+    ExpBiosampleApi,
+    PlatePlan96Api,
+    PlateApi,
+    ExpScreenApi,
+    ReagentLibraryApi
+} from "../../../types/sdk/services/custom";
+import {
     ExpBiosampleResultSet,
     PlatePlan96ResultSet,
+    ExpScreenResultSet,
+    RnaiScreenUploadWorkflowResultSet,
     ExpScreenUploadWorkflowResultSet,
-    RnaiScreenUploadWorkflowResultSet
-} from '../../../types/sdk/models';
-import {ExpBiosampleApi, PlatePlan96Api} from '../../../types/sdk/services/custom';
-
-import {PlateResultSet} from '../../../types/sdk/models';
-import {PlateApi} from '../../../types/sdk/services/custom';
-
-import {ExpScreenApi} from '../../../types/sdk/services/custom';
-import {ExpScreenResultSet} from '../../../types/sdk/models';
-
-import {ReagentLibraryApi} from '../../../types/sdk/services/custom';
-import {ReagentLibraryResultSet} from '../../../types/sdk/models';
+    PlateResultSet,
+    ReagentLibraryResultSet
+} from "../../../types/sdk/models";
 
 import {find, isNull, isEmpty, orderBy, padStart, chunk} from 'lodash';
 
@@ -24,7 +24,7 @@ import {find, isNull, isEmpty, orderBy, padStart, chunk} from 'lodash';
  */
 
 /**
- * This is just a helper class to search for biosamples, mostly to return them to the screen upload form
+ * This is just a helper class to expSetSearch for biosamples, mostly to return them to the screen upload form
  */
 export class SearchExpBiosamples {
     // Choose Mutant and Control strains
@@ -108,7 +108,7 @@ export class ExperimentData {
 export class ScreenDesign {
     /* Search for Plates */
     creationDates: Array<any> = [new Date()];
-    // The name search parameter is created with these
+    // The name expSetSearch parameter is created with these
     conditionCode: String = '';
     libraryPlate: string | number = '';
     collapse: Boolean = false;

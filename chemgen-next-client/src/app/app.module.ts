@@ -15,8 +15,7 @@ import {AppComponent} from './app.component';
 import {environment} from "../environments/environment";
 
 //Loopback SDK - generates model definition, services, etc
-import {SDKBrowserModule} from '../types/sdk';
-import {LoopBackConfig} from '../types/sdk';
+import {SDKBrowserModule, LoopBackConfig} from "../types/sdk";
 
 // Highcharts is weird
 import {HighchartsChartModule} from 'highcharts-angular';
@@ -89,7 +88,7 @@ import {SearchFormChemicalComponent} from './search-forms/filter-components/sear
 import {SearchFormViewOptionsComponent} from './search-forms/filter-components/search-form-view-options/search-form-view-options.component';
 
 /**
- * Components - Search Forms for Various Experiment Data (score this, score that, search for this, search for that)
+ * Components - Search Forms for Various Experiment Data (score this, score that, expSetSearch for this, expSetSearch for that)
  */
 import {SearchFormContactSheetPlateViewComponent} from './search-forms/search-form-contact-sheet-plate-view/search-form-contact-sheet-plate-view.component';
 import {SearchFormExpsetsComponent} from './search-forms/search-form-expsets/search-form-expsets.component';
@@ -117,10 +116,30 @@ import {ExpWorkflowQcComponent} from './scoring/exp-workflow-qc/exp-workflow-qc.
 import {SearchFormExpWorkflowQcComponent} from './search-forms/search-form-exp-workflow-qc/search-form-exp-workflow-qc.component';
 
 /**
- * WIP Refactoring search forms
+ * WIP Refactoring expSetSearch forms
  */
 import {SearchFormBaseComponent} from './search-forms/search-form-base/search-form-base.component';
 import {SearchFormContactSheetReplicateViewComponent} from './search-forms/search-form-contact-sheet-replicate-view/search-form-contact-sheet-replicate-view.component';
+import {InterestingSummaryComponent} from './scoring/interesting-summary/interesting-summary.component';
+import {SearchFormInterestingSummaryComponent} from './search-forms/search-form-interesting-summary/search-form-interesting-summary.component';
+import {PlateViewComponent} from './views/plate-view/plate-view.component';
+import {PlateViewRouteComponent} from './views/plate-view-route/plate-view-route.component';
+import {ReagentDataComponent} from './views/expset-data/reagent-data/reagent-data.component';
+import {PlateDataComponent} from './views/expset-data/plate-data/plate-data.component';
+import {ScoreDataComponent} from './views/expset-data/score-data/score-data.component';
+import {BatchDataComponent} from './views/expset-data/batch-data/batch-data.component';
+import {ExpsetTabViewComponent} from './views/expset-tab-view/expset-tab-view.component';
+import {RelatedExpsetsRouteComponent} from './views/related-expsets-route/related-expsets-route.component';
+import {SearchFormRnaiLibraryComponent} from './search-forms/search-form-rnai-library/search-form-rnai-library.component';
+import {SearchFormChemicalLibraryComponent} from './search-forms/search-form-chemical-library/search-form-chemical-library.component';
+import {DetailedScoresComponent} from './scoring/detailed-scores/detailed-scores.component';
+import {SearchFormDetailedScoresComponent} from "./search-forms/search-form-detailed-scores/search-form-detailed-scores.component";
+import {ContactSheetReplicateViewRouteComponent} from './scoring/contact-sheet-replicate-view-route/contact-sheet-replicate-view-route.component';
+import {ExpsetScorePrimaryRouteComponent} from './scoring/expset-score-primary-route/expset-score-primary-route.component';
+import {UploadRnaiPrimaryComponent} from './upload-screens/upload-rnai-primary/upload-rnai-primary.component';
+import {UploadRnaiPrimaryExpGroupPlateSelectionComponent} from './upload-screens/upload-rnai-primary-exp-group-plate-selection/upload-rnai-primary-exp-group-plate-selection.component';
+import { UploadRnaiPrimaryFromGoogleSheetsComponent } from './upload-screens/upload-rnai-primary-from-google-sheets/upload-rnai-primary-from-google-sheets.component';
+import { UploadRnaiPrimaryFromGoogleSheetsRouteComponent } from './upload-screens/upload-rnai-primary-from-google-sheets-route/upload-rnai-primary-from-google-sheets-route.component';
 
 @NgModule({
     imports: [
@@ -143,6 +162,7 @@ import {SearchFormContactSheetReplicateViewComponent} from './search-forms/searc
         TooltipModule.forRoot(),
         TypeaheadModule.forRoot(),
         NgProgressModule.forRoot({}),
+        // HotkeyModule.forRoot({cheatSheetHotkey: 'shift+h'}),
         HotkeyModule.forRoot(),
         LightboxModule,
         NouisliderModule,
@@ -184,6 +204,26 @@ import {SearchFormContactSheetReplicateViewComponent} from './search-forms/searc
         SearchFormExpWorkflowQcComponent,
         SearchFormBaseComponent,
         SearchFormContactSheetReplicateViewComponent,
+        InterestingSummaryComponent,
+        SearchFormInterestingSummaryComponent,
+        PlateViewComponent,
+        PlateViewRouteComponent,
+        ReagentDataComponent,
+        PlateDataComponent,
+        ScoreDataComponent,
+        BatchDataComponent,
+        ExpsetTabViewComponent,
+        RelatedExpsetsRouteComponent,
+        SearchFormRnaiLibraryComponent,
+        SearchFormChemicalLibraryComponent,
+        DetailedScoresComponent,
+        SearchFormDetailedScoresComponent,
+        ContactSheetReplicateViewRouteComponent,
+        ExpsetScorePrimaryRouteComponent,
+        UploadRnaiPrimaryComponent,
+        UploadRnaiPrimaryExpGroupPlateSelectionComponent,
+        UploadRnaiPrimaryFromGoogleSheetsComponent,
+        UploadRnaiPrimaryFromGoogleSheetsRouteComponent,
     ],
     entryComponents: [],
     providers: [],

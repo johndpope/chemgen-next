@@ -70,7 +70,7 @@ if (cluster.isMaster) {
 function updateModelPredictedCounts() {
   return new Promise((resolve, reject) => {
     countModelPredictedCounts()
-      .then((paginationResults) => {
+      .then((paginationResults: {pages, limit}) => {
         let page = paginationResults.pages[0];
         let skip = Number(page) * Number(paginationResults.limit);
         console.log(`Page: ${page} Skip: ${skip}`);
@@ -153,7 +153,7 @@ function getExpAssays(modelPredictedCounts: ModelPredictedCountsResultSet[]) {
           }
         })
         .then((expAssays: ExpAssayResultSet[]) => {
-          return Promise.map(modelPredictedCounts, (modelPredictedCount) => {
+          return Promise.map(modelPredictedCounts, (modelPredictedCount: ModelPredictedCountsResultSet) => {
             let expAssay = find(expAssays, (expAssay) => {
               return isEqual(expAssay.assayId, modelPredictedCount.assayId);
             });

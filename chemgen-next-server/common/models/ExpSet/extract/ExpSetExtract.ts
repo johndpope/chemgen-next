@@ -6,9 +6,11 @@ import {
   ExpPlateResultSet,
   ExpScreenResultSet, ExpScreenUploadWorkflowResultSet,
   ModelPredictedCountsResultSet, RnaiLibraryResultSet, RnaiWormbaseXrefsResultSet,
-} from "../../../types/sdk/models/index";
+} from "../../../types/sdk/models";
 import {
   isArray,
+  camelCase,
+  capitalize,
   has,
   get,
   find,
@@ -23,7 +25,7 @@ import Promise = require('bluebird');
 import {ExpSetSearch, ExpSetSearchResults} from "../../../types/custom/ExpSetTypes/index";
 
 import config = require('config');
-import {ExpManualScoresResultSet} from "../../../types/sdk";
+import {ExpManualScoresResultSet} from "../../../types/sdk/models";
 
 const ExpSet = app.models.ExpSet as (typeof WorkflowModel);
 
@@ -45,7 +47,7 @@ ExpSet.extract.workflows.getExpSets = function (search: ExpSetSearch) {
       app.winston.info('Getting scores by scoresQuery');
       resolve(ExpSet.extract.workflows.filterByScores(search));
     } else if (isEqual(search.scoresExist, true)) {
-      //search.scoresExist is a boolean value to say whether or not there exists an entry in the exp_manual_scores for a given treatmentGroupId
+      //expSetSearch.scoresExist is a boolean value to say whether or not there exists an entry in the exp_manual_scores for a given treatmentGroupId
       //It does not do any further filtering
       //It uses the knex api, because it executes a nested select if exists, which is not possible through the loopback api
       app.winston.info('Get UnscoredExpSets');
@@ -60,9 +62,21 @@ ExpSet.extract.workflows.getExpSets = function (search: ExpSetSearch) {
     } else if (isEqual(search.scoresExist, null) && !(isEmpty(search.chemicalSearch))) {
       //Place holder - I haven't written in this one yet
       resolve();
-    } else if (search.expGroupSearch.length) {
-      // ExpSet.extract.searchExpAssay2reagents = function (search: ExpSetSearch) {
-      app.winston.info('Getting ExpSets by expGroupId');
+    } else if (get(search, ['expGroupSearch']) && search.expGroupSearch.length) {
+      app.winston.info('Getting ExpSets by expAssay2reagent data');
+      resolve(ExpSet.extract.searchExpAssay2reagents(search))
+    } else if (get(search, ['plateSearch']) && search.plateSearch.length) {
+      app.winston.info('Getting ExpSets by expAssay2reagent data');
+      resolve(ExpSet.extract.searchExpAssay2reagents(search))
+    } else if (get(search, ['expWorkflowSearch']) && search.screenSearch.length) {
+      app.winston.info('Getting the ExpSetsByWorkflowId');
+      search.pageSize = 1;
+      resolve(ExpSet.extract.workflows.getExpSetsByWorkflowId(search));
+    } else if (get(search, ['screenSearch']) && search.screenSearch.length) {
+      app.winston.info('Getting ExpSets by expAssay2reagent data');
+      resolve(ExpSet.extract.searchExpAssay2reagents(search))
+    } else if (get(search, ['assaySearch']) && search.assaySearch.length) {
+      app.winston.info('Getting ExpSets by expAssay2reagent data');
       resolve(ExpSet.extract.searchExpAssay2reagents(search))
     } else {
       //Get all the expSets for a single expWorkflowId
@@ -171,11 +185,12 @@ ExpSet.extract.buildReagentQuery = function (data: ExpSetSearchResults, or: Arra
 ExpSet.extract.buildExpAssay2reagentSearch = function (data: ExpSetSearchResults, search: ExpSetSearch) {
   let or = ExpSet.extract.buildQuery(data, search);
   return {
-    where: {or: or, reagentId: {'neq': null}},
-    limit: data.pageSize,
-    skip: data.skip,
-    // skip: search.currentPage * search.pageSize,
+    where: {or: or},
+    limit: 1000,
+    // skip: data.skip,
+    // skip: expSetSearch.currentPage * expSetSearch.pageSize,
     fields: {
+      screenId: true,
       assay2reagentId: true,
       reagentType: true,
       expGroupId: true,
@@ -184,6 +199,7 @@ ExpSet.extract.buildExpAssay2reagentSearch = function (data: ExpSetSearchResults
       reagentId: true,
       libraryId: true,
       reagentTable: true,
+      expWorkflowId: true,
     },
   };
 };
@@ -338,9 +354,9 @@ ExpSet.extract.getExpManualScoresByExpGroupId = function (data: ExpSetSearchResu
   });
 };
 /**
- * Depending on how the search is run (genes list, expGroup, etc)
+ * Depending on how the expSetSearch is run (genes list, expGroup, etc)
  * We may be missing different pieces of data
- * For instance if we search by expGroup=1, up to here only expAssay2Reagent with expGroup=1 will be returned
+ * For instance if we expSetSearch by expGroup=1, up to here only expAssay2Reagent with expGroup=1 will be returned
  * Or if searching for genes we won't have any L4440s
  * So this is a very brute force approach to ensure there is no data missing
  * But we want the whole expSet
@@ -623,6 +639,8 @@ ExpSet.extract.workflows.getReagentData = function (data: ExpSetSearchResults, s
     //@ts-ignore
     Promise.map(Object.keys(reagentTypes), (reagentType: string) => {
       if (reagentType) {
+        // reagentType = camelCase(reagentType);
+        // reagentType = capitalize(reagentType);
         return ExpSet.extract.workflows[`getReagentData${reagentType}`](data, reagentTypes[reagentType]);
       } else {
         return;
@@ -722,7 +740,7 @@ ExpSet.extract.buildImageObjDEV = function (expAssay: ExpAssayResultSet) {
     assayImagePath: expAssay.assayImagePath,
     src: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
     caption: `Image ${expAssay.assayImagePath} caption here`,
-    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
+    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel-1024x1024.jpeg`,
     assayId: expAssay.assayId,
     plateId: expAssay.plateId,
   };
@@ -733,7 +751,7 @@ ExpSet.extract.buildImageObjAD = function (expAssay: ExpAssayResultSet) {
     assayImagePath: expAssay.assayImagePath,
     src: `${config.get('sites')['AD']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
     caption: `Image ${expAssay.assayImagePath} caption here`,
-    thumb: `${config.get('sites')['DEV']['imageUrl']}/${expAssay.assayImagePath}-autolevel.jpeg`,
+    thumb: `${config.get('sites')['AD']['imageUrl']}/${expAssay.assayImagePath}-autolevel-1024x1024.jpeg`,
     assayId: expAssay.assayId,
     plateId: expAssay.plateId,
   };

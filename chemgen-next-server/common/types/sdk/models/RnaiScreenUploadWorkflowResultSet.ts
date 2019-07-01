@@ -38,6 +38,7 @@ export interface RnaiScreenUploadWorkflowResultSetInterface {
   "site"?: string;
   "platePlanHash"?: any;
   "instrumentPlateIdLookup"?: string;
+  "cultureDate"?: Date;
   "id"?: any;
 }
 
@@ -77,6 +78,7 @@ export class RnaiScreenUploadWorkflowResultSet implements RnaiScreenUploadWorkfl
   "site": string;
   "platePlanHash": any;
   "instrumentPlateIdLookup": string;
+  "cultureDate": Date;
   "id": any;
   constructor(data?: RnaiScreenUploadWorkflowResultSetInterface) {
     Object.assign(this, data);
@@ -261,6 +263,10 @@ export class RnaiScreenUploadWorkflowResultSet implements RnaiScreenUploadWorkfl
         "instrumentPlateIdLookup": {
           name: 'instrumentPlateIdLookup',
           type: 'string'
+        },
+        "cultureDate": {
+          name: 'cultureDate',
+          type: 'Date'
         },
         "id": {
           name: 'id',

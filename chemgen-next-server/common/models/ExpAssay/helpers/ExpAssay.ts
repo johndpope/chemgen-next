@@ -53,9 +53,9 @@ ExpAssay.helpers.genImageFileNames = function(expPlate: ExpPlateResultSet, well:
       '1080x1080',
       '768x768',
       '600x600',
-      '400x400',
-      '300x300',
-      '150x150',
+      // '400x400',
+      // '300x300',
+      // '150x150',
     ],
   };
 };

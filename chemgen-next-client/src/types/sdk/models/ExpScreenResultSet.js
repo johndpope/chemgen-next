@@ -43,6 +43,10 @@ var ExpScreenResultSet = /** @class */ (function () {
                     name: 'screenName',
                     type: 'string'
                 },
+                "screenMoniker": {
+                    name: 'screenMoniker',
+                    type: 'string'
+                },
                 "screenType": {
                     name: 'screenType',
                     type: 'string'

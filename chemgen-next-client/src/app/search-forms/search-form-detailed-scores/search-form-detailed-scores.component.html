@@ -1,0 +1,29 @@
+<app-search-form-base
+        [searchFormParams]="searchFormParams"
+        [title]="'Search Detailed Scoring Results (Album and Table View)'">
+</app-search-form-base>
+
+<!--Start Content-->
+<div class="row">
+    <div class="col-md-12">
+        <div *ngIf="searchFormParams.mustSetSearchCriteriaError">
+
+        </div>
+
+        <div *ngIf="searchFormParams.formSubmitted && !searchFormParams.mustSetSearchCriteriaError">
+            <!--Begin Current Content-->
+            <div *ngIf="searchFormParams.expSets" class="expSets">
+                <app-detailed-scores [expSets]="searchFormParams.expSets"
+                                     [expSetModule]="searchFormParams.expSetsModule"
+                                     [expSetSearch]="searchFormParams.expSetSearch"></app-detailed-scores>
+            </div>
+            <div *ngIf="searchFormParams.expSets && ! searchFormParams.expSets.expWorkflows?.length">
+                <h2>Empty ResultSet</h2>
+                <p>The search you performed returned an empty result set.</p>
+                <p>Either your search is incorrect, or not in the database.</p>
+            </div>
+            <!--End Current Content-->
+        </div>
+    </div>
+</div>
+<!--End Content-->

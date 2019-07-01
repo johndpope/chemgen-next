@@ -68,11 +68,13 @@
                                     Contact Sheet - Plate View</a>
                             </li>
                             <li>
-                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/contact-sheet-secondary">
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-form-contact-sheet-replicate">
                                     Contact Sheet - Replicate View</a>
                             </li>
-                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/score-expsets-worms">Detailed Score - Replicates</a></li>
-                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/scored-summary">Scored Summary</a></li>
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/score-expsets-worms">Detailed Score
+                                    - Replicates</a></li>
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/scored-summary">Scored Summary</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
@@ -85,6 +87,12 @@
                         <ul class="nav child_menu">
                             <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-expsets-worms">Search
                                     for Exp Sets</a>
+                            </li>
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-form-rnai-library">Search
+                                    for Exp Sets by the RNAi Library Table (DRAFT)</a>
+                            </li>
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-form-chemical-library">Search
+                                    for Exp Sets by the Chemical Library Table (DRAFT)</a>
                             </li>
                         </ul>
                     </li>
@@ -102,6 +110,55 @@
                     </li>
                 </ul>
                 <!--End Upload Menu-->
+
+                <!--Begin View Scores Menu-->
+                <ul class="nav side-menu">
+                    <li><a><i class="fa fa-list"></i> View Score Results <span
+                                    class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li>
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-form-interesting-summary">
+                                    Search Interesting Exp Sets (DRAFT)</a>
+                            </li>
+                            <li>
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/search-form-detailed-scores">
+                                    View Detailed Scores (DRAFT)</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <!--End View Scores Menu-->
+
+                <!--Begin Help Menu-->
+                <ul class="nav side-menu">
+                    <li><a><i class="fa fa-question-circle"></i> Help <span
+                                    class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li>
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/eegi-wiki-page/using-scoring-forms/">
+                                    Scoring Forms</a>
+                            </li>
+                            <li>
+                                <a href="<?php echo(get_bloginfo('wpurl')) ?>/eegi-wiki-page/checking-data-with-phpmyadmin/">
+                                    Querying the database with phpmyadmin</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <!--End Help Menu-->
+
+                <!--Begin DRAFTS / WIPS Menu-->
+                <ul class="nav side-menu">
+                    <li><a><i class="fa fa-list"></i> DRAFT Interfaces<span
+                            class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li><a href="<?php echo(get_bloginfo('wpurl')) ?>/app/#/upload-rnai-primary-spreadsheet"
+                                   >Upload RNAi AHR2 Primary(DRAFT)</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <!--End Search Menu-->
 
             </div>
         </div>

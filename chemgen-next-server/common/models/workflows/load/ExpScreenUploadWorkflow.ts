@@ -46,10 +46,10 @@ app.models.ExpScreenUploadWorkflow.load.removeWorkflowsFromDB = function (result
     app.models.ExpPlate
       .destroyAll({expWorkflowId: String(result.id)})
       .then(() => {
-        return app.models.ExpGroup.destroyAll({expWorkflowId: String(result.id)})
+        return app.models.ExpAssay2reagent.destroyAll({expWorkflowId: String(result.id)});
       })
       .then(() => {
-        return app.models.ExpAssay2reagent.destroyAll({expWorkflowId: String(result.id)});
+        return app.models.ExpGroup.destroyAll({expWorkflowId: String(result.id)})
       })
       .then(() => {
         return app.models.ExpAssay.destroyAll({expWorkflowId: String(result.id)})
@@ -58,7 +58,7 @@ app.models.ExpScreenUploadWorkflow.load.removeWorkflowsFromDB = function (result
         return app.models.ExpDesign.destroyAll({expWorkflowId: String(result.id)});
       })
       .then(() => {
-        return app.models.ExpManualScores.destroyAll({expWorkflowId: String(result.id)};
+        return app.models.ExpManualScores.destroyAll({expWorkflowId: String(result.id)});
       })
       .then(() => {
         return app.models.ModelPredictedCounts.destroyAll({expWorkflowId: String(result.id)});

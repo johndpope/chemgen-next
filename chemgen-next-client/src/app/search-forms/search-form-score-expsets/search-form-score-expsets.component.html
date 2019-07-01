@@ -1,5 +1,11 @@
-<app-search-form-base [searchFormParams]="searchFormParams"
-                      [title]="'Detailed Scoring Replicate View'"></app-search-form-base>
+<app-search-form-base 
+    [searchFormParams]="searchFormParams"
+    [title]="'Detailed Scoring Replicate View'"
+    [formDesc]="'Wells and replicate sets marked as interesting will be
+    rendered on this page with the appropriate scoring options.
+    NOTE: This form will be blank if there are no interesting
+    well/replicate sets to score for the particular query.'">
+</app-search-form-base>
 
 <!--Start Content-->
 <div class="row">
@@ -16,6 +22,7 @@
                                 <h3>Hot Keys</h3>
                             </div>
                             <div class="x_content">
+                                <p>Press ? to view the hotkeys!</p>
                                 <p>Hot keys for Mutant are enabled by default 0-9,shift+1-shift+5, in the order of the
                                     form</p>
                                 <p>Hot keys for the N2 are enabled with shift+n, and then are 0-9, shift+1,shift+3, in
@@ -23,6 +30,13 @@
                                 <p>ReEnable mutant hotkeys with shift+m</p>
                                 <p>Submit the form with shift+s</p>
                             </div>
+                            <!--Begin Hot key CheatSheet-->
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <hotkeys-cheatsheet></hotkeys-cheatsheet>
+                                </div>
+                            </div>
+                            <!--End Hot key CheatSheet-->
                         </div>
                     </div>
 

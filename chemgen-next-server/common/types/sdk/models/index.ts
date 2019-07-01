@@ -15,6 +15,7 @@ export * from './ChemicalXrefsResultSet';
 export * from './RnaiLibraryStockResultSet';
 export * from './RnaiWormbaseXrefsResultSet';
 export * from './PlateResultSet';
+export * from './ArrayScanPlateMirrorResultSet';
 export * from './ExpScreenUploadWorkflowResultSet';
 export * from './WpTermsResultSet';
 export * from './WpPostsResultSet';
@@ -35,5 +36,6 @@ export * from './ExpSetResultSet';
 export * from './ModelsResultSet';
 export * from './ReactomeEnityResultSet';
 export * from './ReactomePathwayResultSet';
+export * from './PlateSearchConfigurationResultSet';
 export * from './BaseModels';
 

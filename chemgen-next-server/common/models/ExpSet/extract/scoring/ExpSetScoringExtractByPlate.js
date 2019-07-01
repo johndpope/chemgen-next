@@ -111,24 +111,31 @@ ExpSet.extract.genExpGroupTypeAlbums = function (data, search) {
     };
     data.albums.map(function (album) {
         ['ctrlNullImages', 'ctrlStrainImages'].map(function (albumType) {
-            // expSet[albumType] = shuffle(expSet[albumType].slice(0, search.ctrlLimit));
+            // expSet[albumType] = shuffle(expSet[albumType].slice(0, expSetSearch.ctrlLimit));
         });
     });
     var expGroupTypes = lodash_1.groupBy(data.expAssay2reagents, 'reagentType');
-    Object.keys(expGroupTypes).map(function (expGroup) {
-        var mappedExpGroup = ExpSet.extract.mapExpGroupTypes(expGroup);
-        // app.winston.info(`MappedExpGroup: ${mappedExpGroup} ExpGroupType: ${expGroup}`);
-        expGroupTypes[mappedExpGroup] = ExpSet.extract.genImageMeta(data, expGroupTypes[expGroup]);
-        if (lodash_1.isEqual(mappedExpGroup, 'ctrlNull') || lodash_1.isEqual(mappedExpGroup, 'ctrlStrain')) {
-            expGroupTypes[mappedExpGroup].map(function (imageMeta) {
-                imageMeta.treatmentGroupId = null;
-            });
-        }
-        delete expGroupTypes[expGroup];
-    });
-    data.expGroupTypeAlbums = expGroupTypes;
-    app.winston.info("Complete: genExpGroupTypeAlbums");
-    return data;
+    try {
+        Object.keys(expGroupTypes).map(function (expGroup) {
+            var mappedExpGroup = ExpSet.extract.mapExpGroupTypes(expGroup);
+            // app.winston.info(`MappedExpGroup: ${mappedExpGroup} ExpGroupType: ${expGroup}`);
+            expGroupTypes[mappedExpGroup] = ExpSet.extract.genImageMeta(data, expGroupTypes[expGroup]);
+            if (lodash_1.isEqual(mappedExpGroup, 'ctrlNull') || lodash_1.isEqual(mappedExpGroup, 'ctrlStrain')) {
+                expGroupTypes[mappedExpGroup].map(function (imageMeta) {
+                    imageMeta.treatmentGroupId = null;
+                });
+            }
+            delete expGroupTypes[expGroup];
+        });
+        data.expGroupTypeAlbums = expGroupTypes;
+        app.winston.info("Complete: genExpGroupTypeAlbums");
+        return data;
+    }
+    catch (error) {
+        app.winston.error("Got an error");
+        app.winston.error(error);
+        return data;
+    }
 };
 ExpSet.extract.genAlbumsByPlate = function (data, search) {
     ['treatReagent', 'ctrlReagent'].map(function (mappedExpGroup) {

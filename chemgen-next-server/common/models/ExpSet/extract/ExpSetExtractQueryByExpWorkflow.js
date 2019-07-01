@@ -58,9 +58,11 @@ ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search) {
             }
         })
             .then(function (data) {
+            app.winston.info('Should be getting expManualScores by ExpWorkflowId');
             return ExpSet.extract.getExpManualScoresByExpWorkflowId(data, search);
         })
             .then(function (data) {
+            app.winston.info('Should be getting counts');
             if (!lodash_1.isEqual(data.modelPredictedCounts.length, data.expAssays.length)) {
                 return ExpSet.extract.getModelPredictedCountsByExpWorkflowId(data, search);
             }
@@ -69,10 +71,17 @@ ExpSet.extract.workflows.getExpSetsByWorkflowId = function (search) {
             }
         })
             .then(function (data) {
-            data = ExpSet.extract.insertCountsDataImageMeta(data);
-            data = ExpSet.extract.insertExpManualScoresImageMeta(data);
-            data = ExpSet.extract.cleanUp(data, search);
-            resolve(data);
+            try {
+                data = ExpSet.extract.insertCountsDataImageMeta(data);
+                data = ExpSet.extract.insertExpManualScoresImageMeta(data);
+                data = ExpSet.extract.cleanUp(data, search);
+                app.winston.info('Resolving data');
+                resolve(data);
+            }
+            catch (error) {
+                app.winston.error(error);
+                resolve(data);
+            }
         })
             .catch(function (error) {
             reject(new Error(error));
@@ -349,9 +358,12 @@ ExpSet.extract.getExpDataByExpWorkflowId = function (data, search, expWorkflowId
         })
             .then(function (data) {
             data = ExpSet.extract.genExpGroupTypeAlbums(data, search);
-            return ExpSet.extract.saveToCache(data, search);
+            app.winston.info('Complete genExpGroupTypeAlbums');
+            // return ExpSet.extract.saveToCache(data, expSetSearch);
+            return data;
         })
             .then(function (data) {
+            app.winston.info('Should be resolving data!');
             resolve(data);
         })
             .catch(function (error) {
@@ -369,9 +381,9 @@ ExpSet.extract.fetchFromCache = function (data, search, expWorkflowId) {
         redisClient.getAsync(key)
             .then(function (obj) {
             if (obj) {
-                // data = JSON.parse(obj);
-                // data.fetchedFromCache = true;
-                data.fetchedFromCache = false;
+                data = JSON.parse(obj);
+                data.fetchedFromCache = true;
+                // data.fetchedFromCache = false;
                 resolve(data);
             }
             else {

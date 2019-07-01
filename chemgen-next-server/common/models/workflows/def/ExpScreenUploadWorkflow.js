@@ -17,6 +17,7 @@ module.exports = function (ExpScreenUploadWorkflow) {
 
   ExpScreenUploadWorkflow.on('attached', function () {
     require('../load/ExpScreenUploadWorkflow')
+    require('../load/loadFromGoogleSpreadSheet/ExpScreenUploadWorkflow')
     require('../experiment/worms/load/primary/ExpScreenUploadWorkflow')
     require('../experiment/worms/load/ExpScreenUploadWorkflow')
   })
@@ -46,11 +47,31 @@ module.exports = function (ExpScreenUploadWorkflow) {
     })
   }
 
+  ExpScreenUploadWorkflow.uploadFromGoogleSpreadSheet = function (googleSheetUrl) {
+    return new Promise((resolve, reject) => {
+      ExpScreenUploadWorkflow.load.workflows.uploadFromGoogleSpreadSheet(googleSheetUrl)
+        .then((results) => {
+          resolve(results)
+        })
+        .catch((error) => {
+          reject(new Error(error))
+        })
+    })
+  }
+
   ExpScreenUploadWorkflow.remoteMethod(
     'doWork', {
       http: {path: '/dowork', verb: 'post'},
       accepts: {arg: 'workflowData', type: 'any', http: {source: 'query'}},
       returns: {arg: 'status', type: 'string'}
+    }
+  )
+
+  ExpScreenUploadWorkflow.remoteMethod(
+    'uploadFromGoogleSpreadSheet', {
+      http: {path: '/uploadFromGoogleSpreadSheet', verb: 'post'},
+      accepts: {arg: 'googleSheetUrl', type: 'any', http: {source: 'query'}},
+      returns: {arg: 'batchObj', type: 'any'}
     }
   )
 }

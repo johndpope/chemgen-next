@@ -8,7 +8,7 @@ program
     .version('0.1.0')
     .option('-l, --limit [value]', 'Max number of workflows to process [1]', 1)
     .option('-s, --site [value]', 'Site - AD, NY, DEV [DEV]', 'DEV')
-    .option('-p --search-pattern [value]', 'Search pattern - CHEM, AHR, RNAi, etc')
+    .option('-p --expSetSearch-pattern [value]', 'Search pattern - CHEM, AHR, RNAi, etc')
     .option('-e --exit', 'Exit after completing the queueing process.', false)
     .parse(process.argv);
 processWorkflows(program);
@@ -19,7 +19,7 @@ search = {
 };
 function processWorkflows(program) {
     if (program.searchPattern) {
-        // search = {
+        // expSetSearch = {
         //   screenId: {inq: [3,4]},
         //   screenId: 3,
         //   name: new RegExp(program.searchPattern),
@@ -27,8 +27,9 @@ function processWorkflows(program) {
     }
     app.models.ExpScreenUploadWorkflow
         .find({
-        where: {},
-        limit: 5
+        where: {
+            name: /crb/
+        },
     })
         .then(function (results) {
         //@ts-ignore

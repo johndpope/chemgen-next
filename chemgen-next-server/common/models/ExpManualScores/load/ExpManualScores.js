@@ -5,53 +5,33 @@ var Promise = require("bluebird");
 var lodash_1 = require("lodash");
 var ExpManualScores = app.models.ExpManualScores;
 ExpManualScores.load.submitScores = function (scores) {
-    console.log(JSON.stringify(scores));
+    app.winston.info('Submitting scores!');
+    app.winston.info(JSON.stringify(scores));
     var dateNow = new Date(Date.now());
     return new Promise(function (resolve, reject) {
         if (lodash_1.isArray(scores)) {
-            //@ts-ignore
-            Promise.map(scores, function (score) {
-                var value = score.manualscoreValue;
-                delete score.manualscoreValue;
-                if (lodash_1.get(score, 'timestamp')) {
-                    delete score.timestamp;
-                }
-                var createObj = app.etlWorkflow.helpers.findOrCreateObj(score);
+            scores.map(function (score) {
                 score.timestamp = dateNow;
-                score.manualscoreValue = value;
-                app.winston.log("Score is : " + JSON.stringify(score));
-                return ExpManualScores
-                    .findOrCreate({ where: createObj }, score)
-                    .then(function (results) {
-                    return results[0];
-                })
-                    .catch(function (error) {
-                    app.winston.error(error);
-                    return new Error(error);
-                });
-            })
+            });
+            app.models.ExpManualScores
+                .create(scores)
                 .then(function (results) {
-                resolve(results);
+                app.winston.info("Successfully submitted " + results.length + " scores");
+                resolve();
             })
                 .catch(function (error) {
                 app.winston.error(error);
                 reject(new Error(error));
             });
+            //@ts-ignore
         }
         else if (lodash_1.isObject(scores)) {
-            var value = scores.manualscoreValue;
-            delete scores.manualscoreValue;
-            if (lodash_1.get(scores, 'timestamp')) {
-                delete scores.timestamp;
-            }
-            var createObj = app.etlWorkflow.helpers.findOrCreateObj(scores);
             scores.timestamp = dateNow;
-            scores.manualscoreValue = value;
-            app.winston.log("Score is : " + JSON.stringify(scores));
-            ExpManualScores
-                .findOrCreate({ where: createObj }, scores)
+            app.models.ExpManualScores
+                .create(scores)
                 .then(function (results) {
-                resolve(results[0]);
+                app.winston.info('Successfully submitted score');
+                resolve();
             })
                 .catch(function (error) {
                 app.winston.error(error);

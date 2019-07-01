@@ -4,7 +4,7 @@ import {SearchFormBaseComponentParams} from "../../search/search.module";
 import {ExpScreenApi, ExpBiosampleApi, ExpScreenUploadWorkflowApi, ExpSetApi} from "../../../types/sdk/services/custom";
 
 /**
- * TODO All these search forms need to be factored to a module
+ * TODO All these expSetSearch forms need to be factored to a module
  */
 
 @Component({
@@ -22,8 +22,14 @@ export class SearchFormExpWorkflowQcComponent implements OnInit {
     }
 
     getNewExpSets() {
-        // this.onSubmit();
+        //Ensure expWorkflowIds are up to date
+        this.searchFormParams.searchModule.getExpWorkflows();
+        this.searchFormParams.expSets = null;
+        this.searchFormParams.formSubmitted = false;
+        this.searchFormParams.onSubmit();
+        console.log('get some new exp sets');
     }
+
 
     ngOnInit() {
     }

@@ -32,151 +32,145 @@
                 <input autocomplete="off"
                        [(ngModel)]="formResults.expScreenWorkflowName"
                        (ngModelChange)="assignNameToExpWorkflow()"
-                       [typeahead]="searchModule.expScreenWorkflows"
+                       [typeahead]="searchModule.typeAheadExpScreenWorkflows"
                        (typeaheadNoResults)="typeaheadNoResults('expWorkflowFound', $event)"
                        typeaheadOptionField="name"
                        class="form-control" name="expWorkflows" id="expWorkflows">
             </div>
         </div>
     </div>
-    <div class="col-md-12">
-        <div *ngIf="formResults.expWorkflowFound" class="alert alert-danger">
-            <p>No Exp Workflows Found!</p>
-        </div>
-    </div>
+    <br>
 </div>
-<!--End Batches-->
 
-<hr>
-
+<!--This needs to be refactored to work properly-->
+<!--<hr>-->
 <!--Begin Screen Type and Screen Stage-->
-<div class="row" *ngIf="! formResults.expScreenName && ! formResults.expScreenWorkflowName">
-    <br>
-    <div class="col-md-12">
-        <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12">Screen Stage</label>
-            <div class="col-md-9 col-sm-9 col-xs-12">
-                <select [(ngModel)]="formResults.screenStage" name="screenStage" id="screenStage" class="form-control" (ngModelChange)="searchExpWorkflows()">
-                    <option value="primary">Primary</option>
-                    <option value="secondary">Secondary</option>
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
+<!--<div class="row" *ngIf="! formResults.expScreenName && ! formResults.expScreenWorkflowName">-->
+    <!--<br>-->
+    <!--<div class="col-md-12">-->
+        <!--<div class="form-group">-->
+            <!--<label class="control-label col-md-3 col-sm-3 col-xs-12">Screen Stage</label>-->
+            <!--<div class="col-md-9 col-sm-9 col-xs-12">-->
+                <!--<select [(ngModel)]="formResults.screenStage" name="screenStage" id="screenStage" class="form-control" (ngModelChange)="searchExpWorkflows()">-->
+                    <!--<option value="primary">Primary</option>-->
+                    <!--<option value="secondary">Secondary</option>-->
+                <!--</select>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
 
 
-<div class="row" *ngIf="! formResults.expScreenName && ! formResults.expScreenWorkflowName">
-    <br>
-    <div class="col-md-12">
-        <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12">Screen Type</label>
-            <div class="col-md-9 col-sm-9 col-xs-12">
-                <select [(ngModel)]="formResults.screenType" name="screenType" id="screenType" class="form-control" (ngModelChange)="searchExpWorkflows()">
-                    <option value="permissive">Permissive</option>
-                    <option value="restrictive">Restrictive</option>
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
-<!--Begin Screen Type and Screen Stage-->
+<!--<div class="row" *ngIf="! formResults.expScreenName && ! formResults.expScreenWorkflowName">-->
+    <!--<br>-->
+    <!--<div class="col-md-12">-->
+        <!--<div class="form-group">-->
+            <!--<label class="control-label col-md-3 col-sm-3 col-xs-12">Screen Type</label>-->
+            <!--<div class="col-md-9 col-sm-9 col-xs-12">-->
+                <!--<select [(ngModel)]="formResults.screenType" name="screenType" id="screenType" class="form-control" (ngModelChange)="searchExpWorkflows()">-->
+                    <!--<option value="permissive">Permissive</option>-->
+                    <!--<option value="restrictive">Restrictive</option>-->
+                <!--</select>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash;Begin Screen Type and Screen Stage&ndash;&gt;-->
+
+<!--&lt;!&ndash;Begin WormStrain&ndash;&gt;-->
+<!--<div class="row" *ngIf="! formResults.expScreenName && ! formResults.expScreenWorkflowName">-->
+    <!--<br>-->
+    <!--<div class="col-md-12">-->
+        <!--<div class="form-group">-->
+            <!--<label for="wormStrain" class="control-label col-md-3 col-sm-3 col-xs-12">Worm Strain</label>-->
+            <!--<div class="col-md-9 col-sm-9 col-xs-12">-->
+                <!--<input autocomplete="off"-->
+                       <!--[(ngModel)]="formResults.wormStrainName"-->
+                       <!--[typeahead]="searchModule.expBiosamples"-->
+                       <!--(typeaheadNoResults)="typeaheadNoResults('biosampleFound', $event)"-->
+                       <!--typeaheadOptionField="biosampleName"-->
+                       <!--(ngModelChange)="assignNameToWormStrain()"-->
+                       <!--class="form-control" name="wormStrain" id="wormStrain">-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-md-12">-->
+        <!--<div *ngIf="formResults.biosampleFound" class="alert alert-danger">-->
+            <!--<p>No Worm Strain Found!</p>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash;End WormStrain&ndash;&gt;-->
 
 
-<!--Begin WormStrain-->
-<div class="row" *ngIf="! formResults.expScreenName && ! formResults.expScreenWorkflowName">
-    <br>
-    <div class="col-md-12">
-        <div class="form-group">
-            <label for="wormStrain" class="control-label col-md-3 col-sm-3 col-xs-12">Worm Strain</label>
-            <div class="col-md-9 col-sm-9 col-xs-12">
-                <input autocomplete="off"
-                       [(ngModel)]="formResults.wormStrainName"
-                       [typeahead]="searchModule.expBiosamples"
-                       (typeaheadNoResults)="typeaheadNoResults('biosampleFound', $event)"
-                       typeaheadOptionField="biosampleName"
-                       (ngModelChange)="assignNameToWormStrain()"
-                       class="form-control" name="wormStrain" id="wormStrain">
-            </div>
-        </div>
-    </div>
-    <div class="col-md-12">
-        <div *ngIf="formResults.biosampleFound" class="alert alert-danger">
-            <p>No Worm Strain Found!</p>
-        </div>
-    </div>
-</div>
-<!--End WormStrain-->
+<!--&lt;!&ndash;Begin Temperature&ndash;&gt;-->
+<!--<div class="row"-->
+     <!--*ngIf="!formResults.expScreenWorkflowName && (searchModule.temperatures && (!formResults.temperatureUpper || !formResults.temperatureUpper))">-->
+    <!--<br>-->
+    <!--<div class="col-md-12">-->
+        <!--<div class="form-group">-->
+            <!--<label class="control-label col-md-3 col-sm-3 col-xs-12" for="temperature">Temperature</label>-->
+            <!--<div class="col-md-9 col-sm-9 col-xs-12">-->
+                <!--<select [(ngModel)]="formResults.temperature" class="form-control" name="temperature" id="temperature" (ngModelChange)="searchExpWorkflows()">-->
+                    <!--<option *ngFor="let temperature of searchModule.temperatures" [value]="temperature">-->
+                        <!--{{temperature}}-->
+                    <!--</option>-->
+                <!--</select>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
 
+<!--&lt;!&ndash;Begin Temperature Range&ndash;&gt;-->
+<!--<div class="row" *ngIf="searchModule.temperatures  && !formResults.expScreenWorkflowName">-->
+    <!--<br>-->
+    <!--<div class="col-md-12">-->
+        <!--<div class="form-group">-->
+            <!--<label class="control-label col-md-3 col-sm-3 col-xs-12" for="temperatureRange">Temperature Range</label>-->
+            <!--<div class="col-md-4 col-sm-4 col-xs-12">-->
+                <!--<select [(ngModel)]="formResults.temperatureLower" class="form-control" name="temperatureRange" (ngModelChange)="searchExpWorkflows()"-->
+                        <!--id="temperatureRange">-->
+                    <!--<option *ngFor="let temperature of searchModule.temperatures" [value]="temperature">-->
+                        <!--{{temperature}}-->
+                    <!--</option>-->
+                <!--</select>-->
+            <!--</div>-->
+            <!--<div class="col-md-4 col-sm-4 col-xs-12">-->
+                <!--<select [(ngModel)]="formResults.temperatureUpper" class="form-control" name="temperatureUpper"-->
+                        <!--(ngModelChange)="searchExpWorkflows()"-->
+                        <!--id="temperatureUpper">-->
+                    <!--<option *ngFor="let temperature of searchModule.temperatures" [value]="temperature">-->
+                        <!--{{temperature}}-->
+                    <!--</option>-->
+                <!--</select>-->
+            <!--</div>-->
 
-<!--Begin Temperature-->
-<div class="row"
-     *ngIf="!formResults.expScreenWorkflowName && (searchModule.temperatures && (!formResults.temperatureUpper || !formResults.temperatureUpper))">
-    <br>
-    <div class="col-md-12">
-        <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="temperature">Temperature</label>
-            <div class="col-md-9 col-sm-9 col-xs-12">
-                <select [(ngModel)]="formResults.temperature" class="form-control" name="temperature" id="temperature" (ngModelChange)="searchExpWorkflows()">
-                    <option *ngFor="let temperature of searchModule.temperatures" [value]="temperature">
-                        {{temperature}}
-                    </option>
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
+        <!--</div>-->
 
-<!--Begin Temperature Range-->
-<div class="row" *ngIf="searchModule.temperatures  && !formResults.expScreenWorkflowName">
-    <br>
-    <div class="col-md-12">
-        <div class="form-group">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="temperatureRange">Temperature Range</label>
-            <div class="col-md-4 col-sm-4 col-xs-12">
-                <select [(ngModel)]="formResults.temperatureLower" class="form-control" name="temperatureRange" (ngModelChange)="searchExpWorkflows()"
-                        id="temperatureRange">
-                    <option *ngFor="let temperature of searchModule.temperatures" [value]="temperature">
-                        {{temperature}}
-                    </option>
-                </select>
-            </div>
-            <div class="col-md-4 col-sm-4 col-xs-12">
-                <select [(ngModel)]="formResults.temperatureUpper" class="form-control" name="temperatureUpper"
-                        (ngModelChange)="searchExpWorkflows()"
-                        id="temperatureUpper">
-                    <option *ngFor="let temperature of searchModule.temperatures" [value]="temperature">
-                        {{temperature}}
-                    </option>
-                </select>
-            </div>
+    <!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash;End Temperature Range&ndash;&gt;-->
 
-        </div>
-
-    </div>
-</div>
-<!--End Temperature Range-->
-
-<!--Begin Instrument Plate Ids-->
-<div class="row" *ngIf="!formResults.expScreenWorkflowName">
-    <br>
-    <div class="col-md-12">
-        <div class="form-group">
-            <label for="instrumentPlateId" class="control-label col-md-3 col-sm-3 col-xs-12">Plate ID <i
-                    tooltip="Choose an (51148) or a barcode (RNAiI.3.Q1M)"
-                    class="fa fa-question-circle"></i></label>
-            <div class="col-md-9 col-sm-9 col-xs-12">
-                <input autocomplete="off"
-                       name="instrumentPlateId" [(ngModel)]="formResults.instrumentPlateId"
-                       (ngModelChange)="addPlateId()" id="instrumentPlateId" class="form-control">
-            </div>
-        </div>
-    </div>
-    <br>
-    <div class="col-md-12">
-        <div *ngIf="formResults.instrumentPlateIdFound" class="alert alert-danger">
-            <p>Plate {{formResults.instrumentPlateId}} not found!</p>
-        </div>
-    </div>
-</div>
+<!--&lt;!&ndash;Begin Instrument Plate Ids&ndash;&gt;-->
+<!--<div class="row" *ngIf="!formResults.expScreenWorkflowName">-->
+    <!--<br>-->
+    <!--<div class="col-md-12">-->
+        <!--<div class="form-group">-->
+            <!--<label for="instrumentPlateId" class="control-label col-md-3 col-sm-3 col-xs-12">Plate ID <i-->
+                    <!--tooltip="Choose an (51148) or a barcode (RNAiI.3.Q1M)"-->
+                    <!--class="fa fa-question-circle"></i></label>-->
+            <!--<div class="col-md-9 col-sm-9 col-xs-12">-->
+                <!--<input autocomplete="off"-->
+                       <!--name="instrumentPlateId" [(ngModel)]="formResults.instrumentPlateId"-->
+                       <!--(ngModelChange)="addPlateId()" id="instrumentPlateId" class="form-control">-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<br>-->
+    <!--<div class="col-md-12">-->
+        <!--<div *ngIf="formResults.instrumentPlateIdFound" class="alert alert-danger">-->
+            <!--<p>Plate {{formResults.instrumentPlateId}} not found!</p>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
 <!--End Instrument Plate Ids-->

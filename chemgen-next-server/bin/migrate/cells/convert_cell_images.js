@@ -11,6 +11,7 @@ var now = moment().format();
 var fs = require('fs');
 var request = require('request-promise');
 var Promise = require('bluebird');
+var uri = "http://pyrite.abudhabi.nyu.edu:8089/api/experimental/dags/image_conversion/dag_runs";
 var genImageFileNames = function (expPlate, well) {
     var imageArray = expPlate.instrumentPlateImagePath.split('\\');
     var folder = imageArray[4];
@@ -54,56 +55,31 @@ var genImageFileNames = function (expPlate, well) {
         };
     });
 };
-var submitImageJob = function (imagesList) {
+var generateImageJob = function (imagesList, plateData) {
     return new Promise(function (resolve, reject) {
         Promise.map(imagesList, function (images) {
-            var uri = "http://pyrite.abudhabi.nyu.edu:8080/api/experimental/dags/image_conversion/dag_runs";
             return app.models.ExpAssay.helpers.cells.genConvertImageCommands(images)
                 .then(function (commands) {
-                app.winston.info(commands);
-                // return;
-                var imageJob = {
-                    run_id: "convertImage-" + images.plateId + "-" + images.assayName + "-" + now,
-                    task_id: "convertImage-" + images.plateId + "-" + images.assayName + "-" + now,
-                    conf: JSON.stringify({ image_convert_command: commands })
-                };
-                // @ts-ignore
-                return axios.post(uri, imageJob)
-                    .then(function (response) {
-                    app.winston.info('All fine');
-                    return {
-                        baseImage: images.baseImage,
-                        // @ts-ignore
-                        script: imageJob.title,
-                        convert: 1
-                    };
-                })
-                    .then(function () {
-                    return Promise.delay(5000);
-                })
-                    .catch(function (error) {
-                    app.winston.error('Got an error');
-                    // app.winston.error(error.error);
-                    return {
-                        baseImage: images.baseImage,
-                        // @ts-ignore
-                        script: imageJob.title,
-                        convert: 0
-                    };
-                });
+                return commands;
             })
                 .catch(function (error) {
                 console.log(JSON.stringify(error));
-                throw new Error(error);
+                return new Error(error);
             });
         }, { concurrency: 1 })
-            .then(function () {
-            return Promise.delay(5000);
+            .then(function (commands) {
+            var commandStr = commands.join("\n");
+            commandStr = "#!/usr/bin/env bash\nset -x -e\n\n" + commandStr;
+            var imageJob = {
+                run_id: "convertWell-" + plateData.barcode + "-" + imagesList[0].assayName + "-" + now,
+                task_id: "convertWell-" + plateData.barcode + "-" + imagesList[0].assayName + "-" + now,
+                conf: JSON.stringify({ image_convert_command: commandStr })
+            };
+            app.winston.info("Submitting job " + imageJob.task_id);
+            return submitImageJob(imageJob, plateData);
         })
-            .then(function (results) {
-            console.log('resolving contactSheetResults!');
+            .then(function () {
             resolve();
-            // resolve(results);
         })
             .catch(function (error) {
             console.log(JSON.stringify(error));
@@ -111,47 +87,90 @@ var submitImageJob = function (imagesList) {
         });
     });
 };
-var plateDataList = jsonfile.readFileSync(path.resolve(__dirname, 'upload_these.json'));
-plateDataList = lodash_1.shuffle(plateDataList);
+// let plateDataList = jsonfile.readFileSync(path.resolve(__dirname, 'upload_these.json'));
+// plateDataList = shuffle(plateDataList);
 // plateDataList = plateDataList.slice(0, 10);
 app.models.Plate.find({
     where: {
-        platebarcode: { like: '%SK_%' }
+        // csPlateid: 14320
+        or: [
+            {
+                name: { like: 'SK%Sent%' }
+            },
+        ]
     }
 })
     .then(function (platesDataList) {
-    // app.winston.info(`FIRST PLATE: ${JSON.stringify(plateDataList[0], null, 2)}`)
     app.winston.info("Found: " + platesDataList.length + " plates");
-    platesDataList = lodash_1.shuffle(platesDataList);
-    return Promise.map(plateDataList, function (plateData) {
+    platesDataList.map(function (plateData) {
+        app.winston.info("Found Plate: " + plateData.name);
+    });
+    // process.exit(0);
+    // platesDataList = shuffle(platesDataList);
+    return Promise.map(lodash_1.shuffle(platesDataList), function (plateData) {
         var expPlate = new models_1.ExpPlateResultSet({
             barcode: plateData.name,
             instrumentPlateImagePath: plateData.imagepath,
             instrumentPlateId: plateData.csPlateid
         });
+        // app.winston.info(`Processing Plate: ${expPlate.barcode}`);
         var wells = app.etlWorkflow.helpers.list384Wells();
-        wells = lodash_1.shuffle(wells);
+        // wells = shuffle(wells);
         return Promise.map(wells, function (well) {
             var imageData = genImageFileNames(expPlate, well);
-            return submitImageJob(imageData);
+            return generateImageJob(imageData, expPlate);
         }, { concurrency: 1 })
-            .then(function (results) {
-            console.log(JSON.stringify(results));
-            return results;
+            .then(function () {
+            // let commandStr = commands.slice(0,1).join("\n");
+            // let commandStr = commands.join("\n");
+            // // commandStr = "#!/usr/bin/env bash\nset -x -e\n\n" + commandStr;
+            // // app.winston.info(`CommandStr: ${commandStr}`);
+            // const imageJob = {
+            //   run_id: `convertPlate-${expPlate.barcode}`,
+            //   task_id: `convertPlate-${expPlate.barcode}`,
+            //   conf: JSON.stringify({image_convert_command: commandStr})
+            // };
+            // app.winston.info(`Submitting job ${imageJob.task_id}`);
+            // return submitImageJob(imageJob, expPlate);
+            return;
         })
             .catch(function (error) {
-            console.log(JSON.stringify(error));
-            throw new Error(error);
+            return new Error(error);
         });
     }, { concurrency: 1 })
         .then(function (results) {
         console.log('I think this is done!');
     })
         .catch(function (error) {
-        console.log(JSON.stringify(error));
+        // app.winston.error(`Received Error: ${error}`);
     });
 })
     .catch(function (error) {
-    app.winston.error(error);
+    // app.winston.error(error);
 });
+function submitImageJob(imageJob, expPlate) {
+    return new Promise(function (resolve, reject) {
+        //@ts-ignore
+        return axios.post(uri, imageJob)
+            .then(function (response) {
+            app.winston.info("Successfully submitted " + imageJob.run_id);
+            return {
+                plate: expPlate.barcode,
+                convert: 1
+            };
+        })
+            .then(function () {
+            return Promise.delay(1000);
+        })
+            .then(function () {
+            resolve();
+        })
+            .catch(function (error) {
+            app.winston.error("Error submitting " + imageJob.run_id);
+            app.winston.error("" + error);
+            app.winston.error(error);
+            resolve();
+        });
+    });
+}
 //# sourceMappingURL=convert_cell_images.js.map

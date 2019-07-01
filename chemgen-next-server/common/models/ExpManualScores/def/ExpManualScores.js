@@ -1,7 +1,6 @@
+'use strict'
 
-'use strict';
-
-module.exports = function(ExpManualScores) {
+module.exports = function (ExpManualScores) {
   ExpManualScores.helpers = {}
   ExpManualScores.load = {}
   ExpManualScores.load.workflows = {}
@@ -12,24 +11,25 @@ module.exports = function(ExpManualScores) {
 
   ExpManualScores.on('attached', function () {
     require('../load/ExpManualScores')
-    require('../summary/ExpManualScores');
+    require('../summary/ExpManualScores')
     // require('../transform/ExpManualScores')
     // require('../extract/RnaiExpManualScores')
   })
 
-  ExpManualScores.summary = function(search, cb){
-    return new Promise((resolve, reject) =>{
+  ExpManualScores.summary = function (search, cb) {
+    return new Promise((resolve, reject) => {
       ExpManualScores.extract.workflows.getScoresStatsPerScreen(search)
-        .then((results) =>{
-          resolve(results);
+        .then((results) => {
+          resolve(results)
         })
-        .catch((error) =>{
-          reject(new Error(error));
+        .catch((error) => {
+          reject(new Error(error))
         })
-    });
+    })
   }
 
   ExpManualScores.submitScores = function (scores, cb) {
+    console.log('ExpManualScores.submitScores')
     return new Promise((resolve, reject) => {
       ExpManualScores.load.submitScores(scores)
         .then((results) => {

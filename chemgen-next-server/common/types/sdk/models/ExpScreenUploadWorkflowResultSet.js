@@ -128,6 +128,10 @@ var ExpScreenUploadWorkflowResultSet = /** @class */ (function () {
                     name: 'stockPrepDate',
                     type: 'Date'
                 },
+                "cultureDate": {
+                    name: 'cultureDate',
+                    type: 'Date'
+                },
                 "assayDates": {
                     name: 'assayDates',
                     type: 'Array&lt;any&gt;'

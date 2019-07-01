@@ -9,6 +9,10 @@ module.exports = {
     name: 'arrayscanDS',
     connector: 'memory'
   },
+  arrayscanMySQLDS: {
+    name: 'arrayscanMySQLDS',
+    connector: 'memory'
+  },
   chemgenDS: {
     name: 'chemgenDS',
     connector: 'memory'

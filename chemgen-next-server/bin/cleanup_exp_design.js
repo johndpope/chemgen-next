@@ -210,6 +210,7 @@ function updateExpAssays(model, expGroupIds) {
                     .then(function (results) {
                     Promise.map(results, function (row) {
                         console.log("Old Row: " + JSON.stringify(row));
+                        //@ts-ignore
                         row.expGroupId = masterId_3;
                         app.models[model]
                             .upsert(row)

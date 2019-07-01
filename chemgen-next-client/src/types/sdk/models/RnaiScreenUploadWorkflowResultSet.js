@@ -186,6 +186,10 @@ var RnaiScreenUploadWorkflowResultSet = /** @class */ (function () {
                     name: 'instrumentPlateIdLookup',
                     type: 'string'
                 },
+                "cultureDate": {
+                    name: 'cultureDate',
+                    type: 'Date'
+                },
                 "id": {
                     name: 'id',
                     type: 'any'

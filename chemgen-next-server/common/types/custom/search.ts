@@ -1,7 +1,7 @@
 import {intersection, compact, isEqual, includes, shuffle, find, filter} from 'lodash';
 
 /**
- * The search results on the front end give us a list of expWorkflowIds (Batch Ids) or expSetIds (mel-4 on 2012-12-12 in dhc-5 at 22.5)
+ * The expSetSearch results on the front end give us a list of expWorkflowIds (Batch Ids) or expSetIds (mel-4 on 2012-12-12 in dhc-5 at 22.5)
  */
 declare var Object: any;
 

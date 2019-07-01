@@ -1,8 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-
-import {LoopBackConfig} from '../../types/sdk';
-import {ExpBiosampleResultSet} from '../../types/sdk/models';
-import {ExpBiosampleApi} from '../../types/sdk/services/custom';
+import {LoopBackConfig} from "../../types/sdk";
+import {ExpBiosampleResultSet} from "../../types/sdk";
+import {ExpBiosampleApi} from "../../types/sdk";
 
 @Component({
   // Be sure to get rid of the selector when using the router in the component
@@ -10,7 +9,7 @@ import {ExpBiosampleApi} from '../../types/sdk/services/custom';
   // selector: 'app-pages',
   templateUrl: './pages.component.html',
   styleUrls: ['./pages.component.css'],
-  providers: [ExpBiosampleApi]
+  // providers: [ExpBiosampleApi]
 })
 export class PagesComponent implements OnInit {
 

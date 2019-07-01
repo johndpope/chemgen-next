@@ -20,6 +20,7 @@ __export(require("./ChemicalXrefs"));
 __export(require("./RnaiLibraryStock"));
 __export(require("./RnaiWormbaseXrefs"));
 __export(require("./Plate"));
+__export(require("./ArrayScanPlateMirror"));
 __export(require("./ExpScreenUploadWorkflow"));
 __export(require("./WpTerms"));
 __export(require("./WpPosts"));
@@ -40,6 +41,7 @@ __export(require("./ExpSet"));
 __export(require("./Models"));
 __export(require("./ReactomeEnity"));
 __export(require("./ReactomePathway"));
+__export(require("./PlateSearchConfiguration"));
 __export(require("./SDKModels"));
 __export(require("./logger.service"));
 //# sourceMappingURL=index.js.map

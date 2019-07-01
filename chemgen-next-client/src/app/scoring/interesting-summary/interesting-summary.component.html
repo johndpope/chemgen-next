@@ -1,0 +1,51 @@
+<!--Start Content-->
+<div class="row">
+    <div class="col-md-12">
+
+        <!--Begin Current Content-->
+        <div *ngIf="expSets" class="expSets">
+            <h2>Interesting Results</h2>
+            <p>These are results that have gone through the contact sheet and been marked as 'interesting'.</p>
+            <p>Select a row to view the images, and then press 't' to return to the table.</p>
+
+            <div class="x_content">
+                <div class="row" *ngIf="scoreSummaryTableRows" id="scoreSummaryTable">
+                    <div class="col-md-12">
+                        <label> File Name: <input type="text" id="fileName" [(ngModel)]="exportCSVFileName"/> </label>
+                        <label style="margin-left: 20px;">
+                            <button class="btn btn-info" (click)="onBtnExport()">Export to CSV</button>
+                        </label>
+                    </div>
+                    <div class="col-md-12">
+                        <ag-grid-angular
+                                style="width: 100%; height: 100%;"
+                                class="ag-theme-balham"
+                                (gridReady)="onGridReady($event)"
+                                [enableColResize]="true"
+                                [enableSorting]="true"
+                                [enableFilter]="true"
+                                (selectionChanged)="onSelectionChanged($event)"
+                                [rowSelection]="rowSelection"
+                                [rowData]="scoreSummaryTableRows"
+                                [columnDefs]="columnDefs"
+                        >
+                        </ag-grid-angular>
+                    </div>
+                </div>
+            </div>
+
+
+            <app-expset-sheet [expSets]="expSets" [expSetModule]="expSetModule"
+                              [displayToggle]="false"
+                              [expSetSearch]="expSetSearch"></app-expset-sheet>
+        </div>
+        <div *ngIf="expSets && ! expSets.expWorkflows?.length">
+            <h2>Empty ResultSet</h2>
+            <p>The search you performed returned an empty result set.</p>
+            <p>Either your search is incorrect, or not in the database.</p>
+        </div>
+        <!--End Current Content-->
+
+    </div>
+</div>
+<!--End Content-->

@@ -71,6 +71,7 @@ var ChemicalXrefs_1 = require("./services/custom/ChemicalXrefs");
 var RnaiLibraryStock_1 = require("./services/custom/RnaiLibraryStock");
 var RnaiWormbaseXrefs_1 = require("./services/custom/RnaiWormbaseXrefs");
 var Plate_1 = require("./services/custom/Plate");
+var ArrayScanPlateMirror_1 = require("./services/custom/ArrayScanPlateMirror");
 var ExpScreenUploadWorkflow_1 = require("./services/custom/ExpScreenUploadWorkflow");
 var WpTerms_1 = require("./services/custom/WpTerms");
 var WpPosts_1 = require("./services/custom/WpPosts");
@@ -91,6 +92,7 @@ var ExpSet_1 = require("./services/custom/ExpSet");
 var Models_1 = require("./services/custom/Models");
 var ReactomeEnity_1 = require("./services/custom/ReactomeEnity");
 var ReactomePathway_1 = require("./services/custom/ReactomePathway");
+var PlateSearchConfiguration_1 = require("./services/custom/PlateSearchConfiguration");
 /**
 * @module SDKBrowserModule
 * @description
@@ -131,6 +133,7 @@ var SDKBrowserModule = /** @class */ (function () {
                 RnaiLibraryStock_1.RnaiLibraryStockApi,
                 RnaiWormbaseXrefs_1.RnaiWormbaseXrefsApi,
                 Plate_1.PlateApi,
+                ArrayScanPlateMirror_1.ArrayScanPlateMirrorApi,
                 ExpScreenUploadWorkflow_1.ExpScreenUploadWorkflowApi,
                 WpTerms_1.WpTermsApi,
                 WpPosts_1.WpPostsApi,
@@ -151,6 +154,7 @@ var SDKBrowserModule = /** @class */ (function () {
                 Models_1.ModelsApi,
                 ReactomeEnity_1.ReactomeEnityApi,
                 ReactomePathway_1.ReactomePathwayApi,
+                PlateSearchConfiguration_1.PlateSearchConfigurationApi,
                 internalStorageProvider,
                 { provide: storage_swaps_1.SDKStorage, useClass: storage_browser_1.StorageBrowser }
             ]
